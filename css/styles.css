@@ -1,0 +1,75 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color:rgb(36, 80, 114);  /* Light sky blue background color */
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    background-color: rgb(23, 41, 55);
+    color: white;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    background-color: rgb(23, 41, 55);
+    color: white;
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo1 {
+    width: 60px;
+    height: auto;
+}
+header .logo2 {
+    width: 120px;
+    height: auto;
+}
+header .titulo{
+    font-size: 35px;
+}
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+main {
+    padding: 20px;
+    background-color: rgb(23, 41, 55);
+    border-radius: 0 0 15px 15px;
+    color: white;
+    line-height: 2;  /* Adjust this value to increase/decrease line height */
+}
+
+h2, h3 {
+    color: white;
+}
+
+footer {
+    background-color: rgb(23, 41, 55);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 0 0 8px 8px;
+    margin-top: 20px;
+}
+
+a {
+    color: white;
+    text-decoration: underline;
+}
+
+ul, ol {
+    padding-left: 20px;
+}
