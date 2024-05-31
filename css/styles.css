@@ -40,7 +40,7 @@ header .titulo{
     font-size: 35px;
 }
 
-header .titulo{
+header .titulo1{
     font-size: 28px;
 }
 
@@ -77,4 +77,40 @@ a {
 
 ul, ol {
     padding-left: 20px;
+}
+/* Media Query para pantallas pequeñas */
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+        padding: 10px;
+    }
+
+    header {
+        flex-direction: column;
+    }
+
+    header .logo {
+        margin-bottom: 10px;
+
+    }
+
+    header .logo1 {
+        width: 30px;
+        height: auto;
+    }
+    header .logo2 {
+        width: 38px;
+        height: auto;
+    }
+    header .titulo{
+        font-size: 35px;
+    }
+
+    main {
+        padding: 5px;
+    }
+
+    footer {
+        padding: 5px;
+    }
 }
