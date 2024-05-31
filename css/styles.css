@@ -7,7 +7,7 @@ body {
 }
 
 .container {
-    background-color: rgb(23, 41, 55);
+    background-color: rgb(36, 80, 114);
     color: white;
     margin: 20px auto;
     width: 80%;
@@ -19,7 +19,7 @@ body {
 
 header {
     text-align: center;
-    background-color: rgb(23, 41, 55);
+    background-color: rgb(36, 80, 114);
     color: white;
     padding: 10px;
     border-radius: 10px 10px 0 0;
@@ -51,8 +51,8 @@ header h1 {
 
 main {
     padding: 20px;
-    background-color: rgb(23, 41, 55);
-    border-radius: 0 0 15px 15px;
+    background-color: rgb(2, 43, 74);
+    border-radius: 15px 15px 15px 15px;
     color: white;
     line-height: 2;  /* Adjust this value to increase/decrease line height */
 }
@@ -62,7 +62,7 @@ h2, h3 {
 }
 
 footer {
-    background-color: rgb(23, 41, 55);
+    background-color: rgb(36,80,114);
     color: white;
     text-align: center;
     padding: 10px;
