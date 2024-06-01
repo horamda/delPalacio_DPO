@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.card {
+    margin: 20px;
+}
+
+.card-header {
+    background-color: #d9534f;
+    color: white;
+}
+
+.card-body ul {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    filter: invert(100%);
+}
