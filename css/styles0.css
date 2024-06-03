@@ -6,14 +6,14 @@ body {
 }
 
 header {
-    background-color: #333;
+    background-color: #262cd0;
     color: white;
     text-align: center;
     padding: 1rem 0;
 }
 
 footer {
-    background-color: #333;
+    background-color: #483cee;
     color: white;
     text-align: center;
     padding: 1rem 0;
@@ -47,6 +47,15 @@ footer a {
 }
 
 .logodp{
-    border-radius: 47px;
-    width: 15%;
+    border-radius: 100px;
+    width: 5%;
+}
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 600px) {
+    .logodp {
+        width: 15%;
+        padding: 10px
+
+    }
 }
