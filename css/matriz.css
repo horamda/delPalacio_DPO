@@ -19,6 +19,7 @@ header {
 .card-header {
     background-color: #d9534f;
     color: white;
+    align-items: center;
 }
 
 .card-body ul {
@@ -28,4 +29,9 @@ header {
 
 .carousel-control-prev, .carousel-control-next {
     filter: invert(100%);
+}
+
+.iconos {
+    width: 10%;
+
 }
