@@ -45,7 +45,10 @@ footer a {
 .btn:hover {
     background-color: #0056b3;
 }
-
+.qr{
+    width: 100%;
+    border-radius: 5%;
+}
 .logodp{
     border-radius: 100px;
     width: 5%;
