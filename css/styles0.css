@@ -88,9 +88,10 @@ footer a {
         padding: 10px
     }
     .logodpo {
+        border-radius:10px;
         width: 20%;;
         padding: 10px;
-        border-radius:10px;
+        
     }
 
    .img-ini{
