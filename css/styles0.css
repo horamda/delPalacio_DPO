@@ -59,7 +59,7 @@ footer a {
 }
 .logodp{
     border-radius: 100px;
-    width: 5%;
+    width: 8%;
 }
 
 .img-ini {
@@ -75,7 +75,7 @@ footer a {
     transition: background-color 0.3s ease;
   }
   .list-group-item:hover {
-    background-color: #2320e1;
+    background-color: #656569;
   }
 /* Media Query para pantallas pequeñas */
 @media (max-width: 600px) {
