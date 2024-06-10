@@ -32,7 +32,10 @@ footer a {
     color: white;
     margin: 0 10px;
 }
-
+.cardlink{
+    width: 35rem;
+    margin: 20px auto;
+}
 .card {
     border: 1px solid #ddd;
     border-radius: 15px;
@@ -81,6 +84,10 @@ footer a {
   .list-group-item:hover {
     background-color: #656569;
   }
+  .imglink{
+    width: 5%;
+    border-radius: 100%;
+  }
 /* Media Query para pantallas pequeñas */
 @media (max-width: 600px) {
     .logodp {
@@ -99,4 +106,9 @@ footer a {
     align-items: center;
     padding: auto;
    }
+
+   .cardlink{
+    width: 25rem;
+    margin: 20px auto;
+}
 }
