@@ -88,6 +88,11 @@ footer a {
     width: 5%;
     border-radius: 100%;
   }
+
+  #map {
+    height: 500px;
+    width: 100%
+}
 /* Media Query para pantallas pequeñas */
 @media (max-width: 600px) {
     .logodp {
