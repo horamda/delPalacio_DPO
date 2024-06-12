@@ -58,7 +58,7 @@ footer a {
     background-color: #0056b3;
 }
 .qr{
-    width: 10%;
+    width: 20%;
     border-radius: 5%;
 }
 .logodp{
@@ -91,13 +91,13 @@ footer a {
 /* Media Query para pantallas pequeñas */
 @media (max-width: 600px) {
     .logodp {
-        width: 30%;
+        width: 15%;
         padding: 10px
     }
     .logodpo {
         border-radius:5px;
-        width: 20%;;
-        padding: 10px;
+        width: 18%;;
+        padding: 8px;
         
     }
 
@@ -108,7 +108,7 @@ footer a {
    }
 
    .cardlink{
-    width: 20rem;
-    margin: 5px auto;
+    width: 18rem;
+    margin: 2px auto;
 }
 }
