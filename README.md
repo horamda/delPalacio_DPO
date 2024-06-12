@@ -1,2 +1,2 @@
-# delPalacio_cyberSeguridad
-Notas sobre cyber seguridad
+# delPalacio_SA
+Politicas, links, varios
