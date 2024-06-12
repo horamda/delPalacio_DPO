@@ -33,8 +33,8 @@ footer a {
     margin: 0 10px;
 }
 .cardlink{
-    width: 35rem;
-    margin: 20px auto;
+    width: 30rem;
+    margin: 10px auto;
 }
 .card {
     border: 1px solid #ddd;
@@ -108,7 +108,7 @@ footer a {
    }
 
    .cardlink{
-    width: 25rem;
-    margin: 20px auto;
+    width: 10rem;
+    margin: 5px auto;
 }
 }
