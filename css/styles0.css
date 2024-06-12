@@ -63,7 +63,7 @@ footer a {
 }
 .logodp{
     border-radius: 100px;
-    width: 8%;
+    width: 5%;
 }
 .logodpo{
     border-radius: 5px;
@@ -91,11 +91,11 @@ footer a {
 /* Media Query para pantallas pequeñas */
 @media (max-width: 600px) {
     .logodp {
-        width: 20%;
+        width: 30%;
         padding: 10px
     }
     .logodpo {
-        border-radius:10px;
+        border-radius:5px;
         width: 20%;;
         padding: 10px;
         
