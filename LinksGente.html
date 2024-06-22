@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,8 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
+
 <body>
     <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -45,34 +46,26 @@
     </nav>
     <!-- Encabezado -->
     <header class="bg-dark text-white text-center py-3">
-     
-        <h1>Ubicación</h1>
+
+        <h1>Links Generales</h1>
     </header>
     <!-- Contenido Principal -->
- 
-        <div id="map"></div>
-
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script>
-            // Inicializa el mapa y establece su vista
-            var map = L.map('map').setView([51.505, -0.09], 13);
-    
-            // Añade una capa de mapa (en este caso OpenStreetMap)
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-    
-            // Añade los marcadores con las coordenadas deseadas
-            var marker1 = L.marker([51.5, -0.09]).addTo(map)
-                .bindPopup('Punto 1')
-                .openPopup();
-    
-            var marker2 = L.marker([51.51, -0.1]).addTo(map)
-                .bindPopup('Punto 2')
-                .openPopup();
-        </script>
-           
-</body>
+    <main class="container my-4">
+          <div class="cardlink">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdja5pCtpwLO5ifuUrty1XQk8uZFJUGIwUNJ3yNMwP9F59Szw/viewform?usp=sf_link" target="_blank">
+                  <img src="img/link2.png" alt="Imagen 1" class="imglink"> Asistencia a las reuniones generales
+                </a>
+              </li>
+              <li class="list-group-item">
+                <a href="https://docs.google.com/forms/u/1/d/e/1FAIpQLScauxrZdizlLZVomijw1xCb90MxHlcQgxMEuVVjMAPpHtGX2g/formResponse" target="_blank">
+                    <img src="img/link2.png" alt="Imagen 2" class="imglink"> S/U
+                </a>
+              </li>
+            </ul>
+          </div>
+    </main>
     <!-- Pie de Página -->
     <footer class="bg-dark text-white text-center py-3">
         <div class="row">
@@ -99,4 +92,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
