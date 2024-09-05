@@ -40,6 +40,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="LinksGenerales.html">Gral</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -55,7 +58,7 @@
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
         <script>
             // Inicializa el mapa y establece su vista
-            var map = L.map('map').setView([51.505, -0.09], 13);
+            var map = L.map('map').setView([-36.72973, -56.68871], 7);
     
             // Añade una capa de mapa (en este caso OpenStreetMap)
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -63,13 +66,18 @@
             }).addTo(map);
     
             // Añade los marcadores con las coordenadas deseadas
-            var marker1 = L.marker([51.5, -0.09]).addTo(map)
-                .bindPopup('Punto 1')
+            var marker2 = L.marker([-35.575227, -57.977882]).addTo(map)
+                .bindPopup('Deposito Chascomus')
+                .openPopup();   
+            
+            var marker1 = L.marker([-36.72973, -56.68871]).addTo(map)
+                .bindPopup('Casa central')
                 .openPopup();
     
-            var marker2 = L.marker([51.51, -0.1]).addTo(map)
-                .bindPopup('Punto 2')
+            var marker2 = L.marker([-36.298680, -57.688721]).addTo(map)
+                .bindPopup('Suc. Dolores')
                 .openPopup();
+             
         </script>
            
 </body>
