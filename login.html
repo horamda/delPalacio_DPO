@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Restringido - del Palacio S.A.</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Iniciar Sesión</h4>
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label for="password">Clave de Acceso</label>
+                                <input type="password" id="password" class="form-control" placeholder="Ingrese su clave">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Acceder</button>
+                        </form>
+                        <div id="error-message" class="text-danger text-center mt-2" style="display:none;">Clave incorrecta</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const validPassword = "chascomus588"; // Aquí defines la clave
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evitar el envío del formulario
+            const password = document.getElementById("password").value;
+
+            if (password === validPassword) {
+                window.location.href = "tableros.html"; // Redirige a la página restringida
+            } else {
+                document.getElementById("error-message").style.display = "block"; // Muestra el mensaje de error
+            }
+        });
+    </script>
+</body>
+</html>
