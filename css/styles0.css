@@ -13,7 +13,10 @@ body {
         border-radius: 15px;
 
 }
-
+/* El main debe ocupar todo el espacio disponible menos el espacio del footer 
+main {
+    flex: 1; /* Esto empuja el footer hacia abajo 
+*/
 header {
    /* background-color: #262cd0;*/
     color: white;
@@ -93,6 +96,16 @@ footer a {
     height: 500px;
     width: 100%
 }
+
+
+/* Para que el footer siempre esté en la parte inferior */
+.fixed-bottom {
+    position: fixed;
+    bottom: 100px;
+    width: 90%;
+    z-index: 900;
+}
+
 /* Media Query para pantallas pequeñas */
 @media (max-width: 600px) {
     .logodp {
