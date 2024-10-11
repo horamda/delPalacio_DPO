@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Distribuidora del Palacio S.A. especializada en bebidas, almacén, entrega, flota y seguridad e higiene. Visítanos en nuestras redes sociales o contacta con nosotros.">
+    <meta name="description"
+        content="Distribuidora del Palacio S.A. especializada en bebidas, almacén, entrega, flota y seguridad e higiene. Visítanos en nuestras redes sociales o contacta con nosotros.">
     <title> del Palacio S.A</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="icon" href="img/logodpf.png" type="image/x-icon">
 </head>
+
 <body>
     <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <img src="img/logodp.png" alt="" class="logodp">   
-        <a class="navbar-brand" href="index.html">  del Palacio S.A </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <img src="img/logodp.png" alt="" class="logodp">
+        <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -57,22 +61,140 @@
     <main>
         <div>
             <img src="img/modelo.jpeg" alt="" class="img-ini">
+            <!-- Sección de Eventos Especiales - Carrusel Centrados -->
+            <section class="py-5 bg-secondary text-white">
+                <div class="container">
+                    <h2 class="text-center mb-5">Eventos Especiales</h2>
+                    <div id="eventosCarrusel" class="carousel slide mx-auto" data-ride="carousel"
+                        style="max-width: 600px;">
+                        <!-- Indicadores del carrusel -->
+                        <ol class="carousel-indicators">
+                            <li data-target="#eventosCarrusel" data-slide-to="0" class="active"></li>
+                            <li data-target="#eventosCarrusel" data-slide-to="1"></li>
+                            <li data-target="#eventosCarrusel" data-slide-to="2"></li>
+                            <li data-target="#eventosCarrusel" data-slide-to="3"></li>
+                        </ol>
+                        <!-- Contenido del carrusel -->
+                        <div class="carousel-inner text-center">
+                            <!-- Evento 1: Día Mundial de la Seguridad -->
+                            <div class="carousel-item active">
+                                <div class="card h-100 border-0 shadow text-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Día Mundial de la Seguridad - 28 de abril</h5>
+                                        <p class="card-text">En esta fecha destacamos la importancia de las prácticas
+                                            seguras en todos los ámbitos laborales, promoviendo un entorno de trabajo
+                                            seguro y saludable para todos.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Evento 2: Día de la Seguridad Vial -->
+                            <div class="carousel-item">
+                                <div class="card h-100 border-0 shadow text-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Día de la Seguridad Vial - 10 de junio</h5>
+                                        <p class="card-text">Un día para reflexionar sobre la importancia de la
+                                            seguridad en las rutas y calles, y fomentar comportamientos responsables
+                                            entre los conductores para reducir accidentes.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Evento 3: Semana de la Calidad -->
+                            <div class="carousel-item">
+                                <div class="card h-100 border-0 shadow text-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Semana de la Calidad - 12 al 17 de agosto</h5>
+                                        <p class="card-text">Durante esta semana, promovemos la mejora continua en los
+                                            procesos, la excelencia en el servicio y el compromiso con la calidad en
+                                            todas nuestras áreas de trabajo.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Evento 4: Día del Consumo Responsable -->
+                            <div class="carousel-item">
+                                <div class="card h-100 border-0 shadow text-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Día del Consumo Responsable - 16 de septiembre</h5>
+                                        <p class="card-text">Este día fomentamos el consumo consciente y responsable,
+                                            promoviendo prácticas que cuiden el medio ambiente y generen un impacto
+                                            positivo en la sociedad.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Controles del carrusel -->
+                        <a class="carousel-control-prev" href="#eventosCarrusel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Anterior</span>
+                        </a>
+                        <a class="carousel-control-next" href="#eventosCarrusel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Siguiente</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Agregar scripts de Bootstrap si aún no están en tu página -->
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+            <!-- Estilos adicionales para los botones del carrusel -->
+            <style>
+                .carousel-control-prev-icon,
+                .carousel-control-next-icon {
+                    background-color: rgba(255, 255, 255, 0.7);
+                    /* Fondo claro semitransparente */
+                    border-radius: 50%;
+                    /* Bordes redondeados */
+                    padding: 15px;
+                    /* Más espacio alrededor del ícono */
+                    width: 50px;
+                    /* Tamaño aumentado */
+                    height: 50px;
+                    /* Tamaño aumentado */
+                }
+
+                .carousel-control-prev-icon {
+                    background-image: url('https://cdn-icons-png.flaticon.com/512/271/271220.png');
+                    /* Ícono para 'anterior' */
+                    background-size: 30px 30px;
+                    /* Tamaño ajustado del ícono */
+                }
+
+                .carousel-control-next-icon {
+                    background-image: url('https://cdn-icons-png.flaticon.com/512/271/271228.png');
+                    /* Ícono para 'siguiente' */
+                    background-size: 30px 30px;
+                    /* Tamaño ajustado del ícono */
+                }
+
+                .carousel-control-prev,
+                .carousel-control-next {
+                    width: 5%;
+                    /* Aumentar el área de clic para mejor usabilidad */
+                }
+            </style>
         </div>
     </main>
     <!-- Pie de Página -->
     <footer class="bg-dark text-white text-center py-3 ">
         <div class="row">
             <div class="col-md-3">
-                <a href="https://www.instagram.com/del.palacio" class="text-white"> <i class="fa-brands fa-instagram"></i> Instagram</a>
+                <a href="https://www.instagram.com/del.palacio" class="text-white"> <i
+                        class="fa-brands fa-instagram"></i> Instagram</a>
             </div>
             <div class="col-md-3">
-                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i
+                        class="fa-brands fa-facebook"></i> Facebook</a>
             </div>
             <div class="col-md-3">
-                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a>
+                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i
+                        class="fa-brands fa-linkedin"></i> Linkedin</a>
             </div>
             <div class="col-md-3">
-                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p>
+                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar"
+                        class="text-white">administracion@delpalacio.com.ar</a></p>
             </div>
         </div>
         <div class="row">
@@ -85,4 +207,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
