@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard de Gestión de Riesgos y Contingencias - del Palacio S.A. Sistema de gestión integral para situaciones de emergencia.">
+    <title>Dashboard de Gestión de Riesgos Externos - del Palacio S.A.</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="img/logodpf.png" type="image/x-icon">
+    <style>
+        /* Estilos del navbar originales */
+        .logodp {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+        }
+        
+        /* Ajustes para el navbar en el dashboard */
+        .navbar {
+            z-index: 1000;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 0; /* Removido padding superior para acomodar navbar */
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .search-filter-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-btn.critical {
+            background: #dc3545;
+            color: white;
+        }
+
+        .filter-btn.critical.active {
+            background: #c82333;
+        }
+
+        .filter-btn.high {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .filter-btn.high.active {
+            background: #e66a00;
+        }
+
+        .filter-btn.moderate {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .filter-btn.moderate.active {
+            background: #138496;
+        }
+
+        .filter-btn.all {
+            background: #6c757d;
+            color: white;
+        }
+
+        .filter-btn.all.active {
+            background: #545b62;
+        }
+
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .risk-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-table thead th {
+            background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .risk-table tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-table td {
+            padding: 20px 15px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+
+        .risk-level {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .critical-level {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .high-level {
+            background: linear-gradient(135deg, #fd7e14, #e66a00);
+            color: white;
+        }
+
+        .moderate-level {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .event-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .phone-list {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .phone-number {
+            display: inline-block;
+            margin: 2px;
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .emergency-banner {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .emergency-banner i {
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .call-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .call-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .info-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .info-btn:hover {
+            background: #138496;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-bar {
+                gap: 20px;
+            }
+
+            .search-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+
+            .risk-table {
+                font-size: 0.8rem;
+            }
+
+            .risk-table td,
+            .risk-table th {
+                padding: 15px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menú de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <img src="img/logodpf.png" alt="" class="logodp">
+        <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksEntrega.html">Entrega</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksFlota.html">Flota</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksGente.html">Gente</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestíon</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#"><i class="fas fa-shield-alt"></i> Dashboard Riesgos</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="emergency-banner">
+        <i class="fas fa-exclamation-triangle"></i>
+        HOSPITAL: 107 | BOMBEROS: 100 | POLICÍA: 101 | DEFENSA CIVIL: 103
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>del Palacio S.A.</h1>
+            <p>Dashboard de Gestión de Riesgos Externos</p>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number" id="criticalCount">0</span>
+                    <span class="stat-label">Críticos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="highCount">0</span>
+                    <span class="stat-label">Altos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="moderateCount">0</span>
+                    <span class="stat-label">Moderados</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalCount">0</span>
+                    <span class="stat-label">Total</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por evento, responsable o teléfono...">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn all active" data-filter="all">
+                        <i class="fas fa-list"></i> Todos
+                    </button>
+                    <button class="filter-btn critical" data-filter="critical">
+                        <i class="fas fa-exclamation-circle"></i> Críticos
+                    </button>
+                    <button class="filter-btn high" data-filter="high">
+                        <i class="fas fa-exclamation-triangle"></i> Altos
+                    </button>
+                    <button class="filter-btn moderate" data-filter="moderate">
+                        <i class="fas fa-info-circle"></i> Moderados
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="risk-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th><i class="fas fa-bolt" style="margin-right: 8px;"></i>Evento</th>
+                        <th><i class="fas fa-chart-line" style="margin-right: 8px;"></i>Nivel de Riesgo</th>
+                        <th><i class="fas fa-users" style="margin-right: 8px;"></i>Responsables</th>
+                        <th><i class="fas fa-phone" style="margin-right: 8px;"></i>Contactos</th>
+                        <th><i class="fas fa-cogs" style="margin-right: 8px;"></i>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="riskTableBody">
+                    <!-- Los datos se cargarán dinámicamente -->
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No se encontraron resultados</h3>
+                <p>Prueba con otros términos de búsqueda o ajusta los filtros</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de Página -->
+<footer class="bg-dark text-white text-center py-3 ">
+        <div class="row">
+            <div class="col-md-3">
+                <a href="https://www.instagram.com/del.palacio" class="text-white"> <i
+                        class="fa-brands fa-instagram"></i> Instagram</a>
+            </div>
+            <div class="col-md-3">
+                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i
+                        class="fa-brands fa-facebook"></i> Facebook</a>
+            </div>
+            <div class="col-md-3">
+                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i
+                        class="fa-brands fa-linkedin"></i> Linkedin</a>
+            </div>
+            <div class="col-md-3">
+                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar"
+                        class="text-white">administracion@delpalacio.com.ar</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const riskData = [
+            {id: 1, event: "Corte de Luz", type: "CRÍTICO", class: "critical", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES, CLYFEMA", phones: ["02257-15532455", "02257-15537368", "02257-604000"]},
+            {id: 2, event: "Corte de Sistema", type: "CRÍTICO", class: "critical", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES, TECNICO", phones: ["02257-15532455", "02257-15537368"]},
+            {id: 3, event: "Sin Internet", type: "CRÍTICO", class: "critical", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES, MOVISTAR HOGAR", phones: ["02257-15532455", "02257-15537368", "114"]},
+            {id: 4, event: "Incendio", type: "CRÍTICO", class: "critical", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES, ENCARGADO DE BRIGADA", phones: ["02257-15532455", "02257-15537368"]},
+            {id: 5, event: "Paro Sindical", type: "ALTO", class: "high", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES", phones: ["02257-15532455", "02257-15537369"]},
+            {id: 6, event: "Emergencia Médica (Interna)", type: "CRÍTICO", class: "critical", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES, ENCARGADO DE BRIGADA", phones: ["02257-15532455", "02257-15537370"]},
+            {id: 7, event: "Emergencia Médica (Externa)", type: "CRÍTICO", class: "critical", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES, ENCARGADO DE BRIGADA", phones: ["02257-15532455", "02257-15537371"]},
+            {id: 8, event: "Temporal", type: "ALTO", class: "high", responsible: "JEFE DE OPERACIONES, MUNICIPALIDAD DE LA COSTA - DEFENSA CIVIL", phones: ["02257-15537372", "103"]},
+            {id: 9, event: "Robo", type: "ALTO", class: "high", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES", phones: ["02257-15532455", "02257-15537368"]},
+            {id: 10, event: "Saqueos", type: "ALTO", class: "high", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES", phones: ["02257-15532455", "02257-15537369"]},
+            {id: 11, event: "Clausura", type: "MODERADO", class: "moderate", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES", phones: ["02257-15532455", "02257-15537370"]},
+            {id: 12, event: "Amenaza de Bomba", type: "MODERADO", class: "moderate", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES, ENCARGADO DE BRIGADA", phones: ["02257-15532455", "02257-15537371"]},
+            {id: 13, event: "Pandemias", type: "CRÍTICO", class: "critical", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES", phones: ["02257-15532455", "02257-15537369"]},
+            {id: 14, event: "Inundaciones", type: "MODERADO", class: "moderate", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES", phones: ["02257-15532455", "02257-15537370"]},
+            {id: 15, event: "Plagas", type: "ALTO", class: "high", responsible: "JEFE DE ALMACÉN, Fumigaciones Raggio", phones: ["2257-530895", "2257-551824"]},
+            {id: 16, event: "Asambleas Sindicales", type: "ALTO", class: "high", responsible: "GERENTE DEL CD, JEFE DE OPERACIONES", phones: ["02257-15532455", "02257-15537369"]},
+            {id: 17, event: "Ataques Cibernéticos", type: "ALTO", class: "high", responsible: "JEFE ADMINISTRATIVO, JEFE DE PROCESOS", phones: ["2257-529155", "2257-613522"]},
+            {id: 18, event: "Cambios Regulatorios en la Leyes", type: "ALTO", class: "high", responsible: "GERENTE, CONTADOR DE LA EMPRESA, ABOGADO DE LA EMPRESA", phones: ["2257-532455", "2257-548206", "2257-555525"]},
+            {id: 19, event: "Problemas Vecinales", type: "ALTO", class: "high", responsible: "Sossi Maximiliano, Yeuchuk Horacio, Barrios Victor, Mario del Palacio", phones: ["2257-691905", "2257-529155", "2257-537368", "2257-532455"]},
+            {id: 20, event: "Violencia en la vía pública", type: "ALTO", class: "high", responsible: "Sossi Maximiliano, Yeuchuk Horacio, Barrios Victor, Mario del Palacio", phones: ["2257-691905", "2257-529155", "2257-537368", "2257-532455"]},
+            {id: 21, event: "Eventos Críticos en Ruta", type: "ALTO", class: "high", responsible: "Sossi Maximiliano, Yeuchuk Horacio, Barrios Victor, Mario del Palacio", phones: ["2257-691905", "2257-529155", "2257-537368", "2257-532455"]}
+        ];
+
+        let filteredData = [...riskData];
+        let currentFilter = 'all';
+
+        function updateStats() {
+            const critical = filteredData.filter(item => item.class === 'critical').length;
+            const high = filteredData.filter(item => item.class === 'high').length;
+            const moderate = filteredData.filter(item => item.class === 'moderate').length;
+            
+            document.getElementById('criticalCount').textContent = critical;
+            document.getElementById('highCount').textContent = high;
+            document.getElementById('moderateCount').textContent = moderate;
+            document.getElementById('totalCount').textContent = filteredData.length;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('riskTableBody');
+            const noResults = document.getElementById('noResults');
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            
+            tbody.innerHTML = filteredData.map(item => `
+                <tr class="${item.class}-row">
+                    <td><strong>${item.id}</strong></td>
+                    <td class="event-name">${item.event}</td>
+                    <td>
+                        <span class="risk-level ${item.class}-level">
+                            ${item.type}
+                        </span>
+                    </td>
+                    <td style="text-align: left; max-width: 250px;">${item.responsible}</td>
+                    <td class="phone-list">
+                        ${item.phones.map(phone => `<span class="phone-number">${phone}</span>`).join('')}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn call-btn" onclick="makeCall('${item.phones[0]}')">
+                                <i class="fas fa-phone"></i> Llamar
+                            </button>
+                            <button class="action-btn info-btn" onclick="showDetails(${item.id})">
+                                <i class="fas fa-info"></i> Info
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredData = riskData.filter(item => {
+                const matchesSearch = !searchTerm || 
+                    item.event.toLowerCase().includes(searchTerm) ||
+                    item.responsible.toLowerCase().includes(searchTerm) ||
+                    item.phones.some(phone => phone.includes(searchTerm));
+                
+                const matchesFilter = currentFilter === 'all' || item.class === currentFilter;
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            renderTable();
+            updateStats();
+        }
+
+        function makeCall(phone) {
+            if (confirm(`¿Llamar al ${phone}?`)) {
+                window.location.href = `tel:${phone}`;
+            }
+        }
+
+        function showDetails(id) {
+            const item = riskData.find(r => r.id === id);
+            alert(`Evento: ${item.event}\nTipo: ${item.type}\nResponsables: ${item.responsible}\nTeléfonos: ${item.phones.join(', ')}`);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterData);
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                filterData();
+            });
+        });
+
+        // Inicializar
+        filterData();
+    </script>
+</body>
+</html>
