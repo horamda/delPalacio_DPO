@@ -1,173 +1,969 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Histórico de Riesgos 2024-2025</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles0.css">
-    <link rel="icon" href="img/logodpf.png" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 80px;
+        }
+
+        /* Navbar mejorada */
+        .navbar {
+            background: rgba(44, 62, 80, 0.95) !important;
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: var(--transition);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: white !important;
+        }
+
+        .logodp {
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 8px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 1rem !important;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--accent-color);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+            left: 10%;
+        }
+
+        /* Cards mejoradas */
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: none;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .main-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Tabla responsiva mejorada */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            transform: scale(1.01);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        /* Indicadores de impacto */
+        .impact-high { background-color: rgba(231, 76, 60, 0.1); }
+        .impact-medium { background-color: rgba(243, 156, 18, 0.1); }
+        .impact-low { background-color: rgba(39, 174, 96, 0.1); }
+
+        /* Secciones de gráficos */
+        .chart-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .chart-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+
+        .chart-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-title i {
+            color: var(--accent-color);
+        }
+
+        /* Contenedor responsivo para gráficos */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+
+        /* Tarjetas de métricas */
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-danger { color: var(--danger-color); }
+        .metric-warning { color: var(--warning-color); }
+        .metric-success { color: var(--success-color); }
+        .metric-info { color: var(--accent-color); }
+
+        /* Controles y filtros */
+        .controls-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn-custom {
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .btn-custom:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* Footer mejorado */
+        footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        footer a:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* Responsividad mejorada */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .logodp {
+                height: 30px;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .table {
+                font-size: 0.8rem;
+            }
+
+            .table thead th,
+            .table tbody td {
+                padding: 0.5rem;
+            }
+
+            .metric-value {
+                font-size: 1.5rem;
+            }
+
+            .chart-section {
+                padding: 1rem;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-nav {
+                background: rgba(44, 62, 80, 0.98);
+                border-radius: 10px;
+                margin-top: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-link {
+                text-align: center;
+                margin: 0.2rem 0;
+            }
+
+            .table-responsive {
+                border-radius: 10px;
+            }
+
+            .main-card {
+                border-radius: 15px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .metric-value {
+                font-size: 1.2rem;
+            }
+
+            .controls-section .row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn-custom {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
-<body style="background-color: #f4f4f4;">
+<body>
     
 <!-- Menú de Navegación -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <img src="img/logodp.png" alt="" class="logodp">
-    <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="LinksEntrega.html">Entrega</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="LinksFlota.html">Flota</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="LinksGente.html">Gente</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestíon</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="ubicacion.html">Ubicación</a>
-            </li>
-        </ul>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <img src="img/logodp.png" alt="Logo" class="logodp">
+            del Palacio S.A
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="nuestras_politicas.html">Nuestras Políticas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksEntrega.html">Entrega</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksFlota.html">Flota</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Higiene</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksGente.html">Gente</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestión</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
-    <main>
-        <section class="container my-5">
-            <div class="card shadow-lg">
-                <div class="card-header bg-dark text-white">
-                    <h3><i class="fas fa-exclamation-triangle"></i> Análisis Histórico de Riesgos Externos</h3>
-                </div>
-                <div class="card-body">
-                    <p>Resumen de eventos externos registrados en Del Palacio S.A. con su frecuencia e impacto financiero estimado.</p>
-
-                    <div class="table-responsive mb-4">
-                        <table class='table table-bordered table-hover'>
-<thead class='thead-dark'>
-    <tr>
-        <th>EVENTO</th>
-        <th>CANTIDAD DE EVENTOS</th>
-        <th>IMPACTO FINANCIERO TOTAL (ARS)</th>
-    </tr>
-</thead>
-<tbody>
-<tr><td>ATAQUES CIBERNÉTICOS</td><td>22</td><td>$118.593</td></tr><tr><td>CORTES DE LUZ Y/O SISTEMA</td><td>21</td><td>$157.725</td></tr><tr><td>PLAGAS</td><td>5</td><td>$80.000</td></tr><tr><td>ROBO</td><td>5</td><td>$411.376</td></tr><tr><td>ASAMBLEA SINDICAL</td><td>4</td><td>$250.000</td></tr><tr><td>PARO SINDICAL</td><td>3</td><td>$5.392.000</td></tr><tr><td>PROBLEMAS VECINALES</td><td>2</td><td>$0</td></tr><tr><td>CORTE DE INTERNET</td><td>1</td><td>$0</td></tr><tr><td>EVENTOS CRÍTICOS EN RUTA</td><td>1</td><td>$27.923.796</td></tr><tr><td>TEMPORAL</td><td>1</td><td>$180.000</td></tr><tr><td>VIOLENCIA EN LA VÍA PÚBLICA</td><td>1</td><td>$58.000</td></tr><tr><td>NAN</td><td>0</td><td>$0</td></tr></tbody></table>
-                    </div>
-
-                    <h5 class="mt-4"><i class="fas fa-chart-pie"></i> Visualización de Frecuencia</h5>
-                    <canvas id="chartFrecuencia" height="150"></canvas>
-
-                    <h5 class="mt-5"><i class="fas fa-coins"></i> Visualización de Impacto Financiero</h5>
-                    <canvas id="chartImpacto" height="150"></canvas>
-
-                    <h5 class="mt-5"><i class="fas fa-image"></i> Imagen Estática Resumen</h5>
-                    <img src="/img/resumen_eventos_mayusculas (2).png" alt="Resumen de Eventos" class="img-fluid rounded shadow mt-3">
-                </div>
+<main class="container my-5">
+    <!-- Métricas principales -->
+    <div class="row mb-4 fade-in-up">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-6 mb-3">
+            <div class="metric-card">
+                <div class="metric-value metric-danger">66</div>
+                <div class="metric-label">Total Eventos</div>
             </div>
-        </section>
-    </main>
-    
-<!-- Pie de Página -->
-<footer class="bg-dark text-white text-center py-3 ">
-    <div class="row">
-        <div class="col-md-3">
-            <a href="https://www.instagram.com/del.palacio" class="text-white"> <i
-                    class="fa-brands fa-instagram"></i> Instagram</a>
         </div>
-        <div class="col-md-3">
-            <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i
-                    class="fa-brands fa-facebook"></i> Facebook</a>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-6 mb-3">
+            <div class="metric-card">
+                <div class="metric-value metric-warning">$34.6M</div>
+                <div class="metric-label">Impacto Total (ARS)</div>
+            </div>
         </div>
-        <div class="col-md-3">
-            <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i
-                    class="fa-brands fa-linkedin"></i> Linkedin</a>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-6 mb-3">
+            <div class="metric-card">
+                <div class="metric-value metric-info">$27.9M</div>
+                <div class="metric-label">Mayor Evento</div>
+            </div>
         </div>
-        <div class="col-md-3">
-            <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar"
-                    class="text-white">administracion@delpalacio.com.ar</a></p>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-6 mb-3">
+            <div class="metric-card">
+                <div class="metric-value metric-success">12</div>
+                <div class="metric-label">Tipos de Riesgos</div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
+
+    <!-- Controles y filtros -->
+    <div class="controls-section fade-in-up">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Controles de Visualización</h5>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-custom me-2" onclick="toggleView('table')">
+                    <i class="fas fa-table me-1"></i>Tabla
+                </button>
+                <button class="btn btn-custom me-2" onclick="toggleView('charts')">
+                    <i class="fas fa-chart-bar me-1"></i>Gráficos
+                </button>
+                <button class="btn btn-custom" onclick="exportData()">
+                    <i class="fas fa-download me-1"></i>Exportar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card principal -->
+    <div class="card main-card fade-in-up">
+        <div class="card-header">
+            <h3><i class="fas fa-exclamation-triangle me-2"></i> Análisis Histórico de Riesgos Externos</h3>
+        </div>
+        <div class="card-body">
+            <p class="lead mb-4">Resumen detallado de eventos externos registrados en Del Palacio S.A. con análisis de frecuencia e impacto financiero estimado para el período 2024-2025.</p>
+
+            <!-- Tabla de datos -->
+            <div id="tableView" class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-exclamation-circle me-1"></i>EVENTO</th>
+                                <th><i class="fas fa-hashtag me-1"></i>CANTIDAD</th>
+                                <th><i class="fas fa-dollar-sign me-1"></i>IMPACTO (ARS)</th>
+                                <th><i class="fas fa-chart-line me-1"></i>NIVEL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección de gráficos -->
+            <div id="chartsView">
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-section">
+                            <h5 class="chart-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Frecuencia de Eventos
+                            </h5>
+                            <div class="chart-container">
+                                <canvas id="chartFrecuencia"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-section">
+                            <h5 class="chart-title">
+                                <i class="fas fa-coins"></i>
+                                Impacto Financiero
+                            </h5>
+                            <div class="chart-container">
+                                <canvas id="chartImpacto"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-section">
+                            <h5 class="chart-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Distribución de Eventos por Tipo
+                            </h5>
+                            <div class="chart-container">
+                                <canvas id="chartDistribucion"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <a href="https://www.instagram.com/del.palacio" class="d-block">
+                    <i class="fab fa-instagram me-2"></i>Instagram
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="d-block">
+                    <i class="fab fa-facebook me-2"></i>Facebook
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="d-block">
+                    <i class="fab fa-linkedin me-2"></i>LinkedIn
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <p class="mb-0">Contacto: <a href="mailto:administracion@delpalacio.com.ar">administracion@delpalacio.com.ar</a></p>
+            </div>
+        </div>
+        <hr class="my-3" style="border-color: rgba(255,255,255,0.2);">
+        <div class="text-center">
+            <p class="mb-0">&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
         </div>
     </div>
 </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const labels = ['ATAQUES CIBERNÉTICOS', 'CORTES DE LUZ Y/O SISTEMA', 'PLAGAS', 'ROBO', 'ASAMBLEA SINDICAL', 'PARO SINDICAL', 'PROBLEMAS VECINALES', 'CORTE DE INTERNET', 'EVENTOS CRÍTICOS EN RUTA', 'TEMPORAL', 'VIOLENCIA EN LA VÍA PÚBLICA', 'NAN'];
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Datos de eventos
+    const eventosData = [
+        {evento: 'EVENTOS CRÍTICOS EN RUTA', cantidad: 1, impacto: 27923796, nivel: 'Crítico'},
+        {evento: 'PARO SINDICAL', cantidad: 3, impacto: 5392000, nivel: 'Alto'},
+        {evento: 'ROBO', cantidad: 5, impacto: 411376, nivel: 'Medio'},
+        {evento: 'ASAMBLEA SINDICAL', cantidad: 4, impacto: 250000, nivel: 'Medio'},
+        {evento: 'TEMPORAL', cantidad: 1, impacto: 180000, nivel: 'Medio'},
+        {evento: 'CORTES DE LUZ Y/O SISTEMA', cantidad: 21, impacto: 157725, nivel: 'Bajo'},
+        {evento: 'ATAQUES CIBERNÉTICOS', cantidad: 22, impacto: 118593, nivel: 'Bajo'},
+        {evento: 'PLAGAS', cantidad: 5, impacto: 80000, nivel: 'Bajo'},
+        {evento: 'VIOLENCIA EN LA VÍA PÚBLICA', cantidad: 1, impacto: 58000, nivel: 'Bajo'},
+        {evento: 'PROBLEMAS VECINALES', cantidad: 2, impacto: 0, nivel: 'Mínimo'},
+        {evento: 'CORTE DE INTERNET', cantidad: 1, impacto: 0, nivel: 'Mínimo'}
+    ];
 
-        const dataFrecuencia = {
-            labels: labels,
-            datasets: [{
-                label: 'Cantidad de Eventos',
-                backgroundColor: '#dc3545',
-                borderColor: '#dc3545',
-                data: [22, 21, 5, 5, 4, 3, 2, 1, 1, 1, 1, 0],
-            }]
+    // Variables globales para los gráficos
+    let chartFrecuencia = null;
+    let chartImpacto = null;
+    let chartDistribucion = null;
+
+    // Función para formatear moneda
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            minimumFractionDigits: 0
+        }).format(amount);
+    }
+
+    // Función para obtener clase de nivel de impacto
+    function getImpactClass(nivel) {
+        switch(nivel) {
+            case 'Crítico': return 'impact-high';
+            case 'Alto': return 'impact-high';
+            case 'Medio': return 'impact-medium';
+            case 'Bajo': return 'impact-low';
+            case 'Mínimo': return 'impact-low';
+            default: return '';
+        }
+    }
+
+    // Función para obtener badge de nivel
+    function getNivelBadge(nivel) {
+        const badges = {
+            'Crítico': '<span class="badge bg-danger">Crítico</span>',
+            'Alto': '<span class="badge bg-warning">Alto</span>',
+            'Medio': '<span class="badge bg-info">Medio</span>',
+            'Bajo': '<span class="badge bg-success">Bajo</span>',
+            'Mínimo': '<span class="badge bg-secondary">Mínimo</span>'
         };
+        return badges[nivel] || '<span class="badge bg-light">N/A</span>';
+    }
 
-        const dataImpacto = {
-            labels: labels,
-            datasets: [{
-                label: 'Impacto Financiero (ARS)',
-                backgroundColor: '#17a2b8',
-                borderColor: '#17a2b8',
-                data: [118592, 157725, 80000, 411375, 250000, 5392000, 0, 0, 27923796, 180000, 58000, 0],
-            }]
-        };
-
-        new Chart(document.getElementById('chartFrecuencia'), {
-            type: 'bar',
-            data: dataFrecuencia,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    title: { display: true, text: 'Frecuencia de Riesgos Históricos' }
-                }
-            }
+    // Llenar tabla
+    function populateTable() {
+        const tbody = document.getElementById('tableBody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        eventosData.forEach(item => {
+            const row = document.createElement('tr');
+            row.className = getImpactClass(item.nivel);
+            row.innerHTML = `
+                <td><strong>${item.evento}</strong></td>
+                <td><span class="badge bg-primary">${item.cantidad}</span></td>
+                <td><strong>${formatCurrency(item.impacto)}</strong></td>
+                <td>${getNivelBadge(item.nivel)}</td>
+            `;
+            tbody.appendChild(row);
         });
+    }
 
-        new Chart(document.getElementById('chartImpacto'), {
+    // Configuración de colores para gráficos
+    const chartColors = {
+        primary: '#3498db',
+        danger: '#e74c3c',
+        warning: '#f39c12',
+        success: '#27ae60',
+        info: '#17a2b8',
+        secondary: '#6c757d'
+    };
+
+    // Crear gráfico de frecuencia
+    function createFrequencyChart() {
+        const ctx = document.getElementById('chartFrecuencia');
+        if (!ctx) return;
+
+        // Destruir gráfico existente si existe
+        if (chartFrecuencia) {
+            chartFrecuencia.destroy();
+        }
+
+        chartFrecuencia = new Chart(ctx, {
             type: 'bar',
-            data: dataImpacto,
+            data: {
+                labels: eventosData.map(item => item.evento),
+                datasets: [{
+                    label: 'Cantidad de Eventos',
+                    data: eventosData.map(item => item.cantidad),
+                    backgroundColor: chartColors.danger,
+                    borderColor: chartColors.danger,
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    title: { display: true, text: 'Impacto Financiero Total por Evento' }
+                    title: { 
+                        display: true, 
+                        text: 'Eventos por Frecuencia',
+                        font: { size: 16, weight: 'bold' }
+                    }
                 },
                 scales: {
                     y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            font: { size: 10 }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // Crear gráfico de impacto
+    function createImpactChart() {
+        const ctx = document.getElementById('chartImpacto');
+        if (!ctx) return;
+
+        // Destruir gráfico existente si existe
+        if (chartImpacto) {
+            chartImpacto.destroy();
+        }
+
+        chartImpacto = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: eventosData.map(item => item.evento),
+                datasets: [{
+                    label: 'Impacto Financiero (ARS)',
+                    data: eventosData.map(item => item.impacto),
+                    backgroundColor: chartColors.info,
+                    borderColor: chartColors.info,
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { 
+                        display: true, 
+                        text: 'Impacto Financiero por Evento',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatCurrency(context.parsed.y);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '$' + value.toLocaleString('es-AR');
+                                return formatCurrency(value);
+                            }
+                        },
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            font: { size: 10 }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // Crear gráfico de distribución
+    function createDistributionChart() {
+        const ctx = document.getElementById('chartDistribucion');
+        if (!ctx) return;
+
+        // Destruir gráfico existente si existe
+        if (chartDistribucion) {
+            chartDistribucion.destroy();
+        }
+
+        const nivelCounts = {};
+        eventosData.forEach(item => {
+            nivelCounts[item.nivel] = (nivelCounts[item.nivel] || 0) + item.cantidad;
+        });
+
+        chartDistribucion = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(nivelCounts),
+                datasets: [{
+                    data: Object.values(nivelCounts),
+                    backgroundColor: [
+                        chartColors.danger,
+                        chartColors.warning,
+                        chartColors.info,
+                        chartColors.success,
+                        chartColors.secondary
+                    ],
+                    borderWidth: 2,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: { padding: 20 }
+                    },
+                    title: { 
+                        display: true, 
+                        text: 'Distribución por Nivel de Riesgo',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label;
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return label + ': ' + value + ' eventos (' + percentage + '%)';
                             }
                         }
                     }
                 }
             }
         });
-    </script>
+    }
+
+    // Funciones de control
+    function toggleView(view) {
+        const tableView = document.getElementById('tableView');
+        const chartsView = document.getElementById('chartsView');
+        
+        if (!tableView || !chartsView) return;
+        
+        if (view === 'table') {
+            tableView.style.display = 'block';
+            chartsView.style.display = 'none';
+        } else {
+            tableView.style.display = 'none';
+            chartsView.style.display = 'block';
+        }
+    }
+
+    function exportData() {
+        const csvHeader = 'Evento,Cantidad,Impacto,Nivel\n';
+        const csvData = eventosData.map(item => 
+            '"' + item.evento + '",' + item.cantidad + ',' + item.impacto + ',"' + item.nivel + '"'
+        ).join('\n');
+        
+        const csv = csvHeader + csvData;
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'riesgos_historicos.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+
+    // Animaciones de entrada
+    function animateElements() {
+        const elements = document.querySelectorAll('.fade-in-up');
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    }
+
+    // Función para actualizar datos en tiempo real (simulación)
+    function updateMetrics() {
+        const metrics = document.querySelectorAll('.metric-value');
+        metrics.forEach(metric => {
+            metric.style.animation = 'pulse 0.5s ease';
+            setTimeout(() => {
+                metric.style.animation = '';
+            }, 500);
+        });
+    }
+
+    // Función para recrear gráficos en resize
+    function recreateCharts() {
+        createFrequencyChart();
+        createImpactChart();
+        createDistributionChart();
+    }
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar elementos iniciales como invisibles para la animación
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+        });
+
+        // Llenar tabla
+        populateTable();
+        
+        // Crear gráficos después de un pequeño delay
+        setTimeout(() => {
+            createFrequencyChart();
+            createImpactChart();
+            createDistributionChart();
+        }, 500);
+
+        // Animar elementos
+        animateElements();
+
+        // Manejo de resize con debounce
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(recreateCharts, 300);
+        });
+
+        // Responsive navbar behavior
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.style.background = 'rgba(44, 62, 80, 0.98)';
+                    navbar.style.boxShadow = '0 2px 25px rgba(0,0,0,0.2)';
+                } else {
+                    navbar.style.background = 'rgba(44, 62, 80, 0.95)';
+                    navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+                }
+            }
+        });
+
+        // Mejorar la experiencia táctil en dispositivos móviles
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.metric-card, .chart-section, .main-card').forEach(card => {
+                card.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                
+                card.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        }
+    });
+</script>
 </body>
 </html>
