@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Histórico de Riesgos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles0.css">
+    <link rel="icon" href="img/logodpf.png" type="image/x-icon">
+</head>
+<body style="background-color: #f4f4f4;">
+    
+<!-- Menú de Navegación -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <img src="img/logodp.png" alt="" class="logodp">
+    <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="LinksEntrega.html">Entrega</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="LinksFlota.html">Flota</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="LinksGente.html">Gente</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestíon</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="ubicacion.html">Ubicación</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+        <section class="container my-5">
+            <div class="card shadow-lg">
+                <div class="card-header bg-dark text-white">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Análisis Histórico de Riesgos Externos</h3>
+                </div>
+                <div class="card-body">
+                    <p>Resumen de eventos externos registrados en Del Palacio S.A. con su frecuencia e impacto financiero estimado.</p>
+
+                    <div class="table-responsive mb-4">
+                        <table class='table table-bordered table-hover'>
+<thead class='thead-dark'>
+    <tr>
+        <th>EVENTO</th>
+        <th>CANTIDAD DE EVENTOS</th>
+        <th>IMPACTO FINANCIERO TOTAL (ARS)</th>
+    </tr>
+</thead>
+<tbody>
+<tr><td>ATAQUES CIBERNÉTICOS</td><td>22</td><td>$118.593</td></tr><tr><td>CORTES DE LUZ Y/O SISTEMA</td><td>21</td><td>$157.725</td></tr><tr><td>PLAGAS</td><td>5</td><td>$80.000</td></tr><tr><td>ROBO</td><td>5</td><td>$411.376</td></tr><tr><td>ASAMBLEA SINDICAL</td><td>4</td><td>$250.000</td></tr><tr><td>PARO SINDICAL</td><td>3</td><td>$5.392.000</td></tr><tr><td>PROBLEMAS VECINALES</td><td>2</td><td>$0</td></tr><tr><td>CORTE DE INTERNET</td><td>1</td><td>$0</td></tr><tr><td>EVENTOS CRÍTICOS EN RUTA</td><td>1</td><td>$27.923.796</td></tr><tr><td>TEMPORAL</td><td>1</td><td>$180.000</td></tr><tr><td>VIOLENCIA EN LA VÍA PÚBLICA</td><td>1</td><td>$58.000</td></tr><tr><td>NAN</td><td>0</td><td>$0</td></tr></tbody></table>
+                    </div>
+
+                    <h5 class="mt-4"><i class="fas fa-chart-pie"></i> Visualización de Frecuencia</h5>
+                    <canvas id="chartFrecuencia" height="150"></canvas>
+
+                    <h5 class="mt-5"><i class="fas fa-coins"></i> Visualización de Impacto Financiero</h5>
+                    <canvas id="chartImpacto" height="150"></canvas>
+
+                    <h5 class="mt-5"><i class="fas fa-image"></i> Imagen Estática Resumen</h5>
+                    <img src="/img/resumen_eventos_mayusculas (2).png" alt="Resumen de Eventos" class="img-fluid rounded shadow mt-3">
+                </div>
+            </div>
+        </section>
+    </main>
+    
+<!-- Pie de Página -->
+<footer class="bg-dark text-white text-center py-3 ">
+    <div class="row">
+        <div class="col-md-3">
+            <a href="https://www.instagram.com/del.palacio" class="text-white"> <i
+                    class="fa-brands fa-instagram"></i> Instagram</a>
+        </div>
+        <div class="col-md-3">
+            <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i
+                    class="fa-brands fa-facebook"></i> Facebook</a>
+        </div>
+        <div class="col-md-3">
+            <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i
+                    class="fa-brands fa-linkedin"></i> Linkedin</a>
+        </div>
+        <div class="col-md-3">
+            <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar"
+                    class="text-white">administracion@delpalacio.com.ar</a></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = ['ATAQUES CIBERNÉTICOS', 'CORTES DE LUZ Y/O SISTEMA', 'PLAGAS', 'ROBO', 'ASAMBLEA SINDICAL', 'PARO SINDICAL', 'PROBLEMAS VECINALES', 'CORTE DE INTERNET', 'EVENTOS CRÍTICOS EN RUTA', 'TEMPORAL', 'VIOLENCIA EN LA VÍA PÚBLICA', 'NAN'];
+
+        const dataFrecuencia = {
+            labels: labels,
+            datasets: [{
+                label: 'Cantidad de Eventos',
+                backgroundColor: '#dc3545',
+                borderColor: '#dc3545',
+                data: [22, 21, 5, 5, 4, 3, 2, 1, 1, 1, 1, 0],
+            }]
+        };
+
+        const dataImpacto = {
+            labels: labels,
+            datasets: [{
+                label: 'Impacto Financiero (ARS)',
+                backgroundColor: '#17a2b8',
+                borderColor: '#17a2b8',
+                data: [118592, 157725, 80000, 411375, 250000, 5392000, 0, 0, 27923796, 180000, 58000, 0],
+            }]
+        };
+
+        new Chart(document.getElementById('chartFrecuencia'), {
+            type: 'bar',
+            data: dataFrecuencia,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Frecuencia de Riesgos Históricos' }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('chartImpacto'), {
+            type: 'bar',
+            data: dataImpacto,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Impacto Financiero Total por Evento' }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString('es-AR');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
