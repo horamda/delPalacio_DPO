@@ -60,6 +60,16 @@ footer a {
 .btn:hover {
     background-color: #0056b3;
 }
+
+.btn-evaluacion {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-evaluacion:hover {
+    background-color: #218838;
+    color: white;
+}
 .qr{
     width: 20%;
     border-radius: 5%;
