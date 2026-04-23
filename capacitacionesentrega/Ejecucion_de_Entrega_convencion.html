@@ -1,0 +1,2622 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Ejecución de Entrega · Capacitación</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Standalone version: JS inlined and external font requests removed. Uses local fallback fonts if custom webfonts are unavailable. -->
+<script>
+/**
+ * <deck-stage> — reusable web component for HTML decks.
+ *
+ * Handles:
+ *  (a) speaker notes — reads <script type="application/json" id="speaker-notes">
+ *      and posts {slideIndexChanged: N} to the parent window on nav.
+ *  (b) keyboard navigation — ←/→, PgUp/PgDn, Space, Home/End, number keys.
+ *  (c) press R to reset to slide 0 (with a tasteful keyboard hint).
+ *  (d) bottom-center overlay showing slide count + hints, fades out on idle.
+ *  (e) auto-scaling — inner canvas is a fixed design size (default 1920×1080)
+ *      scaled with `transform: scale()` to fit the viewport, letterboxed.
+ *      Set the `noscale` attribute to render at authored size (1:1) — the
+ *      PPTX exporter sets this so its DOM capture sees unscaled geometry.
+ *  (f) print — `@media print` lays every slide out as its own page at the
+ *      design size, so the browser's Print → Save as PDF produces a clean
+ *      one-page-per-slide PDF with no extra setup.
+ *
+ * Slides are HIDDEN, not unmounted. Non-active slides stay in the DOM with
+ * `visibility: hidden` + `opacity: 0`, so their state (videos, iframes,
+ * form inputs, React trees) is preserved across navigation.
+ *
+ * Lifecycle event — the component dispatches a `slidechange` CustomEvent on
+ * itself whenever the active slide changes (including the initial mount).
+ * The event bubbles and composes out of shadow DOM, so you can listen on
+ * the <deck-stage> element or on document:
+ *
+ *   document.querySelector('deck-stage').addEventListener('slidechange', (e) => {
+ *     e.detail.index         // new 0-based index
+ *     e.detail.previousIndex // previous index, or -1 on init
+ *     e.detail.total         // total slide count
+ *     e.detail.slide         // the new active slide element
+ *     e.detail.previousSlide // the prior slide element, or null on init
+ *     e.detail.reason        // 'init' | 'keyboard' | 'click' | 'tap' | 'api'
+ *   });
+ *
+ * Persistence: current slide index is saved to localStorage keyed by the
+ * document path, so refresh returns you to the same place.
+ *
+ * Usage:
+ *   <deck-stage width="1920" height="1080">
+ *     <section data-label="Title">...</section>
+ *     <section data-label="Agenda">...</section>
+ *   </deck-stage>
+ *
+ * Slides are the direct element children of <deck-stage>. Each slide is
+ * automatically tagged with:
+ *   - data-screen-label="NN Label"   (1-indexed, for comment flow)
+ *   - data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text"
+ */
+
+(() => {
+  const DESIGN_W_DEFAULT = 1920;
+  const DESIGN_H_DEFAULT = 1080;
+  const STORAGE_PREFIX = 'deck-stage:slide:';
+  const OVERLAY_HIDE_MS = 1800;
+  const VALIDATE_ATTR = 'no_overflowing_text,no_overlapping_text,slide_sized_text';
+
+  const pad2 = (n) => String(n).padStart(2, '0');
+
+  const stylesheet = `
+    :host {
+      position: fixed;
+      inset: 0;
+      display: block;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas {
+      position: relative;
+      transform-origin: center center;
+      flex-shrink: 0;
+      background: #fff;
+      will-change: transform;
+    }
+
+    /* Slides live in light DOM (via <slot>) so authored CSS still applies.
+       We absolutely position each slotted child to stack them. */
+    ::slotted(*) {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    ::slotted([data-deck-active]) {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    /* Tap zones for mobile — back/forward thirds like Stories.
+       Transparent, no visible UI, don't block the overlay. */
+    .tapzones {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      z-index: 2147482000;
+      pointer-events: none;
+    }
+    .tapzone {
+      flex: 1;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Only activate tap zones on coarse pointers (touch devices). */
+    @media (hover: hover) and (pointer: fine) {
+      .tapzones { display: none; }
+    }
+
+    .overlay {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translate(-50%, 6px) scale(0.92);
+      filter: blur(6px);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      background: #000;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 12px;
+      font-feature-settings: "tnum" 1;
+      letter-spacing: 0.01em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1), filter 260ms ease;
+      transform-origin: center bottom;
+      z-index: 2147483000;
+      user-select: none;
+    }
+    .overlay[data-visible] {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, 0) scale(1);
+      filter: blur(0);
+    }
+
+    .btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      color: inherit;
+      font: inherit;
+      cursor: default;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 999px;
+      color: rgba(255,255,255,0.72);
+      transition: background 140ms ease, color 140ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .btn:active { background: rgba(255,255,255,0.18); }
+    .btn:focus { outline: none; }
+    .btn:focus-visible { outline: none; }
+    .btn::-moz-focus-inner { border: 0; }
+    .btn svg { width: 14px; height: 14px; display: block; }
+    .btn.reset {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 0 10px 0 12px;
+      gap: 6px;
+      color: rgba(255,255,255,0.72);
+    }
+    .btn.reset .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 10px;
+      line-height: 1;
+      color: rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+    }
+
+    .count {
+      font-variant-numeric: tabular-nums;
+      color: #fff;
+      font-weight: 500;
+      padding: 0 8px;
+      min-width: 42px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .count .sep { color: rgba(255,255,255,0.45); margin: 0 3px; font-weight: 400; }
+    .count .total { color: rgba(255,255,255,0.55); }
+
+    .divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,0.18);
+      margin: 0 2px;
+    }
+
+    /* ── Print: one page per slide, no chrome ────────────────────────────
+       The screen layout stacks every slide at inset:0 inside a scaled
+       canvas; for print we want them in document flow at the authored
+       design size so the browser paginates one slide per sheet. The
+       @page size is set from the width/height attributes via the inline
+       <style id="deck-stage-print-page"> that connectedCallback injects
+       into <head> (the @page at-rule has no effect inside shadow DOM). */
+    @media print {
+      :host {
+        position: static;
+        inset: auto;
+        background: none;
+        overflow: visible;
+        color: inherit;
+      }
+      .stage { position: static; display: block; }
+      .canvas {
+        transform: none !important;
+        width: auto !important;
+        height: auto !important;
+        background: none;
+        will-change: auto;
+      }
+      ::slotted(*) {
+        position: relative !important;
+        inset: auto !important;
+        width: var(--deck-design-w) !important;
+        height: var(--deck-design-h) !important;
+        box-sizing: border-box !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto;
+        break-after: page;
+        page-break-after: always;
+        break-inside: avoid;
+        overflow: hidden;
+      }
+      ::slotted(*:last-child) {
+        break-after: auto;
+        page-break-after: auto;
+      }
+      .overlay, .tapzones { display: none !important; }
+    }
+  `;
+
+  class DeckStage extends HTMLElement {
+    static get observedAttributes() { return ['width', 'height', 'noscale']; }
+
+    constructor() {
+      super();
+      this._root = this.attachShadow({ mode: 'open' });
+      this._index = 0;
+      this._slides = [];
+      this._notes = [];
+      this._hideTimer = null;
+      this._mouseIdleTimer = null;
+      this._storageKey = STORAGE_PREFIX + (location.pathname || '/');
+
+      this._onKey = this._onKey.bind(this);
+      this._onResize = this._onResize.bind(this);
+      this._onSlotChange = this._onSlotChange.bind(this);
+      this._onMouseMove = this._onMouseMove.bind(this);
+      this._onTapBack = this._onTapBack.bind(this);
+      this._onTapForward = this._onTapForward.bind(this);
+    }
+
+    get designWidth() {
+      return parseInt(this.getAttribute('width'), 10) || DESIGN_W_DEFAULT;
+    }
+    get designHeight() {
+      return parseInt(this.getAttribute('height'), 10) || DESIGN_H_DEFAULT;
+    }
+
+    connectedCallback() {
+      this._render();
+      this._loadNotes();
+      this._syncPrintPageRule();
+      window.addEventListener('keydown', this._onKey);
+      window.addEventListener('resize', this._onResize);
+      window.addEventListener('mousemove', this._onMouseMove, { passive: true });
+      // Initial collection + layout happens via slotchange, which fires on mount.
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener('keydown', this._onKey);
+      window.removeEventListener('resize', this._onResize);
+      window.removeEventListener('mousemove', this._onMouseMove);
+      if (this._hideTimer) clearTimeout(this._hideTimer);
+      if (this._mouseIdleTimer) clearTimeout(this._mouseIdleTimer);
+    }
+
+    attributeChangedCallback() {
+      if (this._canvas) {
+        this._canvas.style.width = this.designWidth + 'px';
+        this._canvas.style.height = this.designHeight + 'px';
+        this._canvas.style.setProperty('--deck-design-w', this.designWidth + 'px');
+        this._canvas.style.setProperty('--deck-design-h', this.designHeight + 'px');
+        this._fit();
+        this._syncPrintPageRule();
+      }
+    }
+
+    _render() {
+      const style = document.createElement('style');
+      style.textContent = stylesheet;
+
+      const stage = document.createElement('div');
+      stage.className = 'stage';
+
+      const canvas = document.createElement('div');
+      canvas.className = 'canvas';
+      canvas.style.width = this.designWidth + 'px';
+      canvas.style.height = this.designHeight + 'px';
+      canvas.style.setProperty('--deck-design-w', this.designWidth + 'px');
+      canvas.style.setProperty('--deck-design-h', this.designHeight + 'px');
+
+      const slot = document.createElement('slot');
+      slot.addEventListener('slotchange', this._onSlotChange);
+      canvas.appendChild(slot);
+      stage.appendChild(canvas);
+
+      // Tap zones (mobile): left third = back, right third = forward.
+      const tapzones = document.createElement('div');
+      tapzones.className = 'tapzones export-hidden';
+      tapzones.setAttribute('aria-hidden', 'true');
+      const tzBack = document.createElement('div');
+      tzBack.className = 'tapzone tapzone--back';
+      const tzMid = document.createElement('div');
+      tzMid.className = 'tapzone tapzone--mid';
+      tzMid.style.pointerEvents = 'none';
+      const tzFwd = document.createElement('div');
+      tzFwd.className = 'tapzone tapzone--fwd';
+      tzBack.addEventListener('click', this._onTapBack);
+      tzFwd.addEventListener('click', this._onTapForward);
+      tapzones.append(tzBack, tzMid, tzFwd);
+
+      // Overlay: compact, solid black, with clickable controls.
+      const overlay = document.createElement('div');
+      overlay.className = 'overlay export-hidden';
+      overlay.setAttribute('role', 'toolbar');
+      overlay.setAttribute('aria-label', 'Deck controls');
+      overlay.innerHTML = `
+        <button class="btn prev" type="button" aria-label="Previous slide" title="Previous (←)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>
+        </button>
+        <span class="count" aria-live="polite"><span class="current">1</span><span class="sep">/</span><span class="total">1</span></span>
+        <button class="btn next" type="button" aria-label="Next slide" title="Next (→)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+        </button>
+        <span class="divider"></span>
+        <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
+      `;
+
+      overlay.querySelector('.prev').addEventListener('click', () => this._go(this._index - 1, 'click'));
+      overlay.querySelector('.next').addEventListener('click', () => this._go(this._index + 1, 'click'));
+      overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
+
+      this._root.append(style, stage, tapzones, overlay);
+      this._canvas = canvas;
+      this._slot = slot;
+      this._overlay = overlay;
+      this._countEl = overlay.querySelector('.current');
+      this._totalEl = overlay.querySelector('.total');
+    }
+
+    /** @page must live in the document stylesheet — it's a no-op inside
+     *  shadow DOM. Inject/update a single <head> style tag so the print
+     *  sheet matches the design size and Save-as-PDF yields one slide per
+     *  page with no margins. */
+    _syncPrintPageRule() {
+      const id = 'deck-stage-print-page';
+      let tag = document.getElementById(id);
+      if (!tag) {
+        tag = document.createElement('style');
+        tag.id = id;
+        document.head.appendChild(tag);
+      }
+      tag.textContent =
+        '@page { size: ' + this.designWidth + 'px ' + this.designHeight + 'px; margin: 0; } ' +
+        '@media print { html, body { margin: 0 !important; padding: 0 !important; background: none !important; overflow: visible !important; height: auto !important; } ' +
+        '* { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }';
+    }
+
+    _onSlotChange() {
+      this._collectSlides();
+      this._restoreIndex();
+      this._applyIndex({ showOverlay: false, broadcast: true, reason: 'init' });
+      this._fit();
+    }
+
+    _collectSlides() {
+      const assigned = this._slot.assignedElements({ flatten: true });
+      this._slides = assigned.filter((el) => {
+        // Skip template/style/script nodes even if someone slots them.
+        const tag = el.tagName;
+        return tag !== 'TEMPLATE' && tag !== 'SCRIPT' && tag !== 'STYLE';
+      });
+
+      this._slides.forEach((slide, i) => {
+        const n = i + 1;
+        // Determine a label for comment flow: prefer explicit data-label,
+        // then an existing data-screen-label, then first heading, else "Slide".
+        let label = slide.getAttribute('data-label');
+        if (!label) {
+          const existing = slide.getAttribute('data-screen-label');
+          if (existing) {
+            // Strip any leading number the author may have included.
+            label = existing.replace(/^\s*\d+\s*/, '').trim() || existing;
+          }
+        }
+        if (!label) {
+          const h = slide.querySelector('h1, h2, h3, [data-title]');
+          if (h) label = (h.textContent || '').trim().slice(0, 40);
+        }
+        if (!label) label = 'Slide';
+        slide.setAttribute('data-screen-label', `${pad2(n)} ${label}`);
+
+        // Validation attribute for comment flow / auto-checks.
+        if (!slide.hasAttribute('data-om-validate')) {
+          slide.setAttribute('data-om-validate', VALIDATE_ATTR);
+        }
+
+        slide.setAttribute('data-deck-slide', String(i));
+      });
+
+      if (this._totalEl) this._totalEl.textContent = String(this._slides.length || 1);
+      if (this._index >= this._slides.length) this._index = Math.max(0, this._slides.length - 1);
+    }
+
+    _loadNotes() {
+      const tag = document.getElementById('speaker-notes');
+      if (!tag) { this._notes = []; return; }
+      try {
+        const parsed = JSON.parse(tag.textContent || '[]');
+        if (Array.isArray(parsed)) this._notes = parsed;
+      } catch (e) {
+        console.warn('[deck-stage] Failed to parse #speaker-notes JSON:', e);
+        this._notes = [];
+      }
+    }
+
+    _restoreIndex() {
+      try {
+        const raw = localStorage.getItem(this._storageKey);
+        if (raw != null) {
+          const n = parseInt(raw, 10);
+          if (Number.isFinite(n) && n >= 0 && n < this._slides.length) {
+            this._index = n;
+          }
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    _persistIndex() {
+      try { localStorage.setItem(this._storageKey, String(this._index)); }
+      catch (e) { /* ignore */ }
+    }
+
+    _applyIndex({ showOverlay = true, broadcast = true, reason = 'init' } = {}) {
+      if (!this._slides.length) return;
+      const prev = this._prevIndex == null ? -1 : this._prevIndex;
+      const curr = this._index;
+      this._slides.forEach((s, i) => {
+        if (i === curr) s.setAttribute('data-deck-active', '');
+        else s.removeAttribute('data-deck-active');
+      });
+      if (this._countEl) this._countEl.textContent = String(curr + 1);
+      this._persistIndex();
+
+      if (broadcast) {
+        // (1) Legacy: host-window postMessage for speaker-notes renderers.
+        try { window.postMessage({ slideIndexChanged: curr }, '*'); } catch (e) {}
+
+        // (2) In-page CustomEvent on the <deck-stage> element itself.
+        //     Bubbles and composes out of shadow DOM so slide code can listen:
+        //       document.querySelector('deck-stage').addEventListener('slidechange', e => {
+        //         e.detail.index, e.detail.previousIndex, e.detail.total, e.detail.slide, e.detail.reason
+        //       });
+        const detail = {
+          index: curr,
+          previousIndex: prev,
+          total: this._slides.length,
+          slide: this._slides[curr] || null,
+          previousSlide: prev >= 0 ? (this._slides[prev] || null) : null,
+          reason: reason, // 'init' | 'keyboard' | 'click' | 'tap' | 'api'
+        };
+        this.dispatchEvent(new CustomEvent('slidechange', {
+          detail,
+          bubbles: true,
+          composed: true,
+        }));
+      }
+
+      this._prevIndex = curr;
+      if (showOverlay) this._flashOverlay();
+    }
+
+    _flashOverlay() {
+      if (!this._overlay) return;
+      this._overlay.setAttribute('data-visible', '');
+      if (this._hideTimer) clearTimeout(this._hideTimer);
+      this._hideTimer = setTimeout(() => {
+        this._overlay.removeAttribute('data-visible');
+      }, OVERLAY_HIDE_MS);
+    }
+
+    _fit() {
+      if (!this._canvas) return;
+      // PPTX export sets noscale so the DOM capture sees authored-size
+      // geometry — the scaled canvas is in shadow DOM, so the exporter's
+      // resetTransformSelector can't reach .canvas.style.transform directly.
+      if (this.hasAttribute('noscale')) {
+        this._canvas.style.transform = 'none';
+        return;
+      }
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const s = Math.min(vw / this.designWidth, vh / this.designHeight);
+      this._canvas.style.transform = `scale(${s})`;
+    }
+
+    _onResize() { this._fit(); }
+
+    _onMouseMove() {
+      // Keep overlay visible while mouse moves; hide after idle.
+      this._flashOverlay();
+    }
+
+    _onTapBack(e) {
+      e.preventDefault();
+      this._go(this._index - 1, 'tap');
+    }
+
+    _onTapForward(e) {
+      e.preventDefault();
+      this._go(this._index + 1, 'tap');
+    }
+
+    _onKey(e) {
+      // Ignore when the user is typing.
+      const t = e.target;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const key = e.key;
+      let handled = true;
+
+      if (key === 'ArrowRight' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
+        this._go(this._index + 1, 'keyboard');
+      } else if (key === 'ArrowLeft' || key === 'PageUp') {
+        this._go(this._index - 1, 'keyboard');
+      } else if (key === 'Home') {
+        this._go(0, 'keyboard');
+      } else if (key === 'End') {
+        this._go(this._slides.length - 1, 'keyboard');
+      } else if (key === 'r' || key === 'R') {
+        this._go(0, 'keyboard');
+      } else if (/^[0-9]$/.test(key)) {
+        // 1..9 jump to that slide; 0 jumps to 10.
+        const n = key === '0' ? 9 : parseInt(key, 10) - 1;
+        if (n < this._slides.length) this._go(n, 'keyboard');
+      } else {
+        handled = false;
+      }
+
+      if (handled) {
+        e.preventDefault();
+        this._flashOverlay();
+      }
+    }
+
+    _go(i, reason = 'api') {
+      if (!this._slides.length) return;
+      const clamped = Math.max(0, Math.min(this._slides.length - 1, i));
+      if (clamped === this._index) {
+        this._flashOverlay();
+        return;
+      }
+      this._index = clamped;
+      this._applyIndex({ showOverlay: true, broadcast: true, reason });
+    }
+
+    // Public API ------------------------------------------------------------
+
+    /** Current slide index (0-based). */
+    get index() { return this._index; }
+    /** Total slide count. */
+    get length() { return this._slides.length; }
+    /** Programmatically navigate. */
+    goTo(i) { this._go(i, 'api'); }
+    next() { this._go(this._index + 1, 'api'); }
+    prev() { this._go(this._index - 1, 'api'); }
+    reset() { this._go(0, 'api'); }
+  }
+
+  if (!customElements.get('deck-stage')) {
+    customElements.define('deck-stage', DeckStage);
+  }
+})();
+
+</script>
+<style>
+  :root{
+    --ink:#12110f;
+    --ink-2:#2a2824;
+    --paper:#f4efe6;
+    --paper-2:#ebe4d5;
+    --paper-3:#e0d7c2;
+    --line:#1a1916;
+    --red:#c23a1e;
+    --red-deep:#8a2912;
+    --amber:#d68a1a;
+    --green:#2e6b3a;
+    --blue:#2a4a7a;
+    --mute:#6b6558;
+  }
+  html,body{margin:0;background:#1a1916;font-family:'Inter',sans-serif;color:var(--ink);}
+  deck-stage{background:#1a1916;}
+  section{background:var(--paper);color:var(--ink);overflow:hidden;position:relative;}
+
+  /* Utilities */
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .serif{font-family:'Fraunces',serif;font-weight:800;letter-spacing:-0.02em;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.18em;text-transform:uppercase;color:var(--mute);}
+  .ink{color:var(--ink);}
+  .red{color:var(--red);}
+  .amber{color:var(--amber);}
+  .green{color:var(--green);}
+  .rule{height:2px;background:var(--ink);width:100%;}
+
+  .slide{position:absolute;inset:0;padding:80px 100px;display:flex;flex-direction:column;}
+  .chrome-top{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mute);}
+  .chrome-top .dot{width:10px;height:10px;background:var(--red);display:inline-block;border-radius:50%;margin-right:10px;vertical-align:middle;}
+
+  /* Placeholder imagery — striped */
+  .ph{
+    background:
+      repeating-linear-gradient(135deg, #d7cdb4 0 12px, #ccc1a5 12px 24px);
+    border:1.5px solid var(--ink);
+    position:relative;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.15em;font-size:16px;
+  }
+  .ph.red{background:repeating-linear-gradient(135deg,#e3b5aa 0 12px,#d89b8b 12px 24px);}
+  .ph.amber{background:repeating-linear-gradient(135deg,#ecd5a4 0 12px,#dec389 12px 24px);}
+  .ph.green{background:repeating-linear-gradient(135deg,#b8cdb4 0 12px,#9cb89a 12px 24px);}
+  .ph.blue{background:repeating-linear-gradient(135deg,#b8c4d8 0 12px,#a0afca 12px 24px);}
+  .ph.ink{background:repeating-linear-gradient(135deg,#2a2824 0 12px,#12110f 12px 24px);color:var(--paper);}
+  .ph-label{background:var(--paper);padding:6px 10px;border:1.5px solid var(--ink);}
+  .ph.ink .ph-label{background:var(--ink);color:var(--paper);}
+
+  /* Cover */
+  .cover{background:var(--ink);color:var(--paper);padding:0;}
+  .cover .top{padding:60px 100px 0;display:flex;justify-content:space-between;align-items:flex-start;}
+  .cover .brand{font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.22em;text-transform:uppercase;color:#8a8577;}
+  .cover .meta{font-family:'JetBrains Mono',monospace;font-size:17px;color:#8a8577;text-align:right;line-height:1.9;}
+  .cover .title{padding:0 100px;margin-top:60px;}
+  .cover h1{font-family:'Fraunces',serif;font-weight:800;font-size:200px;line-height:0.88;letter-spacing:-0.04em;margin:0;color:var(--paper);}
+  .cover h1 em{font-style:italic;color:#d68a1a;font-weight:400;}
+  .cover .sub{padding:40px 100px 0;display:grid;grid-template-columns:1.2fr 1fr;gap:60px;align-items:end;}
+  .cover .bigquote{font-family:'Fraunces',serif;font-size:36px;line-height:1.15;font-weight:400;font-style:italic;color:#ebe4d5;max-width:620px;}
+  .cover .bigquote b{color:#c23a1e;font-style:normal;font-weight:800;}
+  .cover .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+  .cover .chip{border:1.5px solid #8a8577;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:0.14em;text-transform:uppercase;color:#ebe4d5;}
+  .cover .ticker{position:absolute;bottom:0;left:0;right:0;border-top:1.5px solid #3a372f;padding:20px 100px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:0.14em;text-transform:uppercase;color:#8a8577;}
+  .cover .ticker b{color:#d68a1a;font-weight:500;}
+
+  /* Agenda */
+  .agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:2px solid var(--ink);margin-top:40px;flex:1;}
+  .agenda-grid > div{border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:20px 28px;display:flex;flex-direction:column;gap:8px;position:relative;}
+  .agenda-grid > div:nth-child(2n){border-right:none;}
+  .agenda-grid > div:nth-child(n+5){border-bottom:none;}
+  .agenda-num{font-family:'Fraunces',serif;font-size:48px;font-weight:800;line-height:1;color:var(--ink);margin-top:24px;}
+  .agenda-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;}
+  .agenda-desc{
+  font-size:18px;
+  color:var(--mute);
+  line-height:1.6;
+}
+  .agenda-dur{position:absolute;top:20px;right:28px;font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;color:var(--mute);font-weight:500;}
+  .agenda-num{margin-top:24px;}
+
+  /* Section divider */
+  .divider{background:var(--ink);color:var(--paper);padding:80px 100px;display:flex;flex-direction:column;justify-content:space-between;}
+  .divider .num{font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.18em;color:#8a8577;}
+  .divider h2{font-family:'Fraunces',serif;font-size:160px;line-height:0.92;font-weight:800;letter-spacing:-0.03em;margin:20px 0 0;max-width:90%;}
+  .divider h2 em{font-style:italic;font-weight:400;color:#d68a1a;}
+  .divider .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;}
+  .divider .kicker{font-family:'Fraunces',serif;font-size:32px;font-style:italic;color:#ebe4d5;max-width:520px;line-height:1.2;}
+
+  /* Rules list */
+  .two-col{display:grid;grid-template-columns:360px 1fr;gap:60px;flex:1;margin-top:32px;}
+  .rule-row{display:grid;grid-template-columns:60px 1fr auto;gap:24px;padding:22px 0;border-top:1.5px solid var(--ink);align-items:center;}
+  .rule-row:last-child{border-bottom:1.5px solid var(--ink);}
+  .rule-num{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mute);letter-spacing:0.1em;}
+  .rule-text{font-size:24px;font-weight:600;letter-spacing:-0.01em;}
+  .rule-text b{color:var(--red);}
+  .rule-tag{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.14em;text-transform:uppercase;padding:6px 10px;border:1.5px solid var(--ink);}
+  .rule-tag.r{background:var(--red);color:var(--paper);border-color:var(--red);}
+  .rule-tag.a{background:var(--amber);color:var(--ink);border-color:var(--amber);}
+  .rule-tag.g{background:var(--green);color:var(--paper);border-color:var(--green);}
+
+  /* Header composed */
+  h2.big{font-family:'Fraunces',serif;font-size:84px;line-height:0.95;font-weight:800;letter-spacing:-0.03em;margin:8px 0 0;max-width:90%;}
+  h2.big em{font-style:italic;font-weight:400;color:var(--red);}
+
+  /* Process steps */
+  .steps{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:28px;border:2px solid var(--ink);}
+  .step{padding:20px 18px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:10px;min-height:220px;position:relative;}
+  .step:last-child{border-right:none;}
+  .step .sn{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.18em;color:var(--mute);}
+  .step .sh{font-family:'Fraunces',serif;font-size:28px;line-height:1;font-weight:700;}
+  .step .sd{
+  font-size:16px;
+  color:var(--ink-2);
+  line-height:1.6;
+}
+  .step .pill{margin-top:auto;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:6px 10px;background:var(--ink);color:var(--paper);align-self:flex-start;}
+
+  /* Simulation cards */
+  .sim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;flex:1;margin-top:32px;}
+  .sim{border:1.5px solid var(--ink);display:flex;flex-direction:column;background:var(--paper-2);}
+  .sim .head{padding:18px 22px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:center;}
+  .sim .head h3{margin:0;font-family:'Fraunces',serif;font-size:28px;font-weight:700;letter-spacing:-0.01em;}
+  .sim .head .code{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mute);letter-spacing:0.12em;}
+  .sim .body{padding:22px;flex:1;display:flex;flex-direction:column;gap:14px;}
+  .sim .scenario{font-size:17px;line-height:1.5;}
+  .sim .action{font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:0.14em;color:var(--mute);margin-top:auto;}
+  .sim.r{background:#f0e0da;} .sim.r .head{background:var(--red);color:var(--paper);}
+  .sim.a{background:#f1e3c4;} .sim.a .head{background:var(--amber);color:var(--ink);}
+  .sim.g{background:#dbe6d7;} .sim.g .head{background:var(--green);color:var(--paper);}
+
+  /* Flow diagram */
+  .flow{flex:1;display:flex;gap:24px;margin-top:32px;}
+  .flow-col{flex:1;display:flex;flex-direction:column;gap:12px;}
+  .flow-node{border:1.5px solid var(--ink);padding:14px 16px;background:var(--paper);font-size:16px;font-weight:500;}
+  .flow-node.header{background:var(--ink);color:var(--paper);font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.14em;text-transform:uppercase;text-align:center;}
+  .flow-node.warn{background:var(--red);color:var(--paper);}
+  .flow-node.ok{background:var(--green);color:var(--paper);}
+  .flow-arrow{text-align:center;font-family:'JetBrains Mono',monospace;color:var(--mute);font-size:18px;}
+
+  /* Errors */
+  .err-list{counter-reset:e;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:24px;border:2px solid var(--ink);}
+  .err{padding:22px 28px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);display:grid;grid-template-columns:56px 1fr;gap:20px;align-items:flex-start;counter-increment:e;position:relative;}
+  .err:nth-child(2n){border-right:none;}
+  .err:nth-child(n+5){border-bottom:none;}
+  .err::before{content:counter(e,decimal-leading-zero);font-family:'JetBrains Mono',monospace;font-size:36px;color:var(--red);font-weight:700;line-height:1;}
+  .err-title{font-size:20px;font-weight:700;letter-spacing:-0.01em;margin:0 0 6px;}
+  .err-why{
+  font-size:16px;
+  color:var(--mute);
+  line-height:1.6;
+}
+  .err-fix{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);}
+
+  /* Checklist */
+  .check-sheet{flex:1;display:grid;grid-template-columns:1fr 380px;gap:40px;margin-top:24px;}
+  .check-paper{background:var(--paper-2);border:2px solid var(--ink);padding:32px 36px;display:flex;flex-direction:column;}
+  .check-paper h3{font-family:'Fraunces',serif;font-size:32px;margin:0 0 4px;font-weight:800;}
+  .check-paper .meta{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mute);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:18px;}
+  .check-item{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:16px;padding:14px 0;border-top:1.5px dashed var(--ink-2);cursor:pointer;}
+  .check-item:last-child{border-bottom:1.5px dashed var(--ink-2);}
+  .check-box{width:22px;height:22px;border:1.5px solid var(--ink);display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;}
+  .check-item.on .check-box{background:var(--ink);color:var(--paper);}
+  .check-item.on .check-box::before{content:"✓";}
+  .check-label{
+  font-size:20px;
+  font-weight:600;
+}
+  .check-note{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);}
+  .check-stamp{align-self:flex-start;margin-top:auto;border:2px solid var(--red);color:var(--red);padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;transform:rotate(-3deg);font-weight:700;}
+
+  /* Quiz */
+  .quiz-wrap{flex:1;display:flex;flex-direction:column;margin-top:20px;gap:16px;overflow:hidden;}
+  .quiz-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--ink);padding-bottom:12px;}
+  .quiz-head .sum{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);}
+  .quiz-head .sum b{color:var(--ink);}
+  .quiz-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 6px 4px 0;display:flex;flex-direction:column;gap:22px;}
+  .quiz-scroll::-webkit-scrollbar{width:8px;}
+  .quiz-scroll::-webkit-scrollbar-thumb{background:var(--ink);}
+  .qblock{display:flex;flex-direction:column;gap:12px;padding-bottom:22px;border-bottom:1.5px dashed var(--ink-2);}
+  .qblock:last-child{border-bottom:none;}
+  .qhead{display:flex;gap:14px;align-items:baseline;}
+  .qnum{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.14em;color:var(--mute);min-width:50px;}
+  .qtext{font-family:'Fraunces',serif;font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-0.01em;flex:1;}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-left:64px;}
+  .option{border:1.5px solid var(--ink);padding:12px 16px;display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:center;cursor:pointer;background:var(--paper-2);font-size:17px;line-height:1.35;user-select:none;}
+  .option:hover{background:var(--paper-3);}
+  .option .ltr{font-family:'JetBrains Mono',monospace;font-size:15px;background:var(--ink);color:var(--paper);width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
+  .option.picked{background:var(--ink);color:var(--paper);}
+  .option.picked .ltr{background:var(--paper);color:var(--ink);}
+  .option.correct{background:#cde1c7;border-color:var(--green);border-width:2px;color:var(--ink);}
+  .option.correct .ltr{background:var(--green);color:var(--paper);}
+  .option.wrong{background:#e8c4bb;border-color:var(--red);color:var(--ink);}
+  .option.wrong .ltr{background:var(--red);color:var(--paper);}
+  .qblock.answered .option{pointer-events:none;}
+  .explain{margin-left:64px;font-size:15px;line-height:1.5;color:var(--ink-2);padding:12px 16px;background:var(--paper-2);border-left:3px solid var(--ink);display:none;}
+  .qblock.answered .explain{display:block;}
+  .qblock.answered .explain.good{border-left-color:var(--green);background:#dbe6d7;}
+  .qblock.answered .explain.bad{border-left-color:var(--red);background:#f0e0da;}
+  .explain b{font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:0.12em;}
+  .quiz-foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1.5px solid var(--ink);}
+  .score-live{font-family:'Fraunces',serif;font-size:48px;font-weight:800;line-height:1;letter-spacing:-0.02em;}
+  .score-live small{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--mute);}
+  .score-verd{font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:0.16em;text-transform:uppercase;padding:7px 14px;margin-left:14px;display:none;}
+  .score-verd.show{display:inline-block;}
+  .score-verd.pass{background:var(--green);color:var(--paper);}
+  .score-verd.fail{background:var(--red);color:var(--paper);}
+  .btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);padding:14px 22px;font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;}
+  .btn.ghost{background:transparent;color:var(--ink);}
+  .btn:disabled{opacity:0.3;cursor:not-allowed;}
+
+  /* Score */
+  .score-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+  .score-num{font-family:'Fraunces',serif;font-size:360px;line-height:0.85;font-weight:800;letter-spacing:-0.04em;color:var(--ink);}
+  .score-num small{font-family:'JetBrains Mono',monospace;font-size:48px;color:var(--mute);letter-spacing:0;}
+  .score-verdict{font-family:'Fraunces',serif;font-size:56px;line-height:1.05;font-weight:700;margin-bottom:20px;letter-spacing:-0.02em;}
+  .score-verdict em{font-style:italic;color:var(--red);}
+  .score-line{font-size:18px;line-height:1.5;max-width:480px;color:var(--ink-2);}
+
+  /* Image band */
+  .band{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(60px,auto);gap:12px;margin-top:24px;flex:1;}
+
+  /* Foxtrot phone mock */
+  .phone{width:280px;height:560px;background:var(--ink);border-radius:36px;padding:14px;position:relative;box-shadow:0 30px 60px rgba(0,0,0,0.25);border:1.5px solid var(--ink);}
+  .phone .screen{background:#f0ece3;border-radius:24px;height:100%;overflow:hidden;display:flex;flex-direction:column;}
+  .phone .ftx-top{background:#1e3a5f;color:#fff;padding:18px 16px 14px;font-family:'Inter';font-size:13px;}
+  .phone .ftx-top .app{font-weight:700;font-size:15px;letter-spacing:0.04em;}
+  .phone .ftx-top .route{opacity:0.8;font-size:11px;margin-top:4px;font-family:'JetBrains Mono',monospace;}
+  .phone .ftx-list{padding:10px;display:flex;flex-direction:column;gap:8px;}
+  .phone .pdv{background:#fff;border:1px solid #cfc7b4;padding:10px;display:flex;gap:10px;align-items:center;}
+  .phone .pdv .dot{width:10px;height:10px;border-radius:50%;background:#ccc;}
+  .phone .pdv.ok .dot{background:var(--green);}
+  .phone .pdv.fail .dot{background:var(--red);}
+  .phone .pdv.now{border:2px solid var(--ink);}
+  .phone .pdv .name{font-size:12px;font-weight:600;}
+  .phone .pdv .addr{font-size:10px;color:var(--mute);font-family:'JetBrains Mono',monospace;}
+  .phone .pdv .time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mute);margin-left:auto;}
+  .phone .ftx-cta{margin:auto 10px 14px;background:var(--green);color:#fff;padding:14px;text-align:center;font-family:'Inter';font-weight:700;font-size:14px;letter-spacing:0.02em;}
+
+  /* Mejoras */
+  .improv{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;flex:1;margin-top:24px;}
+  .imp-card{border:1.5px solid var(--ink);padding:24px;display:flex;flex-direction:column;gap:12px;background:var(--paper-2);}
+  .imp-card h4{margin:0;font-family:'Fraunces',serif;font-size:26px;font-weight:700;letter-spacing:-0.01em;}
+  .imp-card .was{font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:0.14em;color:var(--red);}
+  .imp-card .now{font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:0.14em;color:var(--green);}
+  .imp-card p{margin:0;font-size:16px;line-height:1.5;color:var(--ink-2);}
+  .imp-metric{margin-top:auto;padding-top:14px;border-top:1.5px dashed var(--ink-2);font-family:'Fraunces',serif;font-size:40px;font-weight:800;line-height:1;}
+  .imp-metric small{font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:0.14em;color:var(--mute);display:block;margin-top:6px;font-weight:400;}
+
+  /* Closing */
+  .closing{background:var(--red);color:var(--paper);}
+  .closing .eyebrow{color:#f7d4c6;}
+  .closing h2{font-family:'Fraunces',serif;font-weight:700;font-size:110px;line-height:1;font-style:italic;letter-spacing:-0.03em;margin:40px 0 0;max-width:85%;}
+  .closing h2 b{font-style:normal;font-weight:800;}
+  .closing .sig{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:0.16em;text-transform:uppercase;}
+
+  /* Intro quote slide */
+  .quote-big{flex:1;display:flex;align-items:center;}
+  .quote-big p{font-family:'Fraunces',serif;font-size:110px;line-height:1.02;font-weight:400;font-style:italic;letter-spacing:-0.03em;max-width:1500px;margin:0;}
+  .quote-big p b{font-style:normal;font-weight:800;color:var(--red);}
+
+  /* Risk grid */
+  .risk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:32px;flex:1;border:2px solid var(--ink);}
+  .risk{padding:28px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden;}
+  .risk:last-child{border-right:none;}
+  .risk .cat{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mute);}
+  .risk h4{margin:0;font-family:'Fraunces',serif;font-size:36px;line-height:0.95;font-weight:800;letter-spacing:-0.02em;}
+  .risk ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .risk li{font-size:16px;padding-left:16px;position:relative;line-height:1.4;}
+  .risk li::before{content:"";position:absolute;left:0;top:8px;width:8px;height:2px;background:var(--ink);}
+  .risk .sev{position:absolute;top:28px;right:28px;font-family:'JetBrains Mono',monospace;font-size:13px;padding:5px 10px;letter-spacing:0.14em;text-transform:uppercase;}
+  .risk .sev.high{background:var(--red);color:var(--paper);}
+  .risk .sev.med{background:var(--amber);color:var(--ink);}
+
+  /* Quality band */
+  .q-stages{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;flex:1;margin-top:24px;}
+  .q-stage{border:1.5px solid var(--ink);display:flex;flex-direction:column;overflow:hidden;}
+  .q-stage .q-img{flex:1;min-height:220px;}
+  .q-stage .q-body{padding:22px;background:var(--paper-2);border-top:1.5px solid var(--ink);}
+  .q-stage h4{margin:0 0 6px;font-family:'Fraunces',serif;font-size:26px;font-weight:700;}
+  .q-stage .q-sub{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);margin-bottom:12px;}
+  .q-stage ul{margin:0;padding-left:16px;font-size:16px;line-height:1.55;}
+  .q-stage ul li{margin-bottom:4px;}
+
+
+
+  /* Convention polish overrides */
+  :root{
+    --bg-stage:#0b1020;
+    --bg-stage-2:#111936;
+    --panel:#f7f3eb;
+    --panel-2:#efe6d6;
+    --panel-3:#e7dbc6;
+    --accent:#f0a329;
+    --accent-2:#ffbf56;
+    --shadow:0 28px 80px rgba(0,0,0,.30);
+    --shadow-soft:0 18px 38px rgba(0,0,0,.12);
+  }
+  html,body{
+    background:
+      radial-gradient(1200px 700px at 15% -10%, rgba(240,163,41,.18), transparent 45%),
+      radial-gradient(1000px 700px at 100% 10%, rgba(194,58,30,.16), transparent 40%),
+      linear-gradient(135deg,var(--bg-stage),var(--bg-stage-2));
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size:64px 64px;opacity:.18;
+  }
+  deck-stage{background:transparent;}
+  section{
+    background:linear-gradient(180deg,#fbf8f2 0%, var(--panel) 100%);
+    border-radius:34px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(255,255,255,.12);
+    overflow:hidden;
+  }
+  section::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,.24), transparent 28%);
+    opacity:.5;
+  }
+  section:not(.cover):not(.divider)::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:8px;
+    background:linear-gradient(90deg,var(--red) 0%, var(--accent) 42%, #ffe2a9 100%);
+    z-index:1;
+  }
+  .slide{padding:86px 96px 78px;}
+  .chrome-top{
+    font-size:17px;
+    color:#6d675e;
+    padding-bottom:14px;
+    border-bottom:1px solid rgba(18,17,15,.10);
+    position:relative;z-index:2;
+  }
+  .chrome-top .dot{box-shadow:0 0 0 6px rgba(194,58,30,.12), 0 0 24px rgba(194,58,30,.28);}
+  .eyebrow{color:#8b6a2b;font-weight:700;}
+  h2.big{font-size:88px;line-height:.92;max-width:1100px;text-wrap:balance;}
+  .quote-big{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px 60px;}
+  .quote-big p{
+    margin:0;
+    font-family:'Fraunces',serif;
+    font-size:110px;
+    line-height:.92;
+    letter-spacing:-.045em;
+    color:var(--ink);
+    text-shadow:0 10px 30px rgba(0,0,0,.08);
+  }
+  .quote-big em{font-style:italic;color:var(--red);font-weight:400;}
+  .quote-big b{color:var(--accent);}
+
+  /* Cover */
+  .cover{
+    background:
+      radial-gradient(900px 520px at 20% 18%, rgba(240,163,41,.18), transparent 50%),
+      radial-gradient(900px 620px at 100% 0%, rgba(194,58,30,.26), transparent 45%),
+      linear-gradient(135deg,#0d111b 0%, #121826 55%, #191f2f 100%);
+    border:none;
+  }
+  .cover::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:64px 64px;opacity:.14;
+  }
+  .cover::after{
+    content:"";position:absolute;inset:auto -8% -25% auto;width:720px;height:720px;border-radius:50%;
+    background:radial-gradient(circle at center, rgba(240,163,41,.36), rgba(240,163,41,.08) 42%, transparent 62%);
+    filter:blur(8px);opacity:.95;
+  }
+  .cover .brand{color:#d5d1c8;font-weight:700;}
+  .cover .meta{color:#a8a191;}
+  .cover h1{font-size:214px;text-shadow:0 18px 40px rgba(0,0,0,.35);position:relative;z-index:1;}
+  .cover .bigquote{font-size:42px;max-width:700px;color:#f4efe6;text-shadow:0 8px 24px rgba(0,0,0,.28);}
+  .cover .chip{
+    background:rgba(255,255,255,.06);
+    border-color:rgba(255,255,255,.16);
+    backdrop-filter:blur(10px);
+    border-radius:999px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  .cover .ticker{background:rgba(0,0,0,.16);backdrop-filter:blur(8px);border-top-color:rgba(255,255,255,.12);}
+
+  /* Agenda */
+  .agenda-grid{gap:18px;border:none;background:transparent;margin-top:46px;}
+  .agenda-grid>div{
+    border:1px solid rgba(18,17,15,.10);
+    border-radius:22px;
+    background:linear-gradient(180deg,#fffdf8 0%, #f3ecdf 100%);
+    box-shadow:var(--shadow-soft);
+    transition:transform .2s ease;
+    overflow:hidden;
+  }
+  .agenda-grid>div:nth-child(1), .agenda-grid>div:nth-child(4){background:linear-gradient(180deg,#fff7f3,#f2ddd6);}
+  .agenda-grid>div:nth-child(2), .agenda-grid>div:nth-child(5){background:linear-gradient(180deg,#fffaf0,#f1e1bf);}
+  .agenda-grid>div:nth-child(3), .agenda-grid>div:nth-child(6){background:linear-gradient(180deg,#f8fcf7,#dce8d8);}
+  .agenda-grid > div:nth-child(2n), .agenda-grid > div:nth-child(n+5){border-right:1px solid rgba(18,17,15,.10);border-bottom:1px solid rgba(18,17,15,.10);}
+  .agenda-title{font-size:24px;}
+  .agenda-desc{
+  font-size:18px;
+  color:var(--mute);
+  line-height:1.6;
+}
+  .agenda-dur{background:rgba(18,17,15,.05);padding:6px 10px;border-radius:999px;}
+
+  /* Divider */
+  .divider{
+    background:
+      radial-gradient(800px 500px at 0% 10%, rgba(240,163,41,.16), transparent 50%),
+      radial-gradient(700px 480px at 100% 0%, rgba(194,58,30,.2), transparent 44%),
+      linear-gradient(135deg,#0f1422,#171e30 58%,#101521);
+    border:none;
+  }
+  .divider .num{color:#d1c3a1;}
+  .divider h2{text-shadow:0 18px 40px rgba(0,0,0,.36);}
+  .divider .kicker{color:#f2ecde;}
+
+  /* Placeholders / hero cards */
+  .ph{
+    background:
+      linear-gradient(160deg, rgba(255,255,255,.18), rgba(255,255,255,.02)),
+      linear-gradient(135deg,#eadfca,#ddd0b7);
+    border:1px solid rgba(18,17,15,.12);
+    border-radius:28px;
+    box-shadow:var(--shadow-soft);
+    overflow:hidden;
+  }
+  .ph::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(240px 200px at 20% 15%, rgba(255,255,255,.48), transparent 55%),
+      linear-gradient(145deg, transparent 0 58%, rgba(18,17,15,.06) 58% 60%, transparent 60%),
+      linear-gradient(0deg, rgba(18,17,15,.02), rgba(18,17,15,.02));
+  }
+  .ph.red{background:linear-gradient(160deg, rgba(255,255,255,.2), rgba(255,255,255,.02)),linear-gradient(135deg,#f2ddd6,#dfb8ab);}
+  .ph.amber{background:linear-gradient(160deg, rgba(255,255,255,.2), rgba(255,255,255,.02)),linear-gradient(135deg,#f6e5be,#ebcd83);}
+  .ph.green{background:linear-gradient(160deg, rgba(255,255,255,.2), rgba(255,255,255,.02)),linear-gradient(135deg,#dde9d8,#b8cfb4);}
+  .ph.blue{background:linear-gradient(160deg, rgba(255,255,255,.2), rgba(255,255,255,.02)),linear-gradient(135deg,#d5ddee,#b7c6df);}
+  .ph.ink{background:linear-gradient(160deg, rgba(255,255,255,.04), rgba(255,255,255,.01)),linear-gradient(135deg,#1f2636,#0e1320);}
+  .ph-label{border-radius:999px;border:none;box-shadow:0 12px 24px rgba(0,0,0,.12);font-weight:700;position:relative;z-index:2;}
+  .ph.photo{
+    position:relative;
+    padding:16px;
+    align-items:flex-end;
+    justify-content:flex-start;
+    background:#d8d2c4;
+  }
+  .ph.photo::before{
+    background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, transparent 42%, rgba(18,17,15,.24) 100%);
+    z-index:1;
+  }
+  .ph.photo img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:0;
+  }
+  .ph.photo .ph-label{
+    position:absolute;
+    left:16px;
+    bottom:16px;
+    margin:0;
+  }
+
+  .two-col{grid-template-columns:380px 1fr;gap:48px;align-items:stretch;}
+  .rule-row{
+    grid-template-columns:56px 1fr auto;
+    padding:18px 20px;
+    border:1px solid rgba(18,17,15,.10);
+    border-radius:18px;
+    margin-bottom:12px;
+    background:rgba(255,255,255,.48);
+    box-shadow:var(--shadow-soft);
+  }
+  .rule-row:last-child{border-bottom:1px solid rgba(18,17,15,.10);}
+  .rule-num{font-size:18px;font-weight:700;color:#8b6a2b;}
+  .rule-text{font-size:22px;}
+  .rule-tag{border-radius:999px;border:none;box-shadow:inset 0 0 0 1px rgba(18,17,15,.08);}
+
+  /* maps / process */
+  .steps{gap:14px;border:none;background:transparent;}
+  .step{
+    border:1px solid rgba(18,17,15,.10);
+    border-radius:20px;
+    background:linear-gradient(180deg,#fffdf9,#efe7d8);
+    box-shadow:var(--shadow-soft);
+    min-height:248px;
+  }
+  .step:nth-child(odd){background:linear-gradient(180deg,#fffdf9,#f3ecdf);}
+  .step .pill{border-radius:999px;background:linear-gradient(90deg,var(--ink),#313a4e);}
+
+  .flow{gap:18px;}
+  .flow-col{gap:14px;}
+  .flow-node{
+    border:1px solid rgba(18,17,15,.12);
+    border-radius:16px;
+    background:rgba(255,255,255,.62);
+    box-shadow:var(--shadow-soft);
+  }
+  .flow-node.header{background:linear-gradient(90deg,#12110f,#2b3347);border:none;}
+  .flow-node.warn{background:linear-gradient(90deg,var(--red),#d9674e);border:none;}
+  .flow-node.ok{background:linear-gradient(90deg,var(--green),#4c8f59);border:none;}
+
+  /* Errors */
+  .err-list{gap:14px;border:none;background:transparent;}
+  .err{
+    border:1px solid rgba(18,17,15,.10);
+    border-radius:18px;
+    background:linear-gradient(180deg,#fffdf9,#f2ddd6);
+    box-shadow:var(--shadow-soft);
+  }
+  .err:nth-child(3n){background:linear-gradient(180deg,#fffdf9,#f1e4c8);}
+  .err:nth-child(4n){background:linear-gradient(180deg,#fffdf9,#e1eadf);}
+  .err:nth-child(2n), .err:nth-child(n+5){border-right:1px solid rgba(18,17,15,.10);border-bottom:1px solid rgba(18,17,15,.10);}
+  .err::before{font-size:34px;text-shadow:0 4px 10px rgba(194,58,30,.12);}
+
+  /* Simulation */
+  .sim-grid{gap:20px;}
+  .sim{border:none;border-radius:22px;overflow:hidden;box-shadow:var(--shadow-soft);}
+  .sim .head{border-bottom:none;padding:20px 22px;}
+  .sim .body{background:rgba(255,255,255,.4);}
+
+  /* Checklist */
+  .check-sheet{grid-template-columns:1fr 400px;gap:30px;}
+  .check-paper{
+    border:1px solid rgba(18,17,15,.10);
+    border-radius:28px;
+    background:linear-gradient(180deg,#fffdf9,#efe6d7);
+    box-shadow:var(--shadow-soft);
+  }
+  .check-stamp{border-radius:999px;transform:none;background:rgba(194,58,30,.06);}
+  .check-item{border-top:1px dashed rgba(18,17,15,.28);}
+  .check-item:last-child{border-bottom:1px dashed rgba(18,17,15,.28);}
+
+  /* Quiz */
+  .quiz-head,.quiz-foot{border-color:rgba(18,17,15,.12);}
+  .option{
+    border-radius:16px;
+    border:1px solid rgba(18,17,15,.12);
+    box-shadow:var(--shadow-soft);
+    background:linear-gradient(180deg,#fffdf9,#f1eadc);
+  }
+  .option:hover{transform:translateY(-1px);}
+  .btn{border:none;border-radius:999px;box-shadow:var(--shadow-soft);background:linear-gradient(90deg,#12110f,#2a344b);}
+  .btn.ghost{background:rgba(255,255,255,.55);color:var(--ink);border:1px solid rgba(18,17,15,.10);}
+  .score-live{display:flex;align-items:center;gap:14px;}
+
+  /* Result */
+  .score-wrap{gap:40px;}
+  .score-num{color:transparent;background:linear-gradient(180deg,var(--ink) 0%, #38415a 100%);-webkit-background-clip:text;background-clip:text;text-shadow:none;}
+  .score-verdict{font-size:64px;}
+
+  /* Phone mock and generic cards */
+  .phone{box-shadow:0 36px 70px rgba(0,0,0,.28);background:linear-gradient(180deg,#151923,#07090f);}
+  .phone::before{content:"";position:absolute;top:9px;left:50%;transform:translateX(-50%);width:96px;height:8px;border-radius:999px;background:#2f3544;}
+  .phone .screen{background:linear-gradient(180deg,#f4f0e7,#ece3d3);}
+  .imp-card{border:1px solid rgba(18,17,15,.10);border-radius:22px;background:linear-gradient(180deg,#fffdf9,#efe6d6);box-shadow:var(--shadow-soft);}
+
+  /* Tables or misc small cards */
+  .band > *{border-radius:18px;overflow:hidden;box-shadow:var(--shadow-soft);}
+  .mono{letter-spacing:.02em;}
+
+
+
+/* ===== Presenter Timer (Compact) ===== */
+.presenter-timer{
+  transition: opacity 0.4s ease;
+}
+.presenter-timer.hidden{
+  opacity:0;
+  pointer-events:none;
+}
+  position:fixed;
+  top:12px;
+  right:12px;
+  z-index:2147483600;
+  width:190px;
+  background:rgba(10,12,20,.85);
+  color:#f7f3eb;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  padding:8px 8px 6px;
+  font-family: Inter, Arial, sans-serif;
+  backdrop-filter: blur(6px);
+  opacity:0.9;
+}
+.presenter-timer .pt-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:9px;
+  margin-bottom:4px;
+}
+.presenter-timer .pt-title{
+  letter-spacing:.12em;
+  color:#c6bea9;
+}
+.presenter-timer .pt-total{
+  color:#ffbf56;
+}
+.presenter-timer .pt-slide{
+  font-size:11px;
+  font-weight:700;
+  margin-bottom:6px;
+  line-height:1.1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.presenter-timer .pt-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+}
+.presenter-timer .pt-box{
+  padding:4px;
+  border-radius:6px;
+  background:rgba(255,255,255,.05);
+}
+.presenter-timer .pt-label{
+  font-size:8px;
+  color:#c6bea9;
+}
+.presenter-timer .pt-value{
+  font-size:14px;
+  font-weight:700;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.presenter-timer .pt-actions{
+  display:flex;
+  gap:6px;
+  margin-top:6px;
+  align-items:center;
+}
+.presenter-timer button{
+  font-size:10px;
+  padding:6px 8px;
+  border-radius:8px;
+  line-height:1;
+  min-width:52px;
+  font-weight:600;
+}
+.presenter-timer .pt-bar{
+  margin-top:4px;
+  height:4px;
+}
+
+.presenter-timer .pt-bar > span{
+  display:block;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ffbf56,#c23a1e);
+  transition:width .25s ease;
+}
+
+
+.slide-time-badge{
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:5;
+  background:rgba(10,12,20,.78);
+  color:#f7f3eb;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  padding:5px 9px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  backdrop-filter: blur(6px);
+  box-shadow:0 8px 20px rgba(0,0,0,.18);
+}
+.slide-time-badge b{
+  color:#ffbf56;
+  font-weight:700;
+}
+
+</style>
+</head>
+<body>
+
+<deck-stage>
+
+  <!-- ================= 01 · COVER ================= -->
+  <section data-screen-label="01 Portada" class="cover">
+    <div class="slide" style="padding:0;">
+      <div class="top">
+        <div class="brand"><span style="display:inline-block;width:10px;height:10px;background:#d68a1a;margin-right:8px;"></span>Del Palacio S.A. · Logística</div>
+        <div class="meta">
+          Capacitación interna<br/>
+          Rev. 2026 · Abril<br/>
+          90 min + Q&amp;A
+        </div>
+      </div>
+      <div class="title">
+        <h1>Ejecución<br/>de <em>entrega.</em></h1>
+      </div>
+      <div class="sub">
+        <div class="bigquote">Un error en ruta no es un KPI.<br/><b>Es un accidente.</b></div>
+        <div class="chips">
+          <span class="chip">Seguridad</span>
+          <span class="chip">Proceso</span>
+          <span class="chip">Calidad</span>
+          <span class="chip">Foxtrot</span>
+          <span class="chip">Cuestionario</span>
+        </div>
+      </div>
+      <div class="ticker">
+        <span>CAP · <b>ENTR/2026-04</b></span>
+        <span>3 SOP · 1 FLUJO · 12 MÓDULOS</span>
+        <span>FACILITADOR · <b>SUPERVISOR DE RUTAS</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 02 · AGENDA ================= -->
+  <section data-screen-label="02 Agenda">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Capacitación · Ejecución de entrega</div>
+        <div>02 / 20</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;">
+        <div>
+          <div class="eyebrow">Contenido</div>
+          <h2 class="big">El <em>flujo real</em><br/>de un día en ruta.</h2>
+        </div>
+        <div style="max-width:420px;font-size:16px;line-height:1.55;color:var(--ink-2);">
+          No capacitamos por documento. Capacitamos por <b>flujo real de trabajo</b>: cómo arranca el día, qué pasa en el PDV, y cómo se cierra.
+        </div>
+      </div>
+      <div class="agenda-grid">
+        <div>
+          <span class="agenda-dur">10 min</span>
+          <div class="agenda-num">01</div>
+          <div class="agenda-title">Seguridad no negociable</div>
+          <div class="agenda-desc">Lo que no cambia. Ruta, Foxtrot, PDV. Las 3 reglas que matan o salvan.</div>
+        </div>
+        <div>
+          <span class="agenda-dur">8 min</span>
+          <div class="agenda-num">02</div>
+          <div class="agenda-title">Proceso real de entrega</div>
+          <div class="agenda-desc">Llegada, validación, descarga, cobro, envases, cierre en Foxtrot. Paso a paso.</div>
+        </div>
+        <div>
+          <span class="agenda-dur">5 min</span>
+          <div class="agenda-num">03</div>
+          <div class="agenda-title">Calidad en ruta</div>
+          <div class="agenda-desc">Cómo cuidamos el producto desde la lona hasta la mano del cliente.</div>
+        </div>
+        <div>
+          <span class="agenda-dur">2 min</span>
+          <div class="agenda-num">04</div>
+          <div class="agenda-title">Foxtrot bien usado</div>
+          <div class="agenda-desc">Click Score, secuencia, 150 m, y por qué marcar bien vale lo mismo que entregar bien.</div>
+        </div>
+        <div>
+          <span class="agenda-dur">3 min</span>
+          <div class="agenda-num">05</div>
+          <div class="agenda-title">Top errores &amp; simulación</div>
+          <div class="agenda-desc">Los 8 errores que más plata cuestan y 3 simulaciones en vivo.</div>
+        </div>
+        <div>
+          <span class="agenda-dur">2 min</span>
+          <div class="agenda-num">06</div>
+          <div class="agenda-title">Cuestionario final</div>
+          <div class="agenda-desc">10 preguntas. Se aprueba con 8. Certificado individual por chofer.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 03 · OPENING QUOTE ================= -->
+  <section data-screen-label="03 Apertura">
+    <div class="slide" style="background:var(--paper);">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Apertura</div>
+        <div>03 / 20</div>
+      </div>
+      <div class="quote-big">
+        <p>No buscamos <em>velocidad.</em><br/>Buscamos <b>seguridad</b>, <b>calidad</b><br/>y <b>control</b>.</p>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+        <div class="mono" style="font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">
+          Mensaje central · se repite al cerrar
+        </div>
+        <div class="mono" style="font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">
+          Si el proceso está bien hecho → el resultado llega solo
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 04 · SECTION 1 DIVIDER ================= -->
+  <section data-screen-label="04 Bloque 1 Divider" class="divider">
+    <div class="num">Bloque 01 / 06</div>
+    <h2>Seguridad<br/><em>no negociable.</em></h2>
+    <div class="foot">
+      <div class="kicker">"La regla existe. El problema es que en la práctica se relaja."</div>
+      <div class="mono" style="color:#d68a1a;font-size:14px;letter-spacing:0.14em;">12 MIN · 9 REGLAS · 0 EXCEPCIONES</div>
+    </div>
+  </section>
+
+  <!-- ================= 05 · RULES ================= -->
+  <section data-screen-label="05 Reglas">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 01 · Seguridad</div>
+        <div>05 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Las 9 reglas que no se discuten</div>
+      <h2 class="big">Si una <em>falla</em>,<br/>el día se cancela.</h2>
+      <div class="two-col">
+        <div class="ph red" style="position:relative;">
+          <div class="ph-label">FOTO · CONOS + CAMIÓN DETENIDO + EPP</div>
+        </div>
+        <div>
+          <div class="rule-row"><div class="rule-num">01</div><div class="rule-text">Cinturón <b>siempre</b> en tránsito, ida y vuelta.</div><div class="rule-tag r">Ruta</div></div>
+          <div class="rule-row"><div class="rule-num">02</div><div class="rule-text">Celular <b>jamás</b> manejando. El ayudante lo toma.</div><div class="rule-tag r">Ruta</div></div>
+          <div class="rule-row"><div class="rule-num">03</div><div class="rule-text">Manejo defensivo. Velocidades máximas siempre.</div><div class="rule-tag r">Ruta</div></div>
+          <div class="rule-row"><div class="rule-num">04</div><div class="rule-text">Foxtrot <b>solo</b> con camión detenido y apagado.</div><div class="rule-tag a">Foxtrot</div></div>
+          <div class="rule-row"><div class="rule-num">05</div><div class="rule-text">Camión apagado + freno de mano al llegar al PDV.</div><div class="rule-tag g">PDV</div></div>
+          <div class="rule-row"><div class="rule-num">06</div><div class="rule-text">Conos o banderines colocados a los costados.</div><div class="rule-tag g">PDV</div></div>
+          <div class="rule-row"><div class="rule-num">07</div><div class="rule-text">EPP completo: zapatos, ropa reflectante, guantes, anteojos.</div><div class="rule-tag g">PDV</div></div>
+          <div class="rule-row"><div class="rule-num">08</div><div class="rule-text">Lonas <b>cerradas</b> en todo traslado entre PDV y PDV.</div><div class="rule-tag r">Ruta</div></div>
+          <div class="rule-row"><div class="rule-num">09</div><div class="rule-text">Si hay duda → modular. Nunca decidir solo.</div><div class="rule-tag a">Proceso</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 06 · RISKS ================= -->
+  <section data-screen-label="06 Riesgos">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 01 · Seguridad</div>
+        <div>06 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Mapa de riesgo · lo que realmente pasa en ruta</div>
+      <h2 class="big">4 <em>riesgos</em> reales.<br/>3 son evitables.</h2>
+      <div class="risk-grid">
+        <div class="risk">
+          <span class="sev high">Severidad alta</span>
+          <div class="cat">Riesgo 01</div>
+          <h4>Accidente<br/>vial</h4>
+          <ul>
+            <li>Uso de celular manejando</li>
+            <li>No usar cinturón</li>
+            <li>Exceso de velocidad</li>
+            <li>Ruta deteriorada + prisa</li>
+          </ul>
+        </div>
+        <div class="risk">
+          <span class="sev med">Severidad media</span>
+          <div class="cat">Riesgo 02</div>
+          <h4>Lesiones<br/>físicas</h4>
+          <ul>
+            <li>Mala manipulación de carga</li>
+            <li>Sobrecarga en carro</li>
+            <li>Arrojar desde caja al piso</li>
+            <li>Sin faja lumbar</li>
+          </ul>
+        </div>
+        <div class="risk">
+          <span class="sev med">Severidad media</span>
+          <div class="cat">Riesgo 03</div>
+          <h4>Calidad<br/>y reclamo</h4>
+          <ul>
+            <li>Producto en mal estado</li>
+            <li>Error de cantidad</li>
+            <li>Mal cálculo de descuento</li>
+            <li>Envases sin contar</li>
+          </ul>
+        </div>
+        <div class="risk">
+          <span class="sev high">Severidad alta</span>
+          <div class="cat">Riesgo 04</div>
+          <h4>Pérdida<br/>económica</h4>
+          <ul>
+            <li>Rechazo total evitable</li>
+            <li>Envases mal gestionados</li>
+            <li>Cobro incorrecto</li>
+            <li>Entrega no clickeada</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 07 · SECTION 2 DIVIDER ================= -->
+  <section data-screen-label="07 Bloque 2 Divider" class="divider">
+    <div class="num">Bloque 02 / 06</div>
+    <h2>Proceso<br/><em>de entrega.</em></h2>
+    <div class="foot">
+      <div class="kicker">6 pasos. En el orden correcto. Sin saltarse ninguno.</div>
+      <div class="mono" style="color:#d68a1a;font-size:14px;letter-spacing:0.14em;">25 MIN · 6 PASOS · TIEMPOS ESTÁNDAR</div>
+    </div>
+  </section>
+
+  <!-- ================= 08 · PROCESS STEPS ================= -->
+  <section data-screen-label="08 Proceso 6 pasos">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 02 · Proceso</div>
+        <div>08 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">El recorrido en un PDV</div>
+      <h2 class="big">De la <em>llegada</em><br/>al cierre en Foxtrot.</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="sn">01 · LLEGADA</div>
+          <div class="sh">Llegada<br/>al PDV</div>
+          <div class="sd">Respetar horario. Saludar. Mostrar factura: productos, cantidad, monto, envases retornables.</div>
+          <div class="pill">Error común: entrar apurado</div>
+        </div>
+        <div class="step">
+          <div class="sn">02 · VALIDACIÓN</div>
+          <div class="sh">Validación<br/>con cliente</div>
+          <div class="sd">El cliente controla y decide. Puede aprobar, rechazar parcial o total. Parcial &gt; total siempre.</div>
+          <div class="pill">Regla: parcial antes que total</div>
+        </div>
+        <div class="step">
+          <div class="sn">03 · DESCARGA</div>
+          <div class="sh">Descarga<br/>ordenada</div>
+          <div class="sd">Pasamanos, no arrojar. En el carro: cajones abajo, packs de mayor a menor calibre.</div>
+          <div class="pill">Cuidado: lesión + rotura</div>
+        </div>
+        <div class="step">
+          <div class="sn">04 · COBRO</div>
+          <div class="sh">Cobro<br/>verificado</div>
+          <div class="sd">Contado: contar juntos. Transferencia: captura. Cheque: datos + orden. E-check: comprobante.</div>
+          <div class="pill">Error común: no validar</div>
+        </div>
+        <div class="step">
+          <div class="sn">05 · ENVASES</div>
+          <div class="sh">Envases<br/>al detalle</div>
+          <div class="sd">Σ a retirar = Σ entregados ± comodatos − venta. Si falta, se cobra. Sin autorización, no se negocia.</div>
+          <div class="pill">Módulo si hay excepción</div>
+        </div>
+        <div class="step">
+          <div class="sn">06 · CIERRE</div>
+          <div class="sh">Cierre<br/>en Foxtrot</div>
+          <div class="sd">Clickear dentro de 150 m del PDV. Éxito o falla, <b>todo</b> se marca. Nada queda sin registrar.</div>
+          <div class="pill">Regla: 150 m · Click Score ≥85%</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:0;background:var(--ink);color:var(--paper);padding:12px 0;">
+        <div class="mono" style="text-align:center;font-size:11px;letter-spacing:0.14em;">8 min</div>
+        <div class="mono" style="text-align:center;font-size:11px;letter-spacing:0.14em;">2–5 min</div>
+        <div class="mono" style="text-align:center;font-size:11px;letter-spacing:0.14em;">4–20 min</div>
+        <div class="mono" style="text-align:center;font-size:11px;letter-spacing:0.14em;">2–4 min</div>
+        <div class="mono" style="text-align:center;font-size:11px;letter-spacing:0.14em;">2–3 min</div>
+        <div class="mono" style="text-align:center;font-size:11px;letter-spacing:0.14em;">30 seg</div>
+      </div>
+
+      <div style="margin-top:auto;padding-top:20px;display:flex;gap:60px;">
+        <div><div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">Tradicional · 8 min</div></div>
+        <div><div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">Refrigerado · 11 min</div></div>
+        <div><div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">Autoservicio · 16 min</div></div>
+        <div><div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">Mayorista · 33 min</div></div>
+        <div><div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">SMK bajo drop · 60 min</div></div>
+        <div><div class="mono" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);">SMK alto drop · 180 min</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 09 · DECISION FLOW ================= -->
+  <section data-screen-label="09 Flujo decisional">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 02 · Proceso</div>
+        <div>09 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Qué hacer cuando el cliente no acepta</div>
+      <h2 class="big">Rechazo <em>parcial</em><br/>antes que rechazo total.</h2>
+
+      <div class="flow">
+        <div class="flow-col">
+          <div class="flow-node header">Entrada</div>
+          <div class="flow-node">Cliente recibe factura<br/>y controla el pedido</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node header">Decisión</div>
+          <div class="flow-node">¿Aprueba todo?</div>
+        </div>
+
+        <div class="flow-col">
+          <div class="flow-node header" style="background:var(--green);color:var(--paper);">Camino A · SÍ</div>
+          <div class="flow-node ok">Descargar según factura</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node ok">Control conjunto + cobro</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node ok">Retirar envases + canjes</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node ok">Click éxito en Foxtrot &lt;150 m</div>
+        </div>
+
+        <div class="flow-col">
+          <div class="flow-node header" style="background:var(--amber);color:var(--ink);">Camino B · Rechazo parcial</div>
+          <div class="flow-node">Usar planilla de cálculo</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">Si no → llamar modulador<br/>(N° cliente, SKU, cantidad)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">Descontar y entregar el resto</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node ok">Click entrega parcial Foxtrot</div>
+        </div>
+
+        <div class="flow-col">
+          <div class="flow-node header" style="background:var(--red);color:var(--paper);">Camino C · Rechazo total</div>
+          <div class="flow-node warn">Modular al instante</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">¿Resuelve modulación?</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node warn">Si NO → firma del cliente<br/>con motivo del rechazo</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node warn">Click falla + motivo · Foxtrot</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 10 · SECTION 3 DIVIDER ================= -->
+  <section data-screen-label="10 Bloque 3 Divider" class="divider">
+    <div class="num">Bloque 03 / 06</div>
+    <h2>Calidad<br/><em>en ruta.</em></h2>
+    <div class="foot">
+      <div class="kicker">El producto sale bien del CD. Lo que pasa en el medio es responsabilidad del camión.</div>
+      <div class="mono" style="color:#d68a1a;font-size:14px;letter-spacing:0.14em;">15 MIN · 3 ETAPAS · 5S DE CAMIÓN</div>
+    </div>
+  </section>
+
+  <!-- ================= 11 · QUALITY STAGES ================= -->
+  <section data-screen-label="11 Calidad 3 etapas">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 03 · Calidad</div>
+        <div>11 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Tres momentos · Tres responsabilidades</div>
+      <h2 class="big">Tránsito, <em>descarga</em>,<br/>producto dañado.</h2>
+
+      <div class="q-stages">
+        <div class="q-stage">
+          <div class="ph amber q-img photo">
+            <img src="../img/camion%20lona%20cerrada.jpeg" alt="Camion con lona cerrada en ruta"/>
+            <div class="ph-label">FOTO · LONA CERRADA EN RUTA</div>
+          </div>
+          <div class="q-body">
+            <div class="q-sub">Etapa 01 · En viaje</div>
+            <h4>Durante el tránsito</h4>
+            <ul>
+              <li>Lonas siempre cerradas</li>
+              <li>Carga acomodada antes de salir</li>
+              <li>Velocidad máxima respetada</li>
+              <li>Evitar movimientos bruscos</li>
+              <li>Redistribuir packs en paletas vacías</li>
+            </ul>
+          </div>
+        </div>
+        <div class="q-stage">
+          <div class="ph blue q-img photo">
+            <img src="../img/camion%20manijas.JPG" alt="Camion preparado para descarga con manijas"/>
+            <div class="ph-label">FOTO · PASAMANOS EN DESCARGA</div>
+          </div>
+          <div class="q-body">
+            <div class="q-sub">Etapa 02 · En el PDV</div>
+            <h4>Durante la descarga</h4>
+            <ul>
+              <li>Nunca arrojar · siempre pasamanos</li>
+              <li>Base del carro: cajones</li>
+              <li>Arriba: packs de mayor a menor</li>
+              <li>Máx. 4 cajones 1/1 de altura</li>
+              <li>Agarrar packs de los laterales</li>
+            </ul>
+          </div>
+        </div>
+        <div class="q-stage">
+          <div class="ph red q-img photo">
+            <img src="../img/produtos%20da%C3%B1ados%20en%20camion.JPG" alt="Producto danado segregado dentro del camion"/>
+            <div class="ph-label">FOTO · PRODUCTO DAÑADO SEGREGADO</div>
+          </div>
+          <div class="q-body">
+            <div class="q-sub">Etapa 03 · Si algo falla</div>
+            <h4>Producto dañado</h4>
+            <ul>
+              <li>No entregar nunca producto roto</li>
+              <li>Avisar a modulación</li>
+              <li>Separar · culata del camión</li>
+              <li>Descontar al cliente por planilla</li>
+              <li>Informar al verificador al retorno</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 12 · 5S CAMIÓN ================= -->
+  <section data-screen-label="12 5S Camión">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 03 · Calidad</div>
+        <div>12 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">5S de camión · El camión también es un puesto de trabajo</div>
+      <h2 class="big">Lo que tu <em>camión</em> dice<br/>de vos.</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:32px;border:2px solid var(--ink);flex:1;">
+        <div style="padding:24px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:10px;">
+          <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">S01 · SEIRI</div>
+          <div class="serif" style="font-size:40px;font-weight:800;line-height:0.95;">Clasificar</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--ink-2);">Libre de elementos personales. Solo lo que sirve a la entrega.</div>
+          <div class="ph" style="margin-top:auto;height:80px;font-size:10px;">CAJA LIMPIA</div>
+        </div>
+        <div style="padding:24px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:10px;">
+          <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">S02 · SEITON</div>
+          <div class="serif" style="font-size:40px;font-weight:800;line-height:0.95;">Ordenar</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--ink-2);">Sitio asignado para rechazos, roturas, chapadurs y films.</div>
+          <div class="ph amber" style="margin-top:auto;height:80px;font-size:10px;">ZONAS MARCADAS</div>
+        </div>
+        <div style="padding:24px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:10px;">
+          <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">S03 · SEISO</div>
+          <div class="serif" style="font-size:40px;font-weight:800;line-height:0.95;">Limpiar</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--ink-2);">Kit obligatorio: rejilla, cepillo, franela. Cronograma cumplido.</div>
+          <div class="ph blue" style="margin-top:auto;height:80px;font-size:10px;">KIT LIMPIEZA</div>
+        </div>
+        <div style="padding:24px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:10px;">
+          <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">S04 · SEIKETSU</div>
+          <div class="serif" style="font-size:40px;font-weight:800;line-height:0.95;">Estandarizar</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--ink-2);">Lonas en óptimas condiciones. Cabina también cumple el estándar.</div>
+          <div class="ph green" style="margin-top:auto;height:80px;font-size:10px;">ESTÁNDAR</div>
+        </div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:10px;">
+          <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">S05 · SHITSUKE</div>
+          <div class="serif" style="font-size:40px;font-weight:800;line-height:0.95;">Disciplina</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--ink-2);">Todos los elementos vuelven. Cajones rotos se segregan siempre.</div>
+          <div class="ph red" style="margin-top:auto;height:80px;font-size:10px;">DÍA A DÍA</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 13 · FOXTROT DIVIDER ================= -->
+  <section data-screen-label="13 Bloque 4 Divider" class="divider">
+    <div class="num">Bloque 04 / 06</div>
+    <h2>Foxtrot,<br/><em>bien usado.</em></h2>
+    <div class="foot">
+      <div class="kicker">Si no lo clickeás dentro de 150 m, no existe.</div>
+      <div class="mono" style="color:#d68a1a;font-size:14px;letter-spacing:0.14em;">10 MIN · 3 KPI · 150 METROS</div>
+    </div>
+  </section>
+
+  <!-- ================= 14 · FOXTROT ================= -->
+  <section data-screen-label="14 Foxtrot">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 04 · Foxtrot</div>
+        <div>14 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">App de ruta · Así se ve bien usada</div>
+      <h2 class="big">Marcar <em>todo</em>.<br/>Dentro de 150 m.</h2>
+
+      <div style="display:grid;grid-template-columns:320px 1fr;gap:60px;flex:1;margin-top:32px;align-items:center;">
+        <div class="phone">
+          <div class="screen">
+            <div class="ftx-top">
+              <div class="app">FOXTROT</div>
+              <div class="route">RUTA 047 · CAMIÓN 12 · 08:41</div>
+            </div>
+            <div class="ftx-list">
+              <div class="pdv ok"><span class="dot"></span><div><div class="name">Almacén Don Julio</div><div class="addr">RIVADAVIA 1240 · OK</div></div><span class="time">08:12</span></div>
+              <div class="pdv ok"><span class="dot"></span><div><div class="name">Supermercado Luna</div><div class="addr">SAN MARTÍN 890 · OK</div></div><span class="time">08:28</span></div>
+              <div class="pdv fail"><span class="dot"></span><div><div class="name">Kiosko 24 HS</div><div class="addr">BELGRANO 331 · CERRADO</div></div><span class="time">08:35</span></div>
+              <div class="pdv now"><span class="dot"></span><div><div class="name">Mayorista Sur · EN PDV</div><div class="addr">MITRE 2050 · 18 m</div></div><span class="time">AHORA</span></div>
+              <div class="pdv"><span class="dot"></span><div><div class="name">Autoservicio Rojas</div><div class="addr">LAVALLE 445</div></div><span class="time">09:10</span></div>
+              <div class="pdv"><span class="dot"></span><div><div class="name">Despensa La Cruz</div><div class="addr">URQUIZA 780</div></div><span class="time">09:40</span></div>
+            </div>
+            <div class="ftx-cta">ENTREGAR · MAYORISTA SUR</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+            <div style="border:1.5px solid var(--ink);padding:22px;">
+              <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">KPI 01</div>
+              <div class="serif" style="font-size:80px;font-weight:800;line-height:1;">85<small style="font-size:32px;">%</small></div>
+              <div style="font-size:14px;margin-top:8px;">Click Score<br/><b>mínimo</b> por chofer</div>
+            </div>
+            <div style="border:1.5px solid var(--ink);padding:22px;">
+              <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">KPI 02</div>
+              <div class="serif" style="font-size:80px;font-weight:800;line-height:1;">85<small style="font-size:32px;">%</small></div>
+              <div style="font-size:14px;margin-top:8px;">Adherencia<br/>a la <b>secuencia</b></div>
+            </div>
+            <div style="border:1.5px solid var(--ink);padding:22px;background:var(--ink);color:var(--paper);">
+              <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:#8a8577;">RADIO</div>
+              <div class="serif" style="font-size:80px;font-weight:800;line-height:1;color:#d68a1a;">150<small style="font-size:32px;color:#8a8577;">m</small></div>
+              <div style="font-size:14px;margin-top:8px;">Distancia máxima<br/>para <b>marcar válido</b></div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="border-left:3px solid var(--green);padding:14px 18px;background:var(--paper-2);">
+              <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--green);">HACÉ</div>
+              <ul style="margin:8px 0 0;padding-left:16px;font-size:14px;line-height:1.5;">
+                <li>Login <b>dentro</b> del distribuidor</li>
+                <li>Click con camión detenido</li>
+                <li>Ubicación en "alta precisión"</li>
+                <li>Marcá éxito <b>y</b> falla</li>
+                <li>Terminá ruta en distribuidor</li>
+              </ul>
+            </div>
+            <div style="border-left:3px solid var(--red);padding:14px 18px;background:var(--paper-2);">
+              <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--red);">NO HAGAS</div>
+              <ul style="margin:8px 0 0;padding-left:16px;font-size:14px;line-height:1.5;">
+                <li>Foxtrot <b>en movimiento</b></li>
+                <li>Marcar desde lejos del PDV</li>
+                <li>"Modo batería baja" prendido</li>
+                <li>Dejar clientes sin clickear</li>
+                <li>Terminar ruta en el camino</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 15 · TOP ERRORES ================= -->
+  <section data-screen-label="15 Top errores">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 05 · Errores reales</div>
+        <div>15 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Top 8 errores que cambian conductas</div>
+      <h2 class="big">Lo que <em>cuesta</em> plata<br/>cada día.</h2>
+
+      <div class="err-list">
+        <div class="err">
+          <div>
+            <div class="err-title">Usar celular manejando</div>
+            <div class="err-why">Una distracción de 3 segundos a 60 km/h son 50 metros sin mirar. Multa, accidente, vida.</div>
+            <div class="err-fix">Fix · Ayudante toma el teléfono</div>
+          </div>
+        </div>
+        <div class="err">
+          <div>
+            <div class="err-title">No marcar en el cliente</div>
+            <div class="err-why">Bajás el Click Score del equipo entero. Afecta liquidación y rutas del día siguiente.</div>
+            <div class="err-fix">Fix · Click antes de subir al camión</div>
+          </div>
+        </div>
+        <div class="err">
+          <div>
+            <div class="err-title">Tirar mercadería en la descarga</div>
+            <div class="err-why">Roturas que terminan pagando nosotros. Packs rotos = producto no apto = pérdida.</div>
+            <div class="err-fix">Fix · Pasamanos · Packs por los lados</div>
+          </div>
+        </div>
+        <div class="err">
+          <div>
+            <div class="err-title">No usar EPP completo</div>
+            <div class="err-why">Lesión por vidrio, caída sin reflectante, pie aplastado sin zapato. ART lo detecta.</div>
+            <div class="err-fix">Fix · Check EPP antes de salir</div>
+          </div>
+        </div>
+        <div class="err">
+          <div>
+            <div class="err-title">No informar problemas</div>
+            <div class="err-why">Producto mal cargado, cliente difícil, rotura accidental. Si no avisás, no hay solución.</div>
+            <div class="err-fix">Fix · Modular sin vergüenza</div>
+          </div>
+        </div>
+        <div class="err">
+          <div>
+            <div class="err-title">Rechazo total "por comodidad"</div>
+            <div class="err-why">Un rechazo parcial salva la venta. Un rechazo total es dinero que vuelve al CD.</div>
+            <div class="err-fix">Fix · Planilla · Modular · Parcial</div>
+          </div>
+        </div>
+        <div class="err">
+          <div>
+            <div class="err-title">No contar envases con el cliente</div>
+            <div class="err-why">Reclamo futuro asegurado. Plata que se descuenta a fin de mes.</div>
+            <div class="err-fix">Fix · Control juntos · Siempre</div>
+          </div>
+        </div>
+        <div class="err">
+          <div>
+            <div class="err-title">No verificar el cobro</div>
+            <div class="err-why">Transferencias sin captura, cheques con datos incompletos, efectivo sin contar.</div>
+            <div class="err-fix">Fix · Comprobante en mano · Foto</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 16 · SIMULACIÓN ================= -->
+  <section data-screen-label="16 Simulación">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 05 · Simulación</div>
+        <div>16 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Role-play · De a dos, 5 minutos cada uno</div>
+      <h2 class="big">Hacélo <em>vos</em>.<br/>Delante del grupo.</h2>
+
+      <div class="sim-grid">
+        <div class="sim g">
+          <div class="head"><h3>Caso 01 · Cliente OK</h3><span class="code">SIM-01</span></div>
+          <div class="body">
+            <div class="scenario"><b>Situación:</b> Mayorista abierto en horario. Pedido completo. Paga transferencia.</div>
+            <div class="scenario"><b>Lo que tenés que mostrar:</b> saludo, factura, EPP, descarga ordenada, captura de comprobante, conteo de envases, click éxito en Foxtrot.</div>
+            <div class="action">→ Evaluar: pasos completos y tiempo &lt; 33 min</div>
+          </div>
+        </div>
+        <div class="sim a">
+          <div class="head"><h3>Caso 02 · PDV cerrado</h3><span class="code">SIM-02</span></div>
+          <div class="body">
+            <div class="scenario"><b>Situación:</b> Llegás al kiosko y está cerrado. No hay cartel de horario.</div>
+            <div class="scenario"><b>Lo que tenés que mostrar:</b> no dejar la mercadería, modular al supervisor de ventas, marcar reintento en Foxtrot, elegir si se revisita más tarde o queda como falla.</div>
+            <div class="action">→ Evaluar: no asume solo · comunica</div>
+          </div>
+        </div>
+        <div class="sim r">
+          <div class="head"><h3>Caso 03 · Rechazo parcial</h3><span class="code">SIM-03</span></div>
+          <div class="body">
+            <div class="scenario"><b>Situación:</b> Cliente rechaza 2 cajones de 20 por daño en packaging.</div>
+            <div class="scenario"><b>Lo que tenés que mostrar:</b> planilla de cálculo del descuento, modulación si falla la planilla, entrega del resto, separar dañado en culata, entrega parcial en Foxtrot con motivo.</div>
+            <div class="action">→ Evaluar: parcial &gt; total · se registra</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 17 · CHECKLIST DIARIO ================= -->
+  <section data-screen-label="17 Checklist diario">
+    <div class="slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Mejora propuesta · Checklist pre-salida</div>
+        <div>17 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Nuevo · 90 segundos antes de arrancar</div>
+      <h2 class="big">5 check <em>que evitan</em><br/>el 80% de los problemas.</h2>
+
+      <div class="check-sheet">
+        <div class="check-paper">
+          <h3>Checklist pre-salida</h3>
+          <div class="meta">Chofer · Fecha · Camión · Ruta</div>
+          <div class="check-item on" onclick="this.classList.toggle('on')">
+            <span class="check-box"></span>
+            <span class="check-label">EPP completo · zapatos, reflectante, guantes, anteojos</span>
+            <span class="check-note">30 s</span>
+          </div>
+          <div class="check-item on" onclick="this.classList.toggle('on')">
+            <span class="check-box"></span>
+            <span class="check-label">Carga acomodada · paletas firmes · sin productos sueltos</span>
+            <span class="check-note">20 s</span>
+          </div>
+          <div class="check-item on" onclick="this.classList.toggle('on')">
+            <span class="check-box"></span>
+            <span class="check-label">Lonas cerradas · sin roturas visibles</span>
+            <span class="check-note">10 s</span>
+          </div>
+          <div class="check-item" onclick="this.classList.toggle('on')">
+            <span class="check-box"></span>
+            <span class="check-label">Celular cargado · Foxtrot logueado · alta precisión</span>
+            <span class="check-note">15 s</span>
+          </div>
+          <div class="check-item" onclick="this.classList.toggle('on')">
+            <span class="check-box"></span>
+            <span class="check-label">Documentación · facturas, remitos, planilla de rechazo</span>
+            <span class="check-note">15 s</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:28px;">
+            <div>
+              <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">FIRMA CHOFER</div>
+              <div style="width:220px;height:1.5px;background:var(--ink);margin-top:24px;"></div>
+            </div>
+            <div class="check-stamp">Aprobado<br/>salida</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div style="border:1.5px solid var(--ink);padding:22px;background:var(--paper-2);">
+            <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">POR QUÉ</div>
+            <div style="font-size:16px;line-height:1.55;margin-top:8px;">El 80% de los problemas de ruta ya eran visibles en el CD. El checklist los detecta antes de salir.</div>
+          </div>
+          <div style="border:1.5px solid var(--ink);padding:22px;background:var(--ink);color:var(--paper);">
+            <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:#8a8577;">CÓMO</div>
+            <div style="font-size:16px;line-height:1.55;margin-top:8px;">Firma del chofer + validación del supervisor de flota. Sin firma, el camión no sale.</div>
+          </div>
+          <div style="border:1.5px solid var(--ink);padding:22px;background:var(--paper-2);">
+            <div class="mono" style="font-size:11px;letter-spacing:0.14em;color:var(--mute);">MÉTRICA</div>
+            <div style="font-size:16px;line-height:1.55;margin-top:8px;">% camiones con checklist firmado / total camiones · Meta 100%.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 18 · QUIZ ================= -->
+  <section data-screen-label="18 Cuestionario">
+    <div class="slide" style="padding:50px 80px;">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Bloque 06 · Cuestionario final</div>
+        <div>18 / 19</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px;">
+        <div>
+          <div class="eyebrow">Certificación ENTREGA SEGURA · 2026</div>
+          <h2 style="font-family:'Fraunces',serif;font-size:56px;line-height:0.95;font-weight:800;letter-spacing:-0.03em;margin:4px 0 0;">10 preguntas · se aprueba con <em style="font-style:italic;color:var(--red);font-weight:400;">8</em>.</h2>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;color:var(--mute);text-align:right;line-height:1.7;">
+          Marcá una opción por pregunta<br/>Luego tocá <b style="color:var(--ink);">CORREGIR</b>
+        </div>
+      </div>
+
+      <div id="quiz-root" class="quiz-wrap"></div>
+    </div>
+  </section>
+
+  <!-- ================= 19 · RESULT (condensed, real slide) ================= -->
+  <section data-screen-label="19 Resultado">
+    <div class="slide" id="result-slide">
+      <div class="chrome-top">
+        <div><span class="dot"></span>Resultado · Cuestionario</div>
+        <div>19 / 19</div>
+      </div>
+      <div class="eyebrow" style="margin-top:12px;">Tu puntaje</div>
+      <h2 class="big">Resultado <em>final.</em></h2>
+
+      <div class="score-wrap">
+        <div>
+          <div class="score-num"><span id="score-n">–</span><small>/10</small></div>
+          <div class="mono" style="font-size:14px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mute);margin-top:20px;">
+            Certificación · ENTREGA SEGURA 2026
+          </div>
+        </div>
+        <div>
+          <div class="score-verdict" id="verdict">Completá el cuestionario<br/>para ver tu resultado.</div>
+          <div class="score-line" id="score-line">Volvé al slide anterior y corregí el cuestionario. El resultado aparece acá automáticamente.</div>
+          <div style="margin-top:40px;display:flex;gap:12px;">
+            <button class="btn ghost" onclick="document.querySelector('deck-stage').goTo(17)">← Volver al cuestionario</button>
+            <button class="btn" onclick="resetQuiz()">Reiniciar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 20 · CIERRE ================= -->
+  <section data-screen-label="20 Cierre" class="closing">
+    <div class="slide">
+      <div class="chrome-top" style="color:#f7d4c6;">
+        <div><span class="dot" style="background:#fff;"></span>Cierre</div>
+        <div>20 / 20</div>
+      </div>
+      <div class="eyebrow" style="margin-top:40px;">Mensaje final</div>
+      <h2>No buscamos <b> velocidad.</b><br/>Buscamos <b> seguridad, calidad</b><br/>y <b> control.</b></h2>
+      <div class="sig">
+        <div>Del Palacio S.A. · Logística</div>
+        <div>Ref. SOP 1.2 · 2.1 · 2.2</div>
+        <div>Capacitación Entrega · 2026-04</div>
+      </div>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script>
+/* ============== QUIZ ============== */
+const QUESTIONS = [
+  {
+    q: "Estás manejando entre PDV y PDV. Entra un llamado del modulador al celular del camión. ¿Qué hacés?",
+    opts: [
+      "Lo atiendo rápido, es corto",
+      "El ayudante atiende, yo sigo manejando con las dos manos",
+      "Freno en el arcén y atiendo",
+      "No lo atiendo, después llamo"
+    ],
+    correct: 1,
+    explain: "Foxtrot y celular solo con camión detenido. En movimiento, el ayudante se encarga. El chofer conduce, punto."
+  },
+  {
+    q: "Llegás al PDV. El cliente aprueba todo menos 2 cajones por daño en packaging. ¿Qué hacés primero?",
+    opts: [
+      "Rechazo total, no vale la pena",
+      "Uso la planilla de cálculo de rechazo parcial o llamo al modulador",
+      "Le dejo los 2 cajones igual, ya los descontará después",
+      "Le pido al cliente que acepte todo por esta vez"
+    ],
+    correct: 1,
+    explain: "Rechazo parcial siempre antes que total. Planilla primero; si falla, modulador con N° cliente, SKU y cantidad."
+  },
+  {
+    q: "Terminaste la entrega y ya estás saliendo del PDV. Foxtrot no lo clickeaste todavía. ¿Hasta dónde podés marcar?",
+    opts: [
+      "En cualquier momento del día",
+      "Hasta 500 m del PDV",
+      "Dentro de 150 m del PDV",
+      "Al final de la ruta lo hago todo junto"
+    ],
+    correct: 2,
+    explain: "Cada entrega debe clickearse dentro de los 150 m a la redonda del PDV para que el sistema la tome como válida."
+  },
+  {
+    q: "Bajando packs del camión, ¿cuál es la forma correcta?",
+    opts: [
+      "Los arrojo al ayudante para ir más rápido",
+      "Pasamanos, sin arrojar, agarrando los packs por los laterales",
+      "Los tiro al piso y los levanto desde abajo",
+      "Uno encima del otro en el hombro"
+    ],
+    correct: 1,
+    explain: "Nunca arrojar. Pasamanos. Agarrar packs por los laterales, no por el medio. Así evitamos lesiones y roturas."
+  },
+  {
+    q: "Llegás al PDV. Antes de bajar, ¿qué orden seguís?",
+    opts: [
+      "Bajo primero, después apago el camión",
+      "Apago, freno de mano, llaves, conos / banderines",
+      "Dejo el camión prendido para no perder tiempo",
+      "Solo freno de mano si hay pendiente"
+    ],
+    correct: 1,
+    explain: "Camión apagado, freno de mano, llaves retiradas, conos o banderines colocados. Sin excepciones."
+  },
+  {
+    q: "El cliente paga por transferencia. ¿Qué hacés además de cobrar?",
+    opts: [
+      "Me voy, ya va a llegar el dinero",
+      "Le pido captura o comprobante y lo envío al grupo indicando a qué cliente corresponde",
+      "Lo anoto en un papel y después lo paso",
+      "Solo le aviso al liquidador por mensaje"
+    ],
+    correct: 1,
+    explain: "Captura o comprobante + envío al grupo o contacto de WhatsApp, con el cliente identificado. Para que liquidación lo procese rápido."
+  },
+  {
+    q: "Detectás un producto roto durante la descarga. ¿Qué hacés?",
+    opts: [
+      "Lo entrego igual, después se descuenta",
+      "No lo entrego. Aviso a modulación, lo separo en la culata del camión, y descuento por planilla al cliente",
+      "Se lo dejo al cliente y que decida él",
+      "Lo tiro al tacho"
+    ],
+    correct: 1,
+    explain: "Nunca se entrega producto no apto. Se avisa a modulación, se segrega en culata, se descuenta con planilla y el verificador lo recibe al retorno."
+  },
+  {
+    q: "¿Cuál es el mínimo de Click Score esperado por chofer en Foxtrot?",
+    opts: [
+      "50%",
+      "65%",
+      "85%",
+      "100%"
+    ],
+    correct: 2,
+    explain: "Click Score ≥ 85%. Adherencia a secuencia ≥ 85%. Ambos se miden por chofer y por equipo."
+  },
+  {
+    q: "Durante el viaje entre PDV, ¿cómo deben ir las lonas?",
+    opts: [
+      "Abiertas si hace calor",
+      "Semi abiertas para ventilar",
+      "Siempre cerradas",
+      "Depende del producto"
+    ],
+    correct: 2,
+    explain: "SIEMPRE cerradas entre PDV y PDV. Es parte de 5S de camión y de calidad en ruta."
+  },
+  {
+    q: "¿Cuál es el mensaje central de esta capacitación?",
+    opts: [
+      "Cuanto más rápido, mejor",
+      "Seguridad, calidad y control. Si el proceso está bien, los resultados llegan solos",
+      "Todo rechazo es malo",
+      "Foxtrot es opcional"
+    ],
+    correct: 1,
+    explain: "Seguridad, calidad y control. El proceso bien hecho trae el resultado. Nunca al revés."
+  }
+];
+
+const quizState = {
+  answers: new Array(QUESTIONS.length).fill(null),
+  submitted: false
+};
+
+function renderQuiz(){
+  const root = document.getElementById('quiz-root');
+  if(!root) return;
+
+  const answered = quizState.answers.filter(a=>a!==null).length;
+  const total = QUESTIONS.length;
+  const allAnswered = answered === total;
+  const n = quizState.answers.filter((a,i)=>a===QUESTIONS[i].correct).length;
+
+  const submitted = quizState.submitted;
+
+  let blocks = '';
+  QUESTIONS.forEach((q, qi)=>{
+    const picked = quizState.answers[qi];
+    const answered = picked !== null;
+    const good = picked === q.correct;
+    let optsHtml = '';
+    q.opts.forEach((o, oi)=>{
+      let cls = 'option';
+      if(submitted){
+        if(oi === q.correct) cls += ' correct';
+        else if(oi === picked) cls += ' wrong';
+      } else if(picked === oi) {
+        cls += ' picked';
+      }
+      optsHtml += `<div class="${cls}" data-q="${qi}" data-o="${oi}">
+        <span class="ltr">${String.fromCharCode(65+oi)}</span>
+        <span>${o}</span>
+      </div>`;
+    });
+    const showExplain = submitted && answered;
+    const exCls = showExplain ? (good?'good':'bad') : '';
+    const exLabel = showExplain ? (good?'Correcto ·':'Incorrecto ·') : '';
+    const explainHtml = showExplain
+      ? `<div class="explain ${exCls}"><b>${exLabel}</b> ${q.explain}</div>`
+      : '';
+    blocks += `<div class="qblock${submitted?' answered':''}">
+      <div class="qhead">
+        <div class="qnum">${String(qi+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}</div>
+        <div class="qtext">${q.q}</div>
+      </div>
+      <div class="options">${optsHtml}</div>
+      ${explainHtml}
+    </div>`;
+  });
+
+  let footLeft, footRight;
+  if(submitted){
+    const verd = n>=8 ? 'pass' : 'fail';
+    const verdT = n>=8 ? 'APROBADO' : (n>=5 ? 'REFORZAR' : 'NO APROBADO');
+    footLeft = `<div><span class="score-live">${n}<small>/${total}</small></span><span class="score-verd show ${verd}">${verdT}</span></div>`;
+    footRight = `<button class="btn" onclick="goToResult()">Ver resultado · detalle →</button>
+      <button class="btn" onclick="resetQuiz()" style="background:transparent;color:var(--ink);margin-left:10px;">Reiniciar</button>`;
+  } else {
+    footLeft = `<div><span class="mono" style="font-size:14px;letter-spacing:0.14em;color:var(--mute);text-transform:uppercase;">${answered}/${total} respondidas</span></div>`;
+    footRight = allAnswered
+      ? `<button class="btn" onclick="submitQuiz()">Corregir cuestionario →</button>`
+      : `<button class="btn" disabled style="opacity:0.45;cursor:not-allowed;">Respondé las ${total} preguntas</button>`;
+  }
+
+  root.className = 'quiz-wrap';
+  root.innerHTML = `
+    <div class="quiz-head">
+      <div class="sum">Cuestionario · <b>${answered}/${total}</b> respondidas${submitted?` · puntaje <b>${n}/${total}</b>`:''}</div>
+      <div class="sum">${submitted?'Revisá explicaciones · verde = correcta, rojo = tu respuesta incorrecta':'Scroll para ver todas · el resultado aparece al corregir'}</div>
+    </div>
+    <div class="quiz-scroll">${blocks}</div>
+    <div class="quiz-foot">
+      ${footLeft}
+      ${footRight}
+    </div>
+  `;
+
+  // Attach click handlers (avoid inline-onclick / shadow-DOM weirdness)
+  root.querySelectorAll('.option').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      if(quizState.submitted) return;
+      const qi = +el.dataset.q;
+      const oi = +el.dataset.o;
+      quizState.answers[qi] = oi;
+      renderQuiz();
+    });
+  });
+
+  updateResult();
+}
+
+function submitQuiz(){
+  if(quizState.answers.some(a=>a===null)) return;
+  quizState.submitted = true;
+  renderQuiz();
+  // Scroll quiz to top so user sees first correction
+  const sc = document.querySelector('.quiz-scroll');
+  if(sc) sc.scrollTop = 0;
+}
+
+function goToResult(){
+  const ds = document.querySelector('deck-stage');
+  if(ds && ds.goTo) ds.goTo(18);
+}
+
+function resetQuiz(){
+  quizState.answers = new Array(QUESTIONS.length).fill(null);
+  quizState.submitted = false;
+  renderQuiz();
+  updateResult();
+}
+
+function updateResult(){
+  const n = quizState.answers.filter((a,i)=>a===QUESTIONS[i].correct).length;
+  const answered = quizState.answers.filter(a=>a!==null).length;
+  const sEl = document.getElementById('score-n');
+  const vEl = document.getElementById('verdict');
+  const lEl = document.getElementById('score-line');
+  if(!sEl) return;
+  const allDone = answered === QUESTIONS.length && quizState.submitted;
+  if(!allDone){
+    sEl.textContent = answered === 0 ? '–' : n;
+    vEl.innerHTML = answered === 0
+      ? 'Completá el cuestionario<br/>para ver tu resultado.'
+      : `En curso · <em>${answered}/10</em><br/>respondidas.`;
+    lEl.textContent = answered === 0
+      ? 'Volvé al slide anterior y corregí el cuestionario. El resultado aparece acá automáticamente.'
+      : `Llevás ${n} correctas sobre ${answered} respondidas. Seguí contestando para cerrar la evaluación.`;
+    return;
+  }
+  sEl.textContent = n;
+  if(n >= 8){
+    vEl.innerHTML = `<em>Aprobado.</em><br/>Capacitación completada.`;
+    lEl.innerHTML = `Certificado <b>ENTREGA SEGURA 2026</b>. Firma del supervisor + registro en legajo. Revisión anual.`;
+  } else if(n >= 5){
+    vEl.innerHTML = `Falta <em>reforzar.</em><br/>Repetir en 7 días.`;
+    lEl.innerHTML = `Respuestas correctas: ${n}/10. Revisá los bloques de Proceso, Foxtrot y Seguridad. Repetición programada con supervisor.`;
+  } else {
+    vEl.innerHTML = `<em>No aprobado.</em><br/>Recapacitación obligatoria.`;
+    lEl.innerHTML = `Respuestas correctas: ${n}/10. El chofer no sale a ruta hasta recapacitarse y aprobar.`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{ renderQuiz(); });
+window.addEventListener('load', ()=>{ renderQuiz(); });
+
+/* Speaker notes */
+</script>
+
+<script type="application/json" id="speaker-notes">
+[
+  "Bienvenidos. Esta capacitación cubre los 3 SOP de entrega en un solo flujo real. No van a ver los documentos uno por uno, van a ver el día tal como lo viven. Duración estimada: 20 minutos más preguntas.",
+  "Esta es la agenda. Seis bloques. Arrancamos fuerte con seguridad porque es lo que más cuesta cuando falla. Terminamos con un cuestionario individual, se aprueba con 8 sobre 10.",
+  "Quiero que se queden con esta frase desde el arranque: no buscamos velocidad. Buscamos seguridad, calidad y control. Si el proceso está bien hecho, el resultado viene solo.",
+  "Bloque 1. Seguridad no negociable. El SOP existe. La regla está escrita. El problema es que en la calle se relaja. Hoy la dejamos de relajar.",
+  "Nueve reglas. Si una falla, el día se cancela. Quiero hacer una pausa acá: ¿quién usa el celular manejando? Levanten la mano. Nadie se va a enojar, pero seamos honestos.",
+  "Cuatro riesgos reales. Dos con severidad alta: accidente vial y pérdida económica. La mayoría son evitables con las reglas del slide anterior.",
+  "Bloque 2. Proceso de entrega. Seis pasos, en este orden, sin saltarse ninguno.",
+  "De llegada al cierre en Foxtrot. Abajo tienen los tiempos estándar por tipo de PDV. No son sugerencias, son los tiempos que usamos para planificar.",
+  "Este flujo es el corazón del SOP. Aprueba, rechazo parcial, rechazo total. La regla de oro: parcial antes que total. Siempre.",
+  "Bloque 3. Calidad en ruta. El producto sale perfecto del CD. Lo que pasa después es nuestra responsabilidad.",
+  "Tres etapas: tránsito, descarga, producto dañado. Cada una con su checklist.",
+  "5S del camión. El camión es un puesto de trabajo. Si está sucio, desordenado o sin kit, no sale.",
+  "Bloque 4. Foxtrot. Si no lo clickeás dentro de 150 metros, para el sistema no existe.",
+  "Tres números que hay que recordar: 85% de Click Score, 85% de adherencia a secuencia, 150 metros de radio. Y el mandamiento: Foxtrot solo con camión detenido.",
+  "Bloque 5. Top 8 errores. No los invento, los saco de reclamos, ART y liquidación. Cada uno tiene su fix en una línea.",
+  "Ahora les toca a ustedes. Tres simulaciones. Cliente OK, PDV cerrado, rechazo parcial. De a dos, 5 minutos cada uno, y el grupo evalúa.",
+  "Mejora propuesta: checklist pre-salida de 90 segundos. Firma del chofer más validación del supervisor de flota. Sin firma, el camión no sale.",
+  "Cuestionario final. 10 preguntas. Se aprueba con 8. Tomense su tiempo, las respuestas se marcan en verde o rojo al instante.",
+  "Este slide muestra el puntaje. Si aprobás, certificado ENTREGA SEGURA 2026 al legajo. Si no, recapacitación en 7 días con supervisor de flota.",
+  "Cierre. Me quedo con lo mismo que al principio: seguridad, calidad y control. Si el proceso está bien, el resultado llega solo. Gracias."
+]
+</script>
+
+
+<div class="presenter-timer" id="presenterTimer" aria-live="polite">
+  <div class="pt-top">
+    <div class="pt-title">Timer de exposición</div>
+    <div class="pt-total">Plan total · 30:00</div>
+  </div>
+  <div class="pt-slide" id="ptSlideName">Slide actual</div>
+  <div class="pt-grid">
+    <div class="pt-box">
+      <div class="pt-label">Tiempo sugerido</div>
+      <div class="pt-value" id="ptTarget">00:00</div>
+    </div>
+    <div class="pt-box">
+      <div class="pt-label">Tiempo en slide</div>
+      <div class="pt-value" id="ptCurrent">00:00</div>
+    </div>
+    <div class="pt-box">
+      <div class="pt-label">Acumulado</div>
+      <div class="pt-value" id="ptElapsed">00:00</div>
+    </div>
+    <div class="pt-box">
+      <div class="pt-label">Restante total</div>
+      <div class="pt-value" id="ptRemaining">30:00</div>
+    </div>
+  </div>
+  <div class="pt-actions">
+    <button class="start" id="ptStart">Iniciar</button>
+    <button class="pause" id="ptPause">Pausa</button>
+    <button class="reset" id="ptReset">Reset</button>
+    <div class="hint">T inicia/pausa · Shift+T resetea</div>
+  </div>
+  <div class="pt-bar"><span id="ptBar"></span></div>
+</div>
+
+
+<script>
+(function(){
+  const slidePlan = [{"n": 1, "label": "Portada", "min": 0.5}, {"n": 2, "label": "Agenda", "min": 0.5}, {"n": 3, "label": "Apertura", "min": 4.0}, {"n": 4, "label": "Bloque 1 Divider", "min": 0.5}, {"n": 5, "label": "Reglas", "min": 5.0}, {"n": 6, "label": "Riesgos", "min": 4.5}, {"n": 7, "label": "Bloque 2 Divider", "min": 0.5}, {"n": 8, "label": "Proceso 6 pasos", "min": 3.5}, {"n": 9, "label": "Flujo decisional", "min": 4.0}, {"n": 10, "label": "Bloque 3 Divider", "min": 0.5}, {"n": 11, "label": "Calidad 3 etapas", "min": 2.5}, {"n": 12, "label": "5S Camión", "min": 2.0}, {"n": 13, "label": "Bloque 4 Divider", "min": 0.25}, {"n": 14, "label": "Foxtrot", "min": 0.75}, {"n": 15, "label": "Top errores", "min": 1.0}, {"n": 16, "label": "Simulación", "min": 1.0}, {"n": 17, "label": "Checklist diario", "min": 0.25}, {"n": 18, "label": "Cuestionario", "min": 1.0}, {"n": 19, "label": "Resultado", "min": 0.25}, {"n": 20, "label": "Cierre", "min": 0.5}];
+  const TOTAL_SECONDS = 30 * 60;
+  const deck = document.querySelector('deck-stage');
+  const elName = document.getElementById('ptSlideName');
+  const elTarget = document.getElementById('ptTarget');
+  const elCurrent = document.getElementById('ptCurrent');
+  const elElapsed = document.getElementById('ptElapsed');
+  const elRemaining = document.getElementById('ptRemaining');
+  const elBar = document.getElementById('ptBar');
+  const btnStart = document.getElementById('ptStart');
+  const btnPause = document.getElementById('ptPause');
+  const btnReset = document.getElementById('ptReset');
+
+  let running = false;
+  let startedAt = null;
+  let pauseAccum = 0;
+  let currentSlideIndex = 0;
+  let slideEnteredAt = Date.now();
+  let slideTimeBase = 0; // segundos acumulados previos en este slide
+  const perSlideSpent = new Array(slidePlan.length).fill(0);
+
+  function fmt(sec){
+    sec = Math.max(0, Math.round(sec));
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }
+
+  function totalElapsed(){
+    if(!startedAt) return pauseAccum;
+    return running ? ((Date.now() - startedAt)/1000 + pauseAccum) : pauseAccum;
+  }
+
+  function currentSlideElapsed(){
+    const live = running ? ((Date.now() - slideEnteredAt)/1000) : 0;
+    return slideTimeBase + live;
+  }
+
+  function updateSlideMeta(index){
+    currentSlideIndex = index;
+    slideEnteredAt = Date.now();
+    slideTimeBase = perSlideSpent[index] || 0;
+    const item = slidePlan[index] || {n:index+1,label:'Slide ' + (index+1),min:1};
+    elName.textContent = 'Slide ' + String(item.n).padStart(2,'0') + ' · ' + item.label;
+    elTarget.textContent = fmt(item.min * 60);
+    render();
+  }
+
+  function render(){
+    const elapsed = totalElapsed();
+    const current = currentSlideElapsed();
+    const remaining = TOTAL_SECONDS - elapsed;
+    elCurrent.textContent = fmt(current);
+    elElapsed.textContent = fmt(elapsed);
+    elRemaining.textContent = fmt(remaining);
+    elBar.style.width = Math.max(0, Math.min(100, (elapsed / TOTAL_SECONDS) * 100)) + '%';
+
+    const target = (slidePlan[currentSlideIndex]?.min || 0) * 60;
+    if(current > target && target > 0){
+      elCurrent.style.color = '#ff8b71';
+    } else {
+      elCurrent.style.color = '#f7f3eb';
+    }
+    if(remaining <= 0){
+      elRemaining.style.color = '#ff8b71';
+    } else {
+      elRemaining.style.color = '#f7f3eb';
+    }
+  }
+
+  function start(){
+    if(running) return;
+    running = true;
+    startedAt = Date.now();
+    btnStart.style.opacity = '0.65';
+    btnPause.style.opacity = '1';
+  }
+
+  function pause(){
+    if(!running) return;
+    const now = Date.now();
+    pauseAccum += (now - startedAt) / 1000;
+    perSlideSpent[currentSlideIndex] = currentSlideElapsed();
+    running = false;
+    startedAt = null;
+    slideEnteredAt = now;
+    slideTimeBase = perSlideSpent[currentSlideIndex];
+    btnStart.style.opacity = '1';
+    btnPause.style.opacity = '0.65';
+    render();
+  }
+
+  function resetAll(){
+    running = false;
+    startedAt = null;
+    pauseAccum = 0;
+    for(let i=0;i<perSlideSpent.length;i++) perSlideSpent[i] = 0;
+    slideEnteredAt = Date.now();
+    slideTimeBase = 0;
+    btnStart.style.opacity = '1';
+    btnPause.style.opacity = '1';
+    render();
+  }
+
+  btnStart.addEventListener('click', start);
+  btnPause.addEventListener('click', pause);
+  btnReset.addEventListener('click', resetAll);
+
+  document.addEventListener('keydown', (e) => {
+    if((e.key === 't' || e.key === 'T') && !e.shiftKey){
+      if(running) pause(); else start();
+    }
+    if((e.key === 'T' && e.shiftKey) || (e.key === 't' && e.shiftKey)){
+      resetAll();
+    }
+  });
+
+  if(deck){
+    deck.addEventListener('slidechange', (e) => {
+      const prev = e.detail.previousIndex;
+      const next = e.detail.index;
+      if(prev >= 0){
+        perSlideSpent[prev] = currentSlideElapsed();
+      }
+      updateSlideMeta(next);
+    });
+  }
+
+  updateSlideMeta(0);
+  setInterval(render, 250);
+})();
+</script>
+
+
+<script>
+(function(){
+  const plan = slidePlan || [];
+  const sections = document.querySelectorAll('deck-stage > section');
+  function fmtMin(min){
+    const total = Math.round(min * 60);
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }
+  sections.forEach((sec, i) => {
+    const item = plan[i];
+    if(!item) return;
+    if(sec.querySelector('.slide-time-badge')) return;
+    const badge = document.createElement('div');
+    badge.className = 'slide-time-badge';
+    badge.innerHTML = 'Tiempo <b>' + fmtMin(item.min) + '</b>';
+    sec.appendChild(badge);
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  const timer = document.getElementById('presenterTimer');
+  let hideTimeout;
+
+  function showTimer(){
+    timer.classList.remove('hidden');
+    resetTimer();
+  }
+
+  function hideTimer(){
+    timer.classList.add('hidden');
+  }
+
+  function resetTimer(){
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(hideTimer, 5000);
+  }
+
+  ['mousemove','keydown','click','touchstart'].forEach(evt=>{
+    document.addEventListener(evt, showTimer);
+  });
+
+  // start hidden after initial delay
+  resetTimer();
+})();
+</script>
+
+</body>
+</html>
