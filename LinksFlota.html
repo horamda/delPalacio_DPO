@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,214 +7,190 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        .section-title {
+            font-size: 1.1rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #6c757d;
+            margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid #e9ecef;
+        }
+        .quick-links { max-width: 640px; margin: 0 auto; }
+        .quick-links .list-group-item { padding: 0; border-left: none; border-right: none; }
+        .quick-links .list-group-item a {
+            display: flex; align-items: center; gap: 14px;
+            padding: 13px 16px; color: #333; text-decoration: none;
+            font-size: 0.97rem; transition: background 0.18s, color 0.18s; border-radius: 6px;
+        }
+        .quick-links .list-group-item a:hover { background-color: #f0f4ff; color: #0056b3; }
+        .quick-links .list-group-item a .link-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 0.85rem; color: #fff;
+        }
+        .sop-card {
+            border: none; border-left: 4px solid #dc3545;
+            border-radius: 8px !important; transition: box-shadow 0.18s, transform 0.18s;
+        }
+        .sop-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important; transform: translateY(-2px); }
+        .sop-card .card-title { font-size: 0.95rem; font-weight: 600; }
+    </style>
 </head>
-
 <body>
-    <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <img src="img/logodp.png" alt="" class="logodp">
         <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksEntrega.html">Entrega</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksFlota.html">Flota</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGente.html">Gente</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestíon</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
-                </li>
+                <li class="nav-item active"><a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksAlmacen.html">Almacén</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksEntrega.html">Entrega</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksFlota.html">Flota</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksSeguridad.html">Seguridad e Higiene</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGente.html">Gente</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestión</a></li>
+                <li class="nav-item"><a class="nav-link" href="ubicacion.html">Ubicación</a></li>
             </ul>
         </div>
     </nav>
-    <!-- Encabezado -->
-    <header class="bg-dark text-white text-center py-3">
 
+    <header class="bg-dark text-white text-center py-3">
         <h1>Links Flota</h1>
     </header>
-    <!-- Contenido Principal -->
+
     <main class="container my-4">
-        <div class="cardlink">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScauxrZdizlLZVomijw1xCb90MxHlcQgxMEuVVjMAPpHtGX2g/viewform"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 1" class="imglink"> Asistencia a reuniones de Flota
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/1FZwqw38j46YnOdgq2oUbswaEGTUliXNgeQBDJylzGRI/edit"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Feedback distribucíon
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/spreadsheets/d/1ERtcuBUg2MJMgThcR8wV4Rk3oFIh5BxA3c6bScQO25o/edit?usp=sharing"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Historico matriz de riesgos
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/1WiZO0tWPPpUt6fCWCN1j1Y7yQyrUV2E3RtzymsT1HDc/edit"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Checklist diario de salida de camiones
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/1X153si1RZFUH4IcIFAn7OLdlLXc24Ldy8Xf6DnrJscE/edit"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Checklist liberacíon diaria de la flota
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvQeQQ__APXfeBYbScVyjFTyl9m8KvNapcrH-lLExv3aQJ0Q/viewform"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Checklist mensual zorras
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScAOh01MSYAaDbrZEMs8haKnblG3aBa206psTLjYZjtDM2ZXQ/formResponse"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Checklist Quincenal Autoelevadores
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/1w2ADGQ6GUISrfh3U3EiUJ3DfNE81m_2k4cbyGPem-7U/edit"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Checklist diario Autoelevadores
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfNyHBbuV3Nqxzm4ErkmSfnqg-u-JtYtXMD8k1nEyM5PV2gZA/viewform"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Checklist diario Fiorino
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/g78UP8jd5AysncTCA" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Accidente / Multas e Infraciones del
-                        Palacio
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdEu4UJ7jidzem0Osvp8ZeWZkxJ94lVvM8IRldP4S8xukyvLw/formResponse"
-                        target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Mantenimiento preventivo semanal auto
-                        elevadores
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://linktr.ee/Gente.delpa" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Linktree Gente
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <h2 class="mt-5 mb-3 text-center">🚛 Procedimientos Operativos de Flota (SOP)</h2>
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Checklist
-                            Liberación y regreso</h5>
-                        <a href="pdf/Flota - SOP - Checklist Liberacion y regreso de Flota.pdf" target="_blank"
-                            class="btn btn-outline-primary btn-sm">Ver PDF</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Calibración de
-                            neumáticos</h5>
-                        <a href="pdf/Flota - SOP - Calibracion de neumaticos.pdf" target="_blank"
-                            class="btn btn-outline-primary btn-sm">Ver PDF</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Carga de
-                            combustible</h5>
-                        <a href="pdf/Flota - SOP - Carga de combustible flota de camiones.pdf" target="_blank"
-                            class="btn btn-outline-primary btn-sm">Ver PDF</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Stock de repuestos
-                        </h5>
-                        <a href="pdf/Flota - SOP - Politica de Stock para repuestos de la flota.pdf" target="_blank"
-                            class="btn btn-outline-primary btn-sm">Ver PDF</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Medición de
-                            neumáticos</h5>
-                        <a href="pdf/Flota - SOP - Medicion escala milimetrica de neumaticos.pdf" target="_blank"
-                            class="btn btn-outline-primary btn-sm">Ver PDF</a>
-                    </div>
-                </div>
+
+        <div class="mb-5">
+            <p class="section-title text-center">Accesos rápidos</p>
+            <div class="quick-links">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScauxrZdizlLZVomijw1xCb90MxHlcQgxMEuVVjMAPpHtGX2g/viewform" target="_blank">
+                            <span class="link-icon" style="background:#007bff;"><i class="fa-solid fa-calendar-check"></i></span>
+                            Asistencia a reuniones de Flota
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/1FZwqw38j46YnOdgq2oUbswaEGTUliXNgeQBDJylzGRI/edit" target="_blank">
+                            <span class="link-icon" style="background:#6f42c1;"><i class="fa-solid fa-comments"></i></span>
+                            Feedback distribución
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/spreadsheets/d/1ERtcuBUg2MJMgThcR8wV4Rk3oFIh5BxA3c6bScQO25o/edit?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#20c997;"><i class="fa-solid fa-table-cells"></i></span>
+                            Histórico matriz de riesgos
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/1WiZO0tWPPpUt6fCWCN1j1Y7yQyrUV2E3RtzymsT1HDc/edit" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-clipboard-check"></i></span>
+                            Checklist diario de salida de camiones
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/1X153si1RZFUH4IcIFAn7OLdlLXc24Ldy8Xf6DnrJscE/edit" target="_blank">
+                            <span class="link-icon" style="background:#007bff;"><i class="fa-solid fa-truck"></i></span>
+                            Checklist liberación diaria de la flota
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvQeQQ__APXfeBYbScVyjFTyl9m8KvNapcrH-lLExv3aQJ0Q/viewform" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-dolly"></i></span>
+                            Checklist mensual zorras
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScAOh01MSYAaDbrZEMs8haKnblG3aBa206psTLjYZjtDM2ZXQ/formResponse" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-industry"></i></span>
+                            Checklist Quincenal Autoelevadores
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/1w2ADGQ6GUISrfh3U3EiUJ3DfNE81m_2k4cbyGPem-7U/edit" target="_blank">
+                            <span class="link-icon" style="background:#20c997;"><i class="fa-solid fa-clipboard-list"></i></span>
+                            Checklist diario Autoelevadores
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfNyHBbuV3Nqxzm4ErkmSfnqg-u-JtYtXMD8k1nEyM5PV2gZA/viewform" target="_blank">
+                            <span class="link-icon" style="background:#17a2b8;"><i class="fa-solid fa-car"></i></span>
+                            Checklist diario Fiorino
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/g78UP8jd5AysncTCA" target="_blank">
+                            <span class="link-icon" style="background:#dc3545;"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                            Accidente / Multas e Infracciones del Palacio
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdEu4UJ7jidzem0Osvp8ZeWZkxJ94lVvM8IRldP4S8xukyvLw/formResponse" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+                            Mantenimiento preventivo semanal Autoelevadores
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://linktr.ee/Gente.delpa" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-link"></i></span>
+                            Linktree Gente
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
 
+        <section class="mb-5">
+            <p class="section-title text-center">Procedimientos Operativos de Flota (SOP)</p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Checklist — Liberación y regreso</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Flota - SOP - Checklist Liberacion y regreso de Flota.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Calibración de neumáticos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Flota - SOP - Calibracion de neumaticos.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Carga de combustible</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Flota - SOP - Carga de combustible flota de camiones.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Stock de repuestos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Flota - SOP - Politica de Stock para repuestos de la flota.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Medición de neumáticos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Flota - SOP - Medicion escala milimetrica de neumaticos.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     </main>
-    <!-- Pie de Página -->
+
     <footer class="bg-dark text-white text-center py-3">
         <div class="row">
-            <div class="col-md-3">
-                <a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"> <i
-                        class="fa-brands fa-instagram"></i> Instagram</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i
-                        class="fa-brands fa-facebook"></i> Facebook</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i
-                        class="fa-brands fa-linkedin"></i> Linkedin</a>
-            </div>
-            <div class="col-md-3">
-                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar"
-                        class="text-white">administracion@delpalacio.com.ar</a></p>
-            </div>
+            <div class="col-md-3"><a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"><i class="fa-brands fa-instagram"></i> Instagram</a></div>
+            <div class="col-md-3"><a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a></div>
+            <div class="col-md-3"><a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a></div>
+            <div class="col-md-3"><p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p></div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
-            </div>
-        </div>
+        <div class="row"><div class="col-12"><p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p></div></div>
     </footer>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-
 </html>

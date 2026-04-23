@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,470 +7,399 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        .section-title {
+            font-size: 1.1rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #6c757d;
+            margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid #e9ecef;
+        }
+        .quick-links { max-width: 640px; margin: 0 auto; }
+        .quick-links .list-group-item { padding: 0; border-left: none; border-right: none; }
+        .quick-links .list-group-item a {
+            display: flex; align-items: center; gap: 14px;
+            padding: 13px 16px; color: #333; text-decoration: none;
+            font-size: 0.97rem; transition: background 0.18s, color 0.18s; border-radius: 6px;
+        }
+        .quick-links .list-group-item a:hover { background-color: #f0f4ff; color: #0056b3; }
+        .quick-links .list-group-item a .link-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 0.85rem; color: #fff;
+        }
+        .sop-card {
+            border: none; border-left: 4px solid #dc3545;
+            border-radius: 8px !important; transition: box-shadow 0.18s, transform 0.18s;
+        }
+        .sop-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important; transform: translateY(-2px); }
+        .sop-card .card-title { font-size: 0.95rem; font-weight: 600; }
+    </style>
 </head>
-
 <body>
-    <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <img src="img/logodp.png" alt="" class="logodp">   
+        <img src="img/logodp.png" alt="" class="logodp">
         <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksEntrega.html">Entrega</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksFlota.html">Flota</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGente.html">Gente</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestíon</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
-                </li>
+                <li class="nav-item active"><a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksAlmacen.html">Almacén</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksEntrega.html">Entrega</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksFlota.html">Flota</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksSeguridad.html">Seguridad e Higiene</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGente.html">Gente</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestión</a></li>
+                <li class="nav-item"><a class="nav-link" href="ubicacion.html">Ubicación</a></li>
             </ul>
         </div>
     </nav>
-    
-    <!-- Encabezado -->
+
     <header class="bg-dark text-white text-center py-3">
         <h1>Links Almacén</h1>
     </header>
-    
-    <!-- Contenido Principal -->
+
     <main class="container my-4">
-        <div class="cardlink">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/u/1/d/e/1FAIpQLSdgjW8pu21R4h1eT17d9yBGd6MdMMexqba2W316wA4pmPD74Q/formResponse" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 1" class="imglink"> Asistencia a reuniones de logística
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSc_Cjb85vuwx9yNcc-MlXDAYXDWVBMSm2Tlanfz_VPkSGjaWg/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Control de tiempos de Picking y Errores
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeiWL99SlWQWYR8dgVOX3HZ-3qlfHnvoQJBogu0eG_mI6sUJA/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Clasificacion de Vacios
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdJmf9tcpEUxNR2aljsSkirzK7J3kXoJqmzXmiNHZBhw2QkUw/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Control de botellas vacias por reparto
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/A8efrNuahJ6s9c2G7" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Hora de uso Autoelevadores
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdl8AyX6rGKw0S2tT8H20Ik0YEMUNDZ2kP84wJvQnuekmXnSQ/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Tiempos de Carga/Descarga/Espera de Camiones
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSchu7tp3OuYUDq7Y6jUDCQMIzSOpy-S55Uj2hfeo8jlEKtMWw/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Control de temperatura diaria 
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/spreadsheets/d/1k2nSEwbOzjI9YJYh7pc-pdoDLPHtD16r3FUCFssx290/edit?usp=sharing" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Tiempos p/ control de stock o frescura
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdja5pCtpwLO5ifuUrty1XQk8uZFJUGIwUNJ3yNMwP9F59Szw/viewform?usp=sf_link" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Comportamientos inseguros/seguros/accidentes
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSf-LkGL0wdPnYG7x3OGYDTsqssIG87cRq8KtrCvfcci4NW7-w/viewform?usp=sf_link" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Historico de eventos extraordinarios Roturas/Vencidos/Faltantes
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeVL00Ma2rrrP3ajLRz7PdqCmQ4JBF53dTXKrcJEuAkskD0mw/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Link Limpieza de Baños
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeN3bB3mRXt3AryK1qoNql3BT5sprLfOvdaLaWUeu4yFv5Bgw/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Check List 5s orden y limpieza diaria almacen 
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdesCOYIm2HmnSrTXGZxNVAAjAhiyyvrChpIxVk6AeQLvE8Ow/viewform?usp=sharing" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Solicitud de adelantos / Mercaderia 
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/spreadsheets/d/1NAMls_0q2TsB5RndQXZ2tFE8IHjRABl_xhDlGd__QRQ/edit?usp=sharing" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> PDAs Almacen
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/avNWBsx7ZJPV7Ldu5" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Reabastecimiento Form
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/aytQPz85TTR4hfKi7" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Adherencia la "ABC" (Semanal)
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/aytQPz85TTR4hfKi7" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> % Utilizacion del deposito 
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/6qjPvy3MTkPKecU38" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Registro de problemas de carga 
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/mxSPf6CXWcnRfebw6" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Control Botellas/ Vacios 
-                    </a>
-                </li>
-                 <li class="list-group-item">
-                    <a href="https://linktr.ee/Gente.delpa" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Linktree Gente
-                    </a>
-                </li>
-            </ul>
-        </div>
 
-        <h2 class="mt-5 mb-4 text-center text-primary">
-            📦 SOP Almacén 
-        </h2>
-
-        <div class="container">
-            <div class="row row-cols-1 row-cols-md-2 g-3">
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Recepción de mercadería</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Recepcion de mercaderia en deposito.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Validación de carga</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Validacion de Carga.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Tiempos de carga y descarga</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Toma de tiempos de carga y descarga.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Reempaque</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Reempaque.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Reabastecimiento de canchas</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Reabastecimiento de Canchas de Picking.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Picking</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Picking.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Política de inventario</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Politica de Inventario.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Política de activos</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Politica de activos.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Reciclaje</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Reciclaje.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Plan de contingencia</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Plan de contingencia para gestion de inventario.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Clasificación de vacíos</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Clasificacion de vacios.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Control de inventario</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Control de inventario V2.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Limpieza en depósito</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Limpieza en deposito.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Pasaje a depósito bloqueados y vencidos</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Pasaje a Deposito Bloqueados y Vencidos V2.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Movimientos de activos</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Movimientos de Activos.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Calidad y seguridad en el almacén</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Calidad y seguridad en el almacen.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Cálculo de capacidad</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Cálculo de capacidad.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Control de frescura (FEFO)</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - FEFO y Control de frescura.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Carga y descarga camiones de reparto y larga distancia</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Carga y descarga de camiones de reparto y larga distancia.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Control de faltantes de botellas en repartos</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Control de faltantes de botellas en repartos del palacio SA.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                 <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Almacenamiento Producto Terminado</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Almacenamiento Producto Terminado.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-               <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Movimiento de mercaderia entre depositos</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Movimiento de mercaderia entre depositos.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div> 
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Devolucíon mercaderia no conforme</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Devolucion de mercaderia no conforme.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div> 
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Trazabilidad y recall de productos</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Trazabilidad y recall de productos.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Recepcion de Activos Retornables</h6>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Almacen - SOP - Recepcion de Activos Retornables.pdf" class="btn btn-sm btn-primary">Ver PDF</a>
-                        </div>
-                    </div>
-                </div>
-
+        <div class="mb-5">
+            <p class="section-title text-center">Accesos rápidos</p>
+            <div class="quick-links">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/u/1/d/e/1FAIpQLSdgjW8pu21R4h1eT17d9yBGd6MdMMexqba2W316wA4pmPD74Q/formResponse" target="_blank">
+                            <span class="link-icon" style="background:#007bff;"><i class="fa-solid fa-calendar-check"></i></span>
+                            Asistencia a reuniones de logística
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc_Cjb85vuwx9yNcc-MlXDAYXDWVBMSm2Tlanfz_VPkSGjaWg/viewform" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-stopwatch"></i></span>
+                            Control de tiempos de Picking y Errores
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeiWL99SlWQWYR8dgVOX3HZ-3qlfHnvoQJBogu0eG_mI6sUJA/viewform" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-recycle"></i></span>
+                            Clasificación de Vacíos
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdJmf9tcpEUxNR2aljsSkirzK7J3kXoJqmzXmiNHZBhw2QkUw/viewform" target="_blank">
+                            <span class="link-icon" style="background:#20c997;"><i class="fa-solid fa-bottle-water"></i></span>
+                            Control de botellas vacías por reparto
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/A8efrNuahJ6s9c2G7" target="_blank">
+                            <span class="link-icon" style="background:#6f42c1;"><i class="fa-solid fa-clock"></i></span>
+                            Hora de uso Autoelevadores
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdl8AyX6rGKw0S2tT8H20Ik0YEMUNDZ2kP84wJvQnuekmXnSQ/viewform" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-truck-ramp-box"></i></span>
+                            Tiempos de Carga/Descarga/Espera de Camiones
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSchu7tp3OuYUDq7Y6jUDCQMIzSOpy-S55Uj2hfeo8jlEKtMWw/viewform" target="_blank">
+                            <span class="link-icon" style="background:#dc3545;"><i class="fa-solid fa-temperature-half"></i></span>
+                            Control de temperatura diaria
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/spreadsheets/d/1k2nSEwbOzjI9YJYh7pc-pdoDLPHtD16r3FUCFssx290/edit?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#007bff;"><i class="fa-solid fa-boxes-stacked"></i></span>
+                            Tiempos p/ control de stock o frescura
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdja5pCtpwLO5ifuUrty1XQk8uZFJUGIwUNJ3yNMwP9F59Szw/viewform?usp=sf_link" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                            Comportamientos inseguros/seguros/accidentes
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSf-LkGL0wdPnYG7x3OGYDTsqssIG87cRq8KtrCvfcci4NW7-w/viewform?usp=sf_link" target="_blank">
+                            <span class="link-icon" style="background:#6f42c1;"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                            Histórico eventos extraordinarios — Roturas/Vencidos/Faltantes
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeVL00Ma2rrrP3ajLRz7PdqCmQ4JBF53dTXKrcJEuAkskD0mw/viewform" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-broom"></i></span>
+                            Limpieza de Baños
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeN3bB3mRXt3AryK1qoNql3BT5sprLfOvdaLaWUeu4yFv5Bgw/viewform" target="_blank">
+                            <span class="link-icon" style="background:#20c997;"><i class="fa-solid fa-clipboard-check"></i></span>
+                            Check List 5S — Orden y limpieza diaria almacén
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdesCOYIm2HmnSrTXGZxNVAAjAhiyyvrChpIxVk6AeQLvE8Ow/viewform?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#17a2b8;"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+                            Solicitud de adelantos / Mercadería
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/spreadsheets/d/1NAMls_0q2TsB5RndQXZ2tFE8IHjRABl_xhDlGd__QRQ/edit?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#007bff;"><i class="fa-solid fa-tablet-screen-button"></i></span>
+                            PDAs Almacén
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/avNWBsx7ZJPV7Ldu5" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-rotate"></i></span>
+                            Reabastecimiento
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/aytQPz85TTR4hfKi7" target="_blank">
+                            <span class="link-icon" style="background:#6f42c1;"><i class="fa-solid fa-chart-bar"></i></span>
+                            Adherencia al "ABC" (Semanal)
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/aytQPz85TTR4hfKi7" target="_blank">
+                            <span class="link-icon" style="background:#20c997;"><i class="fa-solid fa-warehouse"></i></span>
+                            % Utilización del depósito
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/6qjPvy3MTkPKecU38" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                            Registro de problemas de carga
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/mxSPf6CXWcnRfebw6" target="_blank">
+                            <span class="link-icon" style="background:#17a2b8;"><i class="fa-solid fa-bottle-water"></i></span>
+                            Control Botellas/Vacíos
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://linktr.ee/Gente.delpa" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-link"></i></span>
+                            Linktree Gente
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
+
+        <section class="mb-5">
+            <p class="section-title text-center">Procedimientos Operativos de Almacén (SOP)</p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Recepción de mercadería</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Recepcion de mercaderia en deposito.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Validación de carga</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Validacion de Carga.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Tiempos de carga y descarga</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Toma de tiempos de carga y descarga.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Reempaque</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Reempaque.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Reabastecimiento de canchas de Picking</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Reabastecimiento de Canchas de Picking.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Picking</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Picking.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Política de inventario</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Politica de Inventario.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Política de activos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Politica de activos.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Reciclaje</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Reciclaje.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Plan de contingencia para gestión de inventario</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Plan de contingencia para gestion de inventario.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Clasificación de vacíos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Clasificacion de vacios.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Control de inventario</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Control de inventario V2.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Limpieza en depósito</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Limpieza en deposito.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Pasaje a depósito bloqueados y vencidos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Pasaje a Deposito Bloqueados y Vencidos V2.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Movimientos de activos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Movimientos de Activos.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Calidad y seguridad en el almacén</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Calidad y seguridad en el almacen.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Cálculo de capacidad</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Cálculo de capacidad.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Control de frescura (FEFO)</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - FEFO y Control de frescura.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Carga y descarga — camiones de reparto y larga distancia</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Carga y descarga de camiones de reparto y larga distancia.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Control de faltantes de botellas en repartos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Control de faltantes de botellas en repartos del palacio SA.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Almacenamiento Producto Terminado</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Almacenamiento Producto Terminado.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Movimiento de mercadería entre depósitos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Movimiento de mercaderia entre depositos.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Devolución mercadería no conforme</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Devolucion de mercaderia no conforme.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Trazabilidad y recall de productos</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Trazabilidad y recall de productos.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
+                        <div class="card-body"><h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Recepción de Activos Retornables</h5></div>
+                        <div class="card-footer bg-transparent border-0"><a href="pdf/Almacen - SOP - Recepcion de Activos Retornables.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Capacitaciones -->
+        <section class="mb-5">
+            <p class="section-title text-center">Capacitaciones y evaluaciones</p>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm cap-card d-flex flex-column justify-content-between">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary mr-2"></i>Proceso de Carga y Descarga</h5>
+                            <p class="card-text">¿Qué es? ¿Por qué? ¿Dónde? ¿Cuál es su importancia?</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="capacitacionesentrega/Carga y descarga.pdf" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">
+                                <i class="fa-solid fa-play mr-1"></i>Abrir capacitación
+                            </a>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdyz4q43xPaPzkqLqKZ-GNF6mGHL8MwQrYu81YaUyswrT-irQ/viewform" target="_blank" class="btn btn-sm btn-evaluacion mb-2">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>Ir a evaluación
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm cap-card d-flex flex-column justify-content-between">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary mr-2"></i>5s</h5>
+                            <p class="card-text">¿Qué es? ¿Por qué? ¿Dónde? ¿Cuál es su importancia?</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="capacitacionesentrega/Capacitacion Metodologia 5S.pdf" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">
+                                <i class="fa-solid fa-play mr-1"></i>Abrir capacitación
+                            </a>
+                            <a href="https://docs.google.com/forms/u/2/d/e/1FAIpQLSeU9BM9bd4vLApMQD8DB5YC0ahaYp6eKJeF11C9uOZpDQwfDg/formResponse" target="_blank" class="btn btn-sm btn-evaluacion mb-2">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>Ir a evaluación
+                            </a>
+                        </div>
+                    </div>
+                
+               
+        </section>
+
+
     </main>
-    
-    <!-- Pie de Página -->
+
     <footer class="bg-dark text-white text-center py-3">
         <div class="row">
-            <div class="col-md-3">
-                <a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"> <i class="fa-brands fa-instagram"></i> Instagram</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a>
-            </div>
-            <div class="col-md-3">
-                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p>
-            </div>
+            <div class="col-md-3"><a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"><i class="fa-brands fa-instagram"></i> Instagram</a></div>
+            <div class="col-md-3"><a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a></div>
+            <div class="col-md-3"><a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a></div>
+            <div class="col-md-3"><p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p></div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
-            </div>
-        </div>
+        <div class="row"><div class="col-12"><p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p></div></div>
     </footer>
-    
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 </body>
 </html>

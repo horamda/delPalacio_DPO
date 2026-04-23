@@ -3,106 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>del Palacio S.A</title>
+    <title>del Palacio S.A — Ubicación</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 460px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #6c757d;
+            margin-bottom: 1.2rem; padding-bottom: 0.4rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .location-card {
+            border: none;
+            border-left: 4px solid #007bff;
+            border-radius: 8px;
+            transition: box-shadow 0.18s, transform 0.18s;
+        }
+        .location-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1) !important;
+            transform: translateY(-2px);
+        }
+        .location-card h5 { font-size: 1rem; font-weight: 700; }
+        .location-card p  { font-size: 0.88rem; color: #6c757d; margin: 0; }
+    </style>
 </head>
 <body>
-    <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <img src="img/logodp.png" alt="" class="logodp">   
+        <img src="img/logodp.png" alt="" class="logodp">
         <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksEntrega.html">Entrega</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksFlota.html">Flota</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGente.html">Gente</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGenerales.html">Gral</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
-                </li>
+                <li class="nav-item active"><a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksAlmacen.html">Almacén</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksEntrega.html">Entrega</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksFlota.html">Flota</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksSeguridad.html">Seguridad e Higiene</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGente.html">Gente</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestión</a></li>
+                <li class="nav-item"><a class="nav-link" href="ubicacion.html">Ubicación</a></li>
             </ul>
         </div>
     </nav>
-    <!-- Encabezado -->
+
     <header class="bg-dark text-white text-center py-3">
-     
         <h1>Ubicación</h1>
     </header>
-    <!-- Contenido Principal -->
- 
+
+    <main class="container my-5">
+
+        <p class="section-title text-center">Nuestras sedes</p>
+
+        <!-- Location cards -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm location-card" style="border-left-color:#007bff;">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div style="font-size:1.6rem;color:#007bff;margin-right:14px;"><i class="fa-solid fa-building"></i></div>
+                        <div>
+                            <h5 class="mb-1">Casa Central</h5>
+                            <p>Partido de la Costa - 100.689 habitantes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm location-card" style="border-left-color:#28a745;">
+                    <div class="card-body d-flex align-items-center">
+                        <div style="font-size:1.6rem;color:#28a745;margin-right:14px;"><i class="fa-solid fa-warehouse"></i></div>
+                        <div>
+                            <h5 class="mb-1">Depósito Chascomús</h5>
+                            <p>Chascomús — 42.452 habitantes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm location-card" style="border-left-color:#fd7e14;">
+                    <div class="card-body d-flex align-items-center">
+                        <div style="font-size:1.6rem;color:#fd7e14;margin-right:14px;"><i class="fa-solid fa-store"></i></div>
+                        <div>
+                            <h5 class="mb-1">Sucursal Dolores</h5>
+                            <p>Dolores — 25.940 habitantes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map -->
         <div id="map"></div>
 
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script>
-            // Inicializa el mapa y establece su vista
-            var map = L.map('map').setView([-36.72973, -56.68871], 7);
-    
-            // Añade una capa de mapa (en este caso OpenStreetMap)
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-    
-            // Añade los marcadores con las coordenadas deseadas
-            var marker2 = L.marker([-35.575227, -57.977882]).addTo(map)
-                .bindPopup('Deposito Chascomus,42.452 habitantes')
-                .openPopup();   
-            
-            var marker1 = L.marker([-36.72973, -56.68871]).addTo(map)
-                .bindPopup('Casa central,102.836 habitantes')
-                .openPopup();
-    
-            var marker2 = L.marker([-36.298680, -57.688721]).addTo(map)
-                .bindPopup('Suc. Dolores,25,940 habitantes')
-                .openPopup();
-             
-        </script>
-           
-</body>
-    <!-- Pie de Página -->
+    </main>
+
     <footer class="bg-dark text-white text-center py-3">
         <div class="row">
-            <div class="col-md-3">
-                <a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"> <i class="fa-brands fa-instagram"></i> Instagram</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a>
-            </div>
-            <div class="col-md-3">
-                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p>
-            </div>
+            <div class="col-md-3"><a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"><i class="fa-brands fa-instagram"></i> Instagram</a></div>
+            <div class="col-md-3"><a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a></div>
+            <div class="col-md-3"><a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a></div>
+            <div class="col-md-3"><p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p></div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
-            </div>
-        </div>
+        <div class="row"><div class="col-12"><p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p></div></div>
     </footer>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([-36.72973, -56.68871], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        L.marker([-36.72973, -56.68871]).addTo(map).bindPopup('<strong>Casa Central</strong><br>Mar de Ajó').openPopup();
+        L.marker([-35.575227, -57.977882]).addTo(map).bindPopup('<strong>Depósito Chascomús</strong>');
+        L.marker([-36.298680, -57.688721]).addTo(map).bindPopup('<strong>Sucursal Dolores</strong>');
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -4,17 +4,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Distribuidora del Palacio S.A. especializada en bebidas, almacén, entrega, flota y seguridad e higiene. Visítanos en nuestras redes sociales o contacta con nosotros.">
-    <title> del Palacio S.A</title>
+    <meta name="description" content="Distribuidora del Palacio S.A. especializada en bebidas, almacén, entrega, flota y seguridad e higiene.">
+    <title>del Palacio S.A</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="icon" href="img/logodpf.png" type="image/x-icon">
+    <style>
+        .hero {
+            position: relative;
+            overflow: hidden;
+            max-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+        }
+        .hero img {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+            opacity: 0.55;
+        }
+        .hero-text {
+            position: absolute;
+            text-align: center;
+            color: #fff;
+        }
+        .hero-text h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+        }
+        .hero-text p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+        }
+
+        /* Department cards */
+        .dept-card {
+            border: none;
+            border-radius: 12px;
+            text-align: center;
+            padding: 28px 16px 22px;
+            text-decoration: none;
+            color: #333;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: block;
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .dept-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+            color: #333;
+            text-decoration: none;
+        }
+        .dept-card .dept-icon {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; color: #fff;
+            margin: 0 auto 14px;
+        }
+        .dept-card h6 {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Section title */
+        .section-title {
+            font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #6c757d;
+            margin-bottom: 1.2rem; padding-bottom: 0.4rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        /* Carousel */
+        .carousel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .carousel-card h5 { font-weight: 700; font-size: 1.05rem; color: #222; }
+        .carousel-card p  { font-size: 0.92rem; color: #555; margin: 0; }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            padding: 14px;
+            width: 44px; height: 44px;
+        }
+        .carousel-control-prev-icon {
+            background-image: url('https://cdn-icons-png.flaticon.com/512/271/271220.png');
+            background-size: 22px 22px;
+        }
+        .carousel-control-next-icon {
+            background-image: url('https://cdn-icons-png.flaticon.com/512/271/271228.png');
+            background-size: 22px 22px;
+        }
+        .carousel-control-prev, .carousel-control-next { width: 6%; }
+    </style>
 </head>
 
 <body>
-    <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <img src="img/logodp.png" alt="" class="logodp">
         <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
@@ -24,197 +126,139 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksEntrega.html">Entrega</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksFlota.html">Flota</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGente.html">Gente</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestíon</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
-                </li>
+                <li class="nav-item active"><a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksAlmacen.html">Almacén</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksEntrega.html">Entrega</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksFlota.html">Flota</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksSeguridad.html">Seguridad e Higiene</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGente.html">Gente</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestión</a></li>
+                <li class="nav-item"><a class="nav-link" href="ubicacion.html">Ubicación</a></li>
             </ul>
         </div>
     </nav>
-    <!-- Encabezado -->
-    <header class="bg-dark text-white text-center py-3">
-        <header class="bg-dark text-white text-center py-3">
-            <h1>Bienvenidos a del Palacio S.A.</h1>
-        </header>
-    </header>
-    <!-- Contenido Principal -->
-    <main>
-        <div>
-            <img src="img/modelo.jpeg" alt="" class="img-ini">
-            <!-- Sección de Eventos Especiales - Carrusel Centrados -->
-            <section class="py-5 bg-secondary text-white">
-                <div class="container">
-                    <h2 class="text-center mb-5">Eventos Especiales</h2>
-                    <div id="eventosCarrusel" class="carousel slide mx-auto" data-ride="carousel"
-                        style="max-width: 600px;">
-                        <!-- Indicadores del carrusel -->
-                        <ol class="carousel-indicators">
-                            <li data-target="#eventosCarrusel" data-slide-to="0" class="active"></li>
-                            <li data-target="#eventosCarrusel" data-slide-to="1"></li>
-                            <li data-target="#eventosCarrusel" data-slide-to="2"></li>
-                            <li data-target="#eventosCarrusel" data-slide-to="3"></li>
-                        </ol>
-                        <!-- Contenido del carrusel -->
-                        <div class="carousel-inner text-center">
-                            <!-- Evento 1: Día Mundial de la Seguridad -->
-                            <div class="carousel-item active">
-                                <div class="card h-100 border-0 shadow text-dark">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Día Mundial de la Seguridad e Higiene- 28 de abril</h5>
-                                        <p class="card-text">En esta fecha destacamos la importancia de las prácticas
-                                            seguras en todos los ámbitos laborales, promoviendo un entorno de trabajo
-                                            seguro y saludable para todos.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Evento 2: Día de la Seguridad Vial -->
-                            <div class="carousel-item">
-                                <div class="card h-100 border-0 shadow text-dark">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Día de la Seguridad Vial - 10 de junio</h5>
-                                        <p class="card-text">Un día para reflexionar sobre la importancia de la
-                                            seguridad en las rutas y calles, y fomentar comportamientos responsables
-                                            entre los conductores para reducir accidentes.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Evento 3: Semana de la Calidad -->
-                            <div class="carousel-item">
-                                <div class="card h-100 border-0 shadow text-dark">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Semana de la Calidad - 12 al 17 de agosto</h5>
-                                        <p class="card-text">Durante esta semana, promovemos la mejora continua en los
-                                            procesos, la excelencia en el servicio y el compromiso con la calidad en
-                                            todas nuestras áreas de trabajo.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Evento 4: Día del Consumo Responsable -->
-                            <div class="carousel-item">
-                                <div class="card h-100 border-0 shadow text-dark">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Día del Consumo Responsable - 16 de septiembre</h5>
-                                        <p class="card-text">Este día fomentamos el consumo consciente y responsable,
-                                            promoviendo prácticas que cuiden el medio ambiente y generen un impacto
-                                            positivo en la sociedad.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="card h-100 border-0 shadow text-dark">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Campaña de Temporada Segura - Noviembre 5,6,7 y 8 </h5>
-                                        <p class="card-text">En esta Temporada Segura, hacemos un compromiso colectivo: desde la dirección hasta cada empleado, 
-                                                             nos unimos para cumplir y promover las normas de seguridad. Nuestro objetivo es minimizar riesgos y 
-                                                             evitar accidentes, asegurando un entorno laboral protegido y confiable para todos. Trabajemos 
-                                                             juntos para que la seguridad no solo sea una práctica, sino un valor que compartimos y 
-                                                             reforzamos día a día.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Controles del carrusel -->
-                        <a class="carousel-control-prev" href="#eventosCarrusel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Anterior</span>
-                        </a>
-                        <a class="carousel-control-next" href="#eventosCarrusel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Siguiente</span>
-                        </a>
+
+    <!-- Hero -->
+    <div class="hero">
+        <img src="img/modelo.jpeg" alt="del Palacio S.A.">
+        <div class="hero-text">
+            <h1>del Palacio S.A.</h1>
+            <p>Distribuidora de bebidas — Partido de la Costa/Dolores/Chascomús</p>
+        </div>
+    </div>
+
+    <main class="container my-5">
+
+        <!-- Acceso rápido por área -->
+        <p class="section-title text-center">Acceso por área</p>
+        <div class="row mb-5">
+            <div class="col-6 col-md-4 col-lg-2 mb-3">
+                <a href="LinksAlmacen.html" class="dept-card">
+                    <div class="dept-icon" style="background:#fd7e14;"><i class="fa-solid fa-warehouse"></i></div>
+                    <h6>Almacén</h6>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 mb-3">
+                <a href="LinksEntrega.html" class="dept-card">
+                    <div class="dept-icon" style="background:#007bff;"><i class="fa-solid fa-truck"></i></div>
+                    <h6>Entrega</h6>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 mb-3">
+                <a href="LinksFlota.html" class="dept-card">
+                    <div class="dept-icon" style="background:#20c997;"><i class="fa-solid fa-truck-front"></i></div>
+                    <h6>Flota</h6>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 mb-3">
+                <a href="LinksSeguridad.html" class="dept-card">
+                    <div class="dept-icon" style="background:#dc3545;"><i class="fa-solid fa-helmet-safety"></i></div>
+                    <h6>Seguridad e Higiene</h6>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 mb-3">
+                <a href="LinksGente.html" class="dept-card">
+                    <div class="dept-icon" style="background:#6f42c1;"><i class="fa-solid fa-people-group"></i></div>
+                    <h6>Gente</h6>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 mb-3">
+                <a href="LinksGenerales.html" class="dept-card">
+                    <div class="dept-icon" style="background:#17a2b8;"><i class="fa-solid fa-chart-line"></i></div>
+                    <h6>Planeamiento</h6>
+                </a>
+            </div>
+        </div>
+
+        <!-- Eventos especiales -->
+        <p class="section-title text-center">Eventos especiales</p>
+        <div id="eventosCarrusel" class="carousel slide mx-auto" data-ride="carousel" style="max-width: 680px;">
+            <ol class="carousel-indicators">
+                <li data-target="#eventosCarrusel" data-slide-to="0" class="active"></li>
+                <li data-target="#eventosCarrusel" data-slide-to="1"></li>
+                <li data-target="#eventosCarrusel" data-slide-to="2"></li>
+                <li data-target="#eventosCarrusel" data-slide-to="3"></li>
+                <li data-target="#eventosCarrusel" data-slide-to="4"></li>
+            </ol>
+            <div class="carousel-inner text-center">
+                <div class="carousel-item active">
+                    <div class="carousel-card">
+                        <h5><i class="fa-solid fa-shield-halved text-danger mr-2"></i>Día Mundial de la Seguridad e Higiene</h5>
+                        <p class="text-muted small mb-2">28 de abril</p>
+                        <p>Destacamos la importancia de las prácticas seguras en todos los ámbitos laborales, promoviendo un entorno de trabajo seguro y saludable para todos.</p>
                     </div>
                 </div>
-            </section>
-
-            <!-- Agregar scripts de Bootstrap si aún no están en tu página -->
-            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-            <!-- Estilos adicionales para los botones del carrusel -->
-            <style>
-                .carousel-control-prev-icon,
-                .carousel-control-next-icon {
-                    background-color: rgba(255, 255, 255, 0.7);
-                    /* Fondo claro semitransparente */
-                    border-radius: 50%;
-                    /* Bordes redondeados */
-                    padding: 15px;
-                    /* Más espacio alrededor del ícono */
-                    width: 50px;
-                    /* Tamaño aumentado */
-                    height: 50px;
-                    /* Tamaño aumentado */
-                }
-
-                .carousel-control-prev-icon {
-                    background-image: url('https://cdn-icons-png.flaticon.com/512/271/271220.png');
-                    /* Ícono para 'anterior' */
-                    background-size: 30px 30px;
-                    /* Tamaño ajustado del ícono */
-                }
-
-                .carousel-control-next-icon {
-                    background-image: url('https://cdn-icons-png.flaticon.com/512/271/271228.png');
-                    /* Ícono para 'siguiente' */
-                    background-size: 30px 30px;
-                    /* Tamaño ajustado del ícono */
-                }
-
-                .carousel-control-prev,
-                .carousel-control-next {
-                    width: 5%;
-                    /* Aumentar el área de clic para mejor usabilidad */
-                }
-            </style>
+                <div class="carousel-item">
+                    <div class="carousel-card">
+                        <h5><i class="fa-solid fa-car text-primary mr-2"></i>Día de la Seguridad Vial</h5>
+                        <p class="text-muted small mb-2">10 de junio</p>
+                        <p>Un día para reflexionar sobre la importancia de la seguridad en las rutas y calles, fomentando comportamientos responsables para reducir accidentes.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-card">
+                        <h5><i class="fa-solid fa-star text-warning mr-2"></i>Semana de la Calidad</h5>
+                        <p class="text-muted small mb-2">12 al 17 de agosto</p>
+                        <p>Promovemos la mejora continua en los procesos, la excelencia en el servicio y el compromiso con la calidad en todas nuestras áreas de trabajo.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-card">
+                        <h5><i class="fa-solid fa-leaf text-success mr-2"></i>Día del Consumo Responsable</h5>
+                        <p class="text-muted small mb-2">16 de septiembre</p>
+                        <p>Fomentamos el consumo consciente y responsable, promoviendo prácticas que cuiden el medio ambiente y generen un impacto positivo en la sociedad.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-card">
+                        <h5><i class="fa-solid fa-users text-info mr-2"></i>Campaña de Temporada Segura</h5>
+                        <p class="text-muted small mb-2">Noviembre — 5, 6, 7 y 8</p>
+                        <p>Desde la dirección hasta cada empleado, nos unimos para cumplir y promover las normas de seguridad. Trabajemos juntos para que la seguridad sea un valor compartido, día a día.</p>
+                    </div>
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#eventosCarrusel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Anterior</span>
+            </a>
+            <a class="carousel-control-next" href="#eventosCarrusel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Siguiente</span>
+            </a>
         </div>
+
     </main>
-    <!-- Pie de Página -->
-    <footer class="bg-dark text-white text-center py-3 ">
+
+    <footer class="bg-dark text-white text-center py-3">
         <div class="row">
-            <div class="col-md-3">
-                <a href="https://www.instagram.com/del.palacio" class="text-white"> <i
-                        class="fa-brands fa-instagram"></i> Instagram</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i
-                        class="fa-brands fa-facebook"></i> Facebook</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i
-                        class="fa-brands fa-linkedin"></i> Linkedin</a>
-            </div>
-            <div class="col-md-3">
-                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar"
-                        class="text-white">administracion@delpalacio.com.ar</a></p>
-            </div>
+            <div class="col-md-3"><a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"><i class="fa-brands fa-instagram"></i> Instagram</a></div>
+            <div class="col-md-3"><a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a></div>
+            <div class="col-md-3"><a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a></div>
+            <div class="col-md-3"><p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p></div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
-            </div>
-        </div>
+        <div class="row"><div class="col-12"><p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p></div></div>
     </footer>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

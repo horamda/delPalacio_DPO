@@ -8,14 +8,106 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #6c757d;
+            margin-bottom: 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        /* Links rápidos */
+        .quick-links {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .quick-links .list-group-item {
+            padding: 0;
+            border-left: none;
+            border-right: none;
+        }
+        .quick-links .list-group-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 16px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.97rem;
+            transition: background 0.18s, color 0.18s;
+            border-radius: 6px;
+        }
+        .quick-links .list-group-item a:hover {
+            background-color: #f0f4ff;
+            color: #0056b3;
+        }
+        .quick-links .list-group-item a .link-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        /* SOPs */
+        .sop-card {
+            border: none;
+            border-left: 4px solid #dc3545;
+            border-radius: 8px !important;
+            transition: box-shadow 0.18s, transform 0.18s;
+        }
+        .sop-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+            transform: translateY(-2px);
+        }
+        .sop-card .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* Capacitaciones */
+        .cap-card {
+            border: none;
+            border-top: 4px solid #007bff;
+            border-radius: 8px !important;
+            transition: box-shadow 0.18s, transform 0.18s;
+        }
+        .cap-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+            transform: translateY(-2px);
+        }
+        .cap-card .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .cap-card .card-text {
+            font-size: 0.88rem;
+            color: #6c757d;
+        }
+        .btn-evaluacion-disabled {
+            background-color: #ced4da;
+            color: #6c757d;
+            border: none;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <img src="img/logodp.png" alt="" class="logodp">   
+        <img src="img/logodp.png" alt="" class="logodp">
         <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -33,13 +125,13 @@
                     <a class="nav-link" href="LinksFlota.html">Flota</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
+                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Higiene</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="LinksGente.html">Gente</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestíon</a>
+                    <a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestión</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="ubicacion.html">Ubicación</a>
@@ -47,214 +139,265 @@
             </ul>
         </div>
     </nav>
-    <!-- Encabezado -->
-    <header class="bg-dark text-white text-center py-3">
 
-        <h1>Links distribución</h1>
+    <header class="bg-dark text-white text-center py-3">
+        <h1>Links Distribución</h1>
     </header>
-    <!-- Contenido Principal -->
+
     <main class="container my-4">
-        <div class="cardlink">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/u/1/d/e/1FAIpQLSdgjW8pu21R4h1eT17d9yBGd6MdMMexqba2W316wA4pmPD74Q/formResponse" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 1" class="imglink"> Asistencia a reuniones de logística
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeaWHqlXurs2R1D39KLkhQPj6xKHwAC28DQrHJBea2SkjXHYA/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Feedback distribución
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe9mFU4jzsKXlgdL_15SsRDsLnO3B2MGHDlvLTIH334nKJGKg/viewform?usp=sharing" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Checklist diario de salida de camiones
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeH6w8uDBeWGOmINSvfXZqBXXUZDNUhHv6mU91sN1KesAUkQA/viewform" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Validación de carga
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/spreadsheets/d/1ERtcuBUg2MJMgThcR8wV4Rk3oFIh5BxA3c6bScQO25o/edit?usp=sharing" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Histórico matriz de riesgos
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdesCOYIm2HmnSrTXGZxNVAAjAhiyyvrChpIxVk6AeQLvE8Ow/viewform?usp=sharing" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Solicitud de adelantos / mercadería
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://drive.google.com/file/d/1CzlxBCec6vd29yNBGDwXsQv02omN-Aqq/view?usp=drive_link" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Rechazos parciales - Acceso a la app
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://docs.google.com/spreadsheets/d/1NAMls_0q2TsB5RndQXZ2tFE8IHjRABl_xhDlGd__QRQ/edit?usp=sharing" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> PDAs entrega
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://forms.gle/6qjPvy3MTkPKecU38" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Problemas post validación de cargas
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://linktr.ee/Gente.delpa" target="_blank">
-                        <img src="img/link2.png" alt="Imagen 2" class="imglink"> Linktree Gente
-                    </a>
-                </li>
-            </ul>
+
+        <!-- Links rápidos -->
+        <div class="mb-5">
+            <p class="section-title text-center">Accesos rápidos</p>
+            <div class="quick-links">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/u/1/d/e/1FAIpQLSdgjW8pu21R4h1eT17d9yBGd6MdMMexqba2W316wA4pmPD74Q/formResponse" target="_blank">
+                            <span class="link-icon" style="background:#007bff;"><i class="fa-solid fa-calendar-check"></i></span>
+                            Asistencia a reuniones de logística
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeaWHqlXurs2R1D39KLkhQPj6xKHwAC28DQrHJBea2SkjXHYA/viewform" target="_blank">
+                            <span class="link-icon" style="background:#6f42c1;"><i class="fa-solid fa-comments"></i></span>
+                            Feedback distribución
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe9mFU4jzsKXlgdL_15SsRDsLnO3B2MGHDlvLTIH334nKJGKg/viewform?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-clipboard-check"></i></span>
+                            Checklist diario de salida de camiones
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeH6w8uDBeWGOmINSvfXZqBXXUZDNUhHv6mU91sN1KesAUkQA/viewform" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-boxes-stacked"></i></span>
+                            Validación de carga
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/spreadsheets/d/1ERtcuBUg2MJMgThcR8wV4Rk3oFIh5BxA3c6bScQO25o/edit?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#20c997;"><i class="fa-solid fa-table-cells"></i></span>
+                            Histórico matriz de riesgos
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdesCOYIm2HmnSrTXGZxNVAAjAhiyyvrChpIxVk6AeQLvE8Ow/viewform?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#17a2b8;"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+                            Solicitud de adelantos / mercadería
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://drive.google.com/file/d/1CzlxBCec6vd29yNBGDwXsQv02omN-Aqq/view?usp=drive_link" target="_blank">
+                            <span class="link-icon" style="background:#dc3545;"><i class="fa-solid fa-mobile-screen"></i></span>
+                            Rechazos parciales — Acceso a la app
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://docs.google.com/spreadsheets/d/1NAMls_0q2TsB5RndQXZ2tFE8IHjRABl_xhDlGd__QRQ/edit?usp=sharing" target="_blank">
+                            <span class="link-icon" style="background:#007bff;"><i class="fa-solid fa-tablet-screen-button"></i></span>
+                            PDAs entrega
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://forms.gle/6qjPvy3MTkPKecU38" target="_blank">
+                            <span class="link-icon" style="background:#fd7e14;"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                            Problemas post validación de cargas
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://linktr.ee/Gente.delpa" target="_blank">
+                            <span class="link-icon" style="background:#28a745;"><i class="fa-solid fa-link"></i></span>
+                            Linktree Gente
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
-        <section class="mt-5">
-            <h2 class="mb-4 text-center text-primary">📄 Procedimientos Operativos de Entrega (SOP)</h2>
+        <!-- SOPs -->
+        <section class="mb-5">
+            <p class="section-title text-center">Procedimientos Operativos de Entrega (SOP)</p>
             <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Antes de salir a ruta</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Antes de salir a ruta</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Antes de salir a ruta(1.1)V2.pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Antes de salir a ruta(1.1)V2.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Proceso de Entrega</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Proceso de Entrega</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Proceso de Entrega(1.2)V2.pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Proceso de Entrega(1.2)V2.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Uso Foxtrot</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Uso Foxtrot</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP  - Uso Foxtrot(2.1)V2.pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP  - Uso Foxtrot(2.1)V2.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Calidad en ruta</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Calidad en ruta</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Calidad en ruta(2.2).pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Calidad en ruta(2.2).pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Retorno y cierre de ruta</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Retorno y cierre de ruta</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Retorno y cierre de ruta(3.1).pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Retorno y cierre de ruta(3.1).pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Retiro de Mercadería</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Retiro de Mercadería</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Retiro de Mercaderia(4.1)V1.pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Retiro de Mercaderia(4.1)V1.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Preliquidaciones</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Preliquidaciones</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Pre liquidaciones.pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Pre liquidaciones.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Rechazos y modulaciones</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Rechazos y modulaciones</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Rechazos y modulaciones(8.1).pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Rechazos y modulaciones(8.1).pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Proceso de Feedback</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Proceso de Feedback</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP - Proceso de Feedback.pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP - Proceso de Feedback.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm sop-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger"></i> SOP - Uso App Rechazos Parciales</h5>
+                            <h5 class="card-title"><i class="fa-solid fa-file-pdf text-danger mr-2"></i>Uso App Rechazos Parciales</h5>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="pdf/Entrega - SOP- Uso_app Rechazos Parcieless.pdf" target="_blank" class="btn btn-sm btn-primary">Ver PDF</a>
+                            <a href="pdf/Entrega - SOP- Uso_app Rechazos Parcieless.pdf" target="_blank" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir PDF</a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="mt-5">
-            <h2 class="mb-3 text-center text-primary">🎓 Capacitaciones y evaluaciones</h2>
-          
-
+        <!-- Capacitaciones -->
+        <section class="mb-5">
+            <p class="section-title text-center">Capacitaciones y evaluaciones</p>
             <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm cap-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary"></i> Proceso de Feedback</h5>
-                            <p class="card-text mb-0">Proceso de feedback ¿ que es ? ¿porque? ¿en donde? importancia</p>
+                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary mr-2"></i>Proceso de Feedback</h5>
+                            <p class="card-text">¿Qué es el feedback? ¿Por qué? ¿Dónde? ¿Cuál es su importancia?</p>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="capacitacionesentrega/Proceso de Feedback - Standalone.html" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">Abrir capacitación</a>
-                            <a href="https://forms.gle/u3bA4yVhV2PPm9fC8" target="_blank" class="btn btn-sm btn-evaluacion mb-2">Ir a evaluación</a>
+                            <a href="capacitacionesentrega/Proceso de Feedback - Standalone.html" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">
+                                <i class="fa-solid fa-play mr-1"></i>Abrir capacitación
+                            </a>
+                            <a href="https://forms.gle/u3bA4yVhV2PPm9fC8" target="_blank" class="btn btn-sm btn-evaluacion mb-2">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>Ir a evaluación
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div>
-
-             <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm cap-card d-flex flex-column justify-content-between">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary"></i>Ejecucion de la rutina Basica(Delivery Team Journey)</h5>
-                            <p class="card-text mb-0">Reunion de entrega</p>
+                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary mr-2"></i>Rutina Básica — Reunión de Entrega</h5>
+                            <p class="card-text">¿Qué es la reunión de entrega? ¿Por qué? ¿Dónde? ¿Cuál es su importancia?</p>
                         </div>
                         <div class="card-footer bg-transparent border-0">
-                            <a href="capacitacionesentrega/Capacitacion Reunion de Entrega.html" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">Abrir capacitación</a>
-                            <a href="" target="_blank" class="btn btn-sm btn-evaluacion mb-2">Ir a evaluación</a>
+                            <a href="capacitacionesentrega/Capacitacion Reunion de Entrega.html" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">
+                                <i class="fa-solid fa-play mr-1"></i>Abrir capacitación
+                            </a>
+                            <a href="https://forms.gle/QFfappUtzygxJEKK8" target="_blank" class="btn btn-sm btn-evaluacion mb-2">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>Ir a evaluación
+                            </a>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm cap-card d-flex flex-column justify-content-between">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary mr-2"></i>Rechazos y Modulaciones</h5>
+                            <p class="card-text">Rechazos parciales, modulaciones y refacturaciones. ¿Qué es? ¿Por qué? ¿Dónde?</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="capacitacionesentrega/MODULACION Y RECHAZOS.pdf" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">
+                                <i class="fa-solid fa-play mr-1"></i>Abrir capacitación
+                            </a>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSd-EYH5xVNlGv99WBN23TkSDLZOBQpiXeca-Xs10gX0IHSqRw/viewform" target="_blank" class="btn btn-sm btn-evaluacion mb-2">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>Ir a evaluación
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm cap-card d-flex flex-column justify-content-between">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-graduation-cap text-primary mr-2"></i>5s</h5>
+                            <p class="card-text">¿Qué es? ¿Por qué? ¿Dónde? ¿Cuál es su importancia?</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="capacitacionesentrega/Capacitacion Metodologia 5S.pdf" target="_blank" class="btn btn-sm btn-primary mr-2 mb-2">
+                                <i class="fa-solid fa-play mr-1"></i>Abrir capacitación
+                            </a>
+                            <a href="https://docs.google.com/forms/u/2/d/e/1FAIpQLSeU9BM9bd4vLApMQD8DB5YC0ahaYp6eKJeF11C9uOZpDQwfDg/formResponse" target="_blank" class="btn btn-sm btn-evaluacion mb-2">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>Ir a evaluación
+                            </a>
+                        </div>
+                    </div>
             </div>
         </section>
+
     </main>
-    <!-- Pie de Página -->
+
     <footer class="bg-dark text-white text-center py-3">
         <div class="row">
             <div class="col-md-3">
-                <a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"> <i class="fa-brands fa-instagram"></i> Instagram</a>
+                <a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"><i class="fa-brands fa-instagram"></i> Instagram</a>
             </div>
             <div class="col-md-3">
                 <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a>
@@ -272,6 +415,7 @@
             </div>
         </div>
     </footer>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

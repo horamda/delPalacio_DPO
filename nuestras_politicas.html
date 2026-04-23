@@ -4,15 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>del Palacio S.A</title>
+    <title>del Palacio S.A — Políticas</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles0.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-
+    <style>
+        .section-title {
+            font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #6c757d;
+            margin-bottom: 1.2rem; padding-bottom: 0.4rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .policy-card {
+            border: none;
+            border-radius: 12px;
+            border-top: 4px solid #dee2e6;
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .policy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+        }
+        .policy-card .card-title { font-size: 1rem; font-weight: 700; }
+        .policy-card .card-text  { font-size: 0.88rem; color: #6c757d; }
+    </style>
 </head>
 
 <body>
-    <!-- Menú de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <img src="img/logodp.png" alt="" class="logodp">
         <a class="navbar-brand" href="index.html"> del Palacio S.A </a>
@@ -22,188 +40,147 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksAlmacen.html">Almacén</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksEntrega.html">Entrega</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksFlota.html">Flota</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksSeguridad.html">Seguridad e Hiegiene</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGente.html">Gente</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="LinksGenerales.html">Grales-Planeamiento-Gestíon</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="ubicacion.html">Ubicación</a>
-                </li>
+                <li class="nav-item active"><a class="nav-link" href="nuestras_politicas.html">Nuestras Políticas</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksAlmacen.html">Almacén</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksEntrega.html">Entrega</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksFlota.html">Flota</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksSeguridad.html">Seguridad e Higiene</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGente.html">Gente</a></li>
+                <li class="nav-item"><a class="nav-link" href="LinksGenerales.html">Gral-Planeamiento-Gestión</a></li>
+                <li class="nav-item"><a class="nav-link" href="ubicacion.html">Ubicación</a></li>
             </ul>
         </div>
     </nav>
-    <!-- Encabezado -->
+
     <header class="bg-dark text-white text-center py-3">
-
-        <h1>Políticas</h1>
+        <h1>Nuestras Políticas</h1>
     </header>
-    <!-- Contenido Principal -->
-    <main class="container my-4">
+
+    <main class="container my-5">
+        <p class="section-title text-center">Documentos y lineamientos</p>
         <div class="row">
-            <!-- Tarjeta: Política de Stock -->
+
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-primary">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#007bff;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-boxes text-primary"></i> Política de Stock
-                        </h5>
-                        <p class="card-text">Conozca nuestra política de stock.</p>
-                        <a href="politica-stock.html" class="btn btn-outline-primary btn-block">Ver más</a>
+                        <h5 class="card-title"><i class="fas fa-boxes text-primary mr-2"></i>Política de Stock</h5>
+                        <p class="card-text">Lineamientos para la gestión y control de inventario.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="politica-stock.html" class="btn btn-outline-primary btn-block">Ver política</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta: Nuestros 10 Principios -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-success">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#28a745;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-lightbulb text-success"></i> Nuestros 10 Principios
-                            <span class="badge badge-success">Nuevo</span>
-                        </h5>
-                        <p class="card-text">Conozca los principios que guían nuestro accionar diario.</p>
-                        <a href="principios.html" class="btn btn-outline-success btn-block">Ver más</a>
+                        <h5 class="card-title"><i class="fas fa-lightbulb text-success mr-2"></i>Nuestros 10 Principios <span class="badge badge-success ml-1" style="font-size:0.65rem;">Nuevo</span></h5>
+                        <p class="card-text">Los principios que guían nuestro accionar diario.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="principios.html" class="btn btn-outline-success btn-block">Ver principios</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta: Política de Ciberseguridad -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-danger">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#dc3545;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-shield-alt text-danger"></i> Política de Ciberseguridad
-                        </h5>
-                        <p class="card-text">Conozca nuestras medidas de protección digital.</p>
-                        <a href="politica-ciberseguridad.html" class="btn btn-outline-danger btn-block">Ver más</a>
+                        <h5 class="card-title"><i class="fas fa-shield-alt text-danger mr-2"></i>Política de Ciberseguridad</h5>
+                        <p class="card-text">Medidas de protección y seguridad digital de la organización.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="politica-ciberseguridad.html" class="btn btn-outline-danger btn-block">Ver política</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta: Matriz de Riesgos -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-warning">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#ffc107;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-exclamation-triangle text-warning"></i> Matriz de Riesgos
-                        </h5>
-                        <p class="card-text">Visualice nuestros riesgos críticos y su tratamiento.</p>
-                        <a href="matriz-riesgos.html" class="btn btn-outline-warning btn-block">Ver más</a>
+                        <h5 class="card-title"><i class="fas fa-exclamation-triangle text-warning mr-2"></i>Matriz de Riesgos</h5>
+                        <p class="card-text">Visualización de riesgos críticos y su tratamiento.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="matriz-riesgos.html" class="btn btn-outline-warning btn-block">Ver matriz</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta: Resumen Visual de Riesgos -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-warning">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#ffc107;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-table text-warning"></i> Resumen Visual de Riesgos
-                            <span class="badge badge-warning">Nuevo</span>
-                        </h5>
+                        <h5 class="card-title"><i class="fas fa-table text-warning mr-2"></i>Resumen Visual de Riesgos <span class="badge badge-warning ml-1" style="font-size:0.65rem;">Nuevo</span></h5>
                         <p class="card-text">Tabla general de eventos con responsables y contacto.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
                         <a href="resumen_visual_riesgos.html" class="btn btn-outline-warning btn-block">Ver resumen</a>
                     </div>
                 </div>
             </div>
-            <!-- Tarjeta: Resumen Visual de Riesgos -->
+
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-warning">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#ffc107;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-table text-warning"></i> Informe Riesgos Externos 
-                            <span class="badge badge-warning">Nuevo</span>
-                        </h5>
-                        <p class="card-text"> Informe de los Eventos Historicos</p>
-                        <a href="dashboard_riesgos_integrado.html" class="btn btn-outline-warning btn-block">Ver resumen</a>
+                        <h5 class="card-title"><i class="fas fa-table text-warning mr-2"></i>Informe Riesgos Externos <span class="badge badge-warning ml-1" style="font-size:0.65rem;">Nuevo</span></h5>
+                        <p class="card-text">Informe de eventos históricos externos.</p>
                     </div>
-                </div>
-            </div>
-            <!-- Tarjeta: Política Disciplinaria -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-secondary">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-gavel text-secondary"></i> Política Disciplinaria
-                        </h5>
-                        <p class="card-text">Conozca nuestra estrategia para resolver conflictos.</p>
-                        <a href="politica_disciplinaria.html" class="btn btn-outline-secondary btn-block">Ver más</a>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="dashboard_riesgos_integrado.html" class="btn btn-outline-warning btn-block">Ver informe</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta: Política 5S -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-left-info">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#6c757d;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-broom text-info"></i> Política 5S
-                            <span class="badge badge-info">Actualizado</span>
-                        </h5>
-                        <p class="card-text">Conozca nuestra metodología para mantener el orden y la limpieza.</p>
-                        <a href="politica-5s.html" class="btn btn-outline-info btn-block">Ver más</a>
+                        <h5 class="card-title"><i class="fas fa-gavel text-secondary mr-2"></i>Política Disciplinaria</h5>
+                        <p class="card-text">Estrategia para la resolución de conflictos internos.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="politica_disciplinaria.html" class="btn btn-outline-secondary btn-block">Ver política</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta: Política Global -->
-            <div class="col-md-4 mb-4 mx-auto">
-                <div class="card h-100 shadow-sm border-left-dark">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#17a2b8;">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-globe text-dark"></i> Política Global
-                        </h5>
-                        <p class="card-text">Conozca nuestra política global y valores internacionales.</p>
-                        <a href="politica-global.html" class="btn btn-dark btn-block">Ver más</a>
+                        <h5 class="card-title"><i class="fas fa-broom text-info mr-2"></i>Política 5S <span class="badge badge-info ml-1" style="font-size:0.65rem;">Actualizado</span></h5>
+                        <p class="card-text">Metodología para mantener el orden y la limpieza en el trabajo.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="politica-5s.html" class="btn btn-outline-info btn-block">Ver política</a>
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm policy-card d-flex flex-column justify-content-between" style="border-top-color:#343a40;">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-globe text-dark mr-2"></i>Política Global</h5>
+                        <p class="card-text">Política global y valores internacionales de la organización.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="politica-global.html" class="btn btn-dark btn-block">Ver política</a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <!-- Pie de Página -->
     <footer class="bg-dark text-white text-center py-3">
         <div class="row">
-            <div class="col-md-3">
-                <a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"> <i
-                        class="fa-brands fa-instagram"></i> Instagram</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i
-                        class="fa-brands fa-facebook"></i> Facebook</a>
-            </div>
-            <div class="col-md-3">
-                <a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i
-                        class="fa-brands fa-linkedin"></i> Linkedin</a>
-            </div>
-            <div class="col-md-3">
-                <p>Contacto: <a href="mailto:administracion@delpalacio.com.ar"
-                        class="text-white">administracion@delpalacio.com.ar</a></p>
-            </div>
+            <div class="col-md-3"><a href="https://www.instagram.com/del.palacio?igsh=MXdhbmphdnZ6MDN5dw==" class="text-white"><i class="fa-brands fa-instagram"></i> Instagram</a></div>
+            <div class="col-md-3"><a href="https://www.facebook.com/delpalaciosa?mibextid=ZbWKwL" class="text-white"><i class="fa-brands fa-facebook"></i> Facebook</a></div>
+            <div class="col-md-3"><a href="https://www.linkedin.com/company/del-palacio-s-a/mycompany/" class="text-white"><i class="fa-brands fa-linkedin"></i> Linkedin</a></div>
+            <div class="col-md-3"><p>Contacto: <a href="mailto:administracion@delpalacio.com.ar" class="text-white">administracion@delpalacio.com.ar</a></p></div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p>
-            </div>
-        </div>
+        <div class="row"><div class="col-12"><p>&copy; 2024 del Palacio S.A. Todos los derechos reservados.</p></div></div>
     </footer>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
