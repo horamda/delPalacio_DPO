@@ -35,16 +35,22 @@ body{font-family:var(--font-sans)}
 .body-table .sep{width:1px;padding:0;background:var(--color-border-secondary)}
 .body-table td{vertical-align:top;padding:5px 5px}
 .body-table .c-area{width:160px;vertical-align:middle}
-.body-table .c-kpi {width:185px}
-.body-table .c-drv {width:195px}
+.body-table .c-kpi{width:185px}
+.body-table .c-drv{width:195px}
 
 .area-sep{border-top:2px solid #B5D4F4 !important}
 .kpi-sep td{border-top:0.5px solid var(--color-border-tertiary)}
 
+/* Área box */
+.bx-area{background:#E6F1FB;border:0.5px solid #B5D4F4;color:#0C447C;font-weight:500;border-radius:6px;padding:8px 9px;display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.35;width:100%}
+.bx-area i{font-size:16px;flex-shrink:0;color:#185FA5}
+
+/* KPI box */
+.bx-kpi{background:#EAF3DE;border:0.5px solid #C0DD97;color:#27500A;font-weight:500;border-radius:6px;padding:7px 9px;display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.35;width:100%}
+.bx-kpi i{font-size:14px;flex-shrink:0;color:#3B6D11}
+
+/* Driver y PI */
 .bx{border-radius:6px;font-size:11px;line-height:1.4;padding:7px 9px;width:100%;display:block}
-.bx-area{background:#E6F1FB;border:0.5px solid #B5D4F4;color:#0C447C;font-weight:500;display:flex;align-items:center;gap:6px}
-.bx-area .ico{font-size:13px;flex-shrink:0}
-.bx-kpi{background:#EAF3DE;border:0.5px solid #C0DD97;color:#27500A;font-weight:500}
 .bx-drv{background:#FAEEDA;border:0.5px solid #FAC775;color:#633806}
 .bx-pi {background:#EEEDFE;border:0.5px solid #AFA9EC;color:#3C3489}
 .bx+.bx{margin-top:3px}
@@ -84,44 +90,47 @@ body{font-family:var(--font-sans)}
 </tr></table>
 <table class="body-table"><tbody>
 
+<!-- 1. PICKING -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="3"><div class="bx bx-area"><span class="ico">🛒</span>1. Picking</div></td>
+  <td class="c-area" rowspan="3"><div class="bx-area"><i class="ti ti-hand-grab" aria-hidden="true"></i>1. Picking</div></td>
   <td class="sep" rowspan="3"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">1.1 Productividad Picking</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-speedboat" aria-hidden="true"></i>1.1 Productividad Picking</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Productividad por HH</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos pickeados / Horas</div></td>
 </tr>
 <tr>
-  <td class="c-kpi" style="visibility:hidden"><div class="bx bx-kpi"></div></td>
+  <td class="c-kpi" style="visibility:hidden"><div class="bx-kpi"></div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Volumen procesado</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos pickeados</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">1.2 Exactitud Picking</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-target" aria-hidden="true"></i>1.2 Exactitud Picking</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Calidad en la preparación</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Errores picking (bultos con errores / bultos totales)</div></td>
 </tr>
 
+<!-- 2. CLASIFICACIÓN VACÍOS -->
 <tr class="area-sep">
-  <td class="c-area"><div class="bx bx-area"><span class="ico">📦</span>2. Clasificación Vacíos</div></td>
+  <td class="c-area"><div class="bx-area"><i class="ti ti-box" aria-hidden="true"></i>2. Clasificación Vacíos</div></td>
   <td class="sep"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">2.1 Productividad Clasificación Vacíos</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-layers-subtract" aria-hidden="true"></i>2.1 Productividad Clasificación</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Productividad por HH</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Cajones clasificados / Hora</div></td>
 </tr>
 
+<!-- 3. INVENTARIO -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="2"><div class="bx bx-area"><span class="ico">📋</span>3. Inventario</div></td>
+  <td class="c-area" rowspan="2"><div class="bx-area"><i class="ti ti-clipboard-list" aria-hidden="true"></i>3. Inventario</div></td>
   <td class="sep" rowspan="2"></td>
-  <td class="c-kpi" rowspan="2"><div class="bx bx-kpi">3.1 Precisión de Inventario</div></td>
+  <td class="c-kpi" rowspan="2"><div class="bx-kpi"><i class="ti ti-circle-check" aria-hidden="true"></i>3.1 Precisión de Inventario</div></td>
   <td class="sep" rowspan="2"></td>
   <td class="c-drv"><div class="bx bx-drv">Diferencia de inventario</div></td>
   <td class="sep"></td>
@@ -133,34 +142,36 @@ body{font-family:var(--font-sans)}
   <td class="c-pi"><div class="bx bx-pi">SKUs sin diferencias / SKUs contados</div></td>
 </tr>
 
+<!-- 4. CALIDAD -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="3"><div class="bx bx-area"><span class="ico">🛡️</span>4. Calidad Warehouse</div></td>
+  <td class="c-area" rowspan="3"><div class="bx-area"><i class="ti ti-shield-check" aria-hidden="true"></i>4. Calidad Warehouse</div></td>
   <td class="sep" rowspan="3"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">4.1 WQI</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-award" aria-hidden="true"></i>4.1 WQI</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Rotura</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos rotos</div><div class="bx bx-pi">Costo Rotura (bultos)</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">4.2 FGLI</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-alert-triangle" aria-hidden="true"></i>4.2 FGLI</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Pérdidas</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos perdidos</div><div class="bx bx-pi">Costo perdidas (por bulto)</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">4.3 Rechazos Operativos</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-ban" aria-hidden="true"></i>4.3 Rechazos Operativos</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Rechazos por errores operativos</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos rechazados por mercadería cruzada</div><div class="bx bx-pi">Bultos cargados en los camiones</div></td>
 </tr>
 
+<!-- 5. CARGA T2 -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="2"><div class="bx bx-area"><span class="ico">🚚</span>5. Carga (T2)</div></td>
+  <td class="c-area" rowspan="2"><div class="bx-area"><i class="ti ti-truck-loading" aria-hidden="true"></i>5. Carga (T2)</div></td>
   <td class="sep" rowspan="2"></td>
-  <td class="c-kpi" rowspan="2"><div class="bx bx-kpi">5.1 Eficiencia de Carga</div></td>
+  <td class="c-kpi" rowspan="2"><div class="bx-kpi"><i class="ti ti-bolt" aria-hidden="true"></i>5.1 Eficiencia de Carga</div></td>
   <td class="sep" rowspan="2"></td>
   <td class="c-drv"><div class="bx bx-drv">Carga antes de matinal</div></td>
   <td class="sep"></td>
@@ -172,44 +183,47 @@ body{font-family:var(--font-sans)}
   <td class="c-pi"><div class="bx bx-pi">Promedio tiempo carga (min/camión)</div></td>
 </tr>
 
+<!-- 6. DESCARGA T1 -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="2"><div class="bx bx-area"><span class="ico">🏭</span>6. Descarga (T1)</div></td>
+  <td class="c-area" rowspan="2"><div class="bx-area"><i class="ti ti-forklift" aria-hidden="true"></i>6. Descarga (T1)</div></td>
   <td class="sep" rowspan="2"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">6.1 ATCT (Tiempo Ciclo Camión)</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-clock" aria-hidden="true"></i>6.1 ATCT (Tiempo Ciclo Camión)</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Tiempo de espera</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Promedio tiempo de espera (min/camión)</div><div class="bx bx-pi">% de camiones atendidos a tiempo</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">6.2 Tiempo de Descarga</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-arrow-down-circle" aria-hidden="true"></i>6.2 Tiempo de Descarga</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Tiempo de descarga</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Pallets descargados</div><div class="bx bx-pi">Promedio min descargas</div></td>
 </tr>
 
+<!-- 7. AUTOELEVADORES -->
 <tr class="area-sep">
-  <td class="c-area"><div class="bx bx-area"><span class="ico">🔧</span>7. Autoelevadores</div></td>
+  <td class="c-area"><div class="bx-area"><i class="ti ti-crane" aria-hidden="true"></i>7. Autoelevadores</div></td>
   <td class="sep"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">7.1 FNP</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-chart-line" aria-hidden="true"></i>7.1 FNP</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Productividad de AE</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos despachados / HS de uso de AE</div></td>
 </tr>
 
+<!-- 8. PÉRDIDAS -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="2"><div class="bx bx-area"><span class="ico">⚠️</span>8. Pérdidas</div></td>
+  <td class="c-area" rowspan="2"><div class="bx-area"><i class="ti ti-exclamation-circle" aria-hidden="true"></i>8. Pérdidas</div></td>
   <td class="sep" rowspan="2"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">8.1 Pérdidas Totales</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-trending-down" aria-hidden="true"></i>8.1 Pérdidas Totales</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Robo / faltantes</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos faltantes</div><div class="bx bx-pi">Costo Faltantes</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">8.2 Obsolescencia</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-hourglass" aria-hidden="true"></i>8.2 Obsolescencia</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Vencidos / obsoletos</div></td>
   <td class="sep"></td>
@@ -236,78 +250,83 @@ body{font-family:var(--font-sans)}
 </tr></table>
 <table class="body-table"><tbody>
 
+<!-- 1. RESULTADOS CLIENTE -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="3"><div class="bx bx-area"><span class="ico">⭐</span>1. Resultados Cliente</div></td>
+  <td class="c-area" rowspan="3"><div class="bx-area"><i class="ti ti-star" aria-hidden="true"></i>1. Resultados Cliente</div></td>
   <td class="sep" rowspan="3"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">1.1 NPS Entrega</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-mood-smile" aria-hidden="true"></i>1.1 NPS Entrega</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Experiencia del cliente</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">NPS Entrega</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">1.2 Rate My Delivery (RMD)</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-message-star" aria-hidden="true"></i>1.2 Rate My Delivery (RMD)</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Calidad percibida en la entrega</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">RMD (puntaje promedio)</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">1.3 Nivel de Servicio (OTIF)</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-circle-check" aria-hidden="true"></i>1.3 Nivel de Servicio (OTIF)</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">On Time In Full (OTIF)</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">OTIF (%)</div><div class="bx bx-pi">Pedidos OTIF / Pedidos Totales</div></td>
 </tr>
 
+<!-- 2. PRODUCTIVIDAD ENTREGA -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="3"><div class="bx bx-area"><span class="ico">🚛</span>2. Productividad Entrega</div></td>
+  <td class="c-area" rowspan="3"><div class="bx-area"><i class="ti ti-package" aria-hidden="true"></i>2. Productividad Entrega</div></td>
   <td class="sep" rowspan="3"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">2.1 Volumen Entregado (bultos)</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-stack" aria-hidden="true"></i>2.1 Volumen Entregado (bultos)</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Drop Size</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos por camión</div><div class="bx bx-pi">Clientes por camión</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">2.2 Calidad de Entrega</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-rosette" aria-hidden="true"></i>2.2 Calidad de Entrega</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Rechazos</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos rechazados / bultos despachados = % Rechazos</div></td>
 </tr>
 <tr>
-  <td class="c-kpi" style="visibility:hidden"><div class="bx bx-kpi"></div></td>
+  <td class="c-kpi" style="visibility:hidden"><div class="bx-kpi"></div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">DQI</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Bultos rotos / Bultos despachados = % Rotura</div></td>
 </tr>
 
+<!-- 3. HORAS EN RUTA -->
 <tr class="area-sep">
-  <td class="c-area"><div class="bx bx-area"><span class="ico">🗺️</span>3. Horas en Ruta</div></td>
+  <td class="c-area"><div class="bx-area"><i class="ti ti-map-pin" aria-hidden="true"></i>3. Horas en Ruta</div></td>
   <td class="sep"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">3.1 Tiempo en Ruta (h)</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-clock-hour-4" aria-hidden="true"></i>3.1 Tiempo en Ruta (h)</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Desvío de TR (%)</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Paradas no programadas</div><div class="bx bx-pi">Desvío de KM (%)</div><div class="bx bx-pi">Rechazo "sin dinero"</div><div class="bx bx-pi">Rechazo "sin envases"</div></td>
 </tr>
 
+<!-- 4. ATENCIÓN PDV -->
 <tr class="area-sep">
-  <td class="c-area"><div class="bx bx-area"><span class="ico">🏪</span>4. Atención PDV</div></td>
+  <td class="c-area"><div class="bx-area"><i class="ti ti-building-store" aria-hidden="true"></i>4. Atención PDV</div></td>
   <td class="sep"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">4.1 Tiempo Atención PDV (h)</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-clock-hour-4" aria-hidden="true"></i>4.1 Tiempo Atención PDV (h)</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Desvío de TxPDV (%)</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Adherencia al click (%)</div><div class="bx bx-pi">Tiempo de espera promedio</div></td>
 </tr>
 
+<!-- 5. PRE RUTA -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="2"><div class="bx bx-area"><span class="ico">🕐</span>5. Pre Ruta</div></td>
+  <td class="c-area" rowspan="2"><div class="bx-area"><i class="ti ti-clock-play" aria-hidden="true"></i>5. Pre Ruta</div></td>
   <td class="sep" rowspan="2"></td>
-  <td class="c-kpi" rowspan="2"><div class="bx bx-kpi">5.1 TML — Tiempo Medio de Liberación</div></td>
+  <td class="c-kpi" rowspan="2"><div class="bx-kpi"><i class="ti ti-player-play" aria-hidden="true"></i>5.1 TML — Tiempo Medio Liberación</div></td>
   <td class="sep" rowspan="2"></td>
   <td class="c-drv"><div class="bx bx-drv">Salida a tiempo</div></td>
   <td class="sep"></td>
@@ -319,10 +338,11 @@ body{font-family:var(--font-sans)}
   <td class="c-pi"><div class="bx bx-pi">Camiones liberados a tiempo (%)</div></td>
 </tr>
 
+<!-- 6. POST RUTA -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="3"><div class="bx bx-area"><span class="ico">🔄</span>6. Post Ruta</div></td>
+  <td class="c-area" rowspan="3"><div class="bx-area"><i class="ti ti-player-stop" aria-hidden="true"></i>6. Post Ruta</div></td>
   <td class="sep" rowspan="3"></td>
-  <td class="c-kpi" rowspan="3"><div class="bx bx-kpi">6.1 Tiempo Interno (h)</div></td>
+  <td class="c-kpi" rowspan="3"><div class="bx-kpi"><i class="ti ti-clock-hour-8" aria-hidden="true"></i>6.1 Tiempo Interno (h)</div></td>
   <td class="sep" rowspan="3"></td>
   <td class="c-drv"><div class="bx bx-drv">Rendición</div></td>
   <td class="sep"></td>
@@ -339,10 +359,11 @@ body{font-family:var(--font-sans)}
   <td class="c-pi"><div class="bx bx-pi">Tiempo total interno (h/camión)</div></td>
 </tr>
 
+<!-- 7. CALIDAD DE SERVICIO -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="2"><div class="bx bx-area"><span class="ico">✅</span>7. Calidad de Servicio</div></td>
+  <td class="c-area" rowspan="2"><div class="bx-area"><i class="ti ti-medal" aria-hidden="true"></i>7. Calidad de Servicio</div></td>
   <td class="sep" rowspan="2"></td>
-  <td class="c-kpi" rowspan="2"><div class="bx bx-kpi">7.1 Entrega OTIF</div></td>
+  <td class="c-kpi" rowspan="2"><div class="bx-kpi"><i class="ti ti-checks" aria-hidden="true"></i>7.1 Entrega OTIF</div></td>
   <td class="sep" rowspan="2"></td>
   <td class="c-drv"><div class="bx bx-drv">In Full</div></td>
   <td class="sep"></td>
@@ -374,62 +395,64 @@ body{font-family:var(--font-sans)}
 </tr></table>
 <table class="body-table"><tbody>
 
+<!-- 1. DOCUMENTACIÓN -->
 <tr class="area-sep">
-  <td class="c-area"><div class="bx bx-area"><span class="ico">📄</span>1. Control Documentación</div></td>
+  <td class="c-area"><div class="bx-area"><i class="ti ti-file-certificate" aria-hidden="true"></i>1. Control Documentación</div></td>
   <td class="sep"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">1.1 Cumplimiento de Documentación</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-checklist" aria-hidden="true"></i>1.1 Cumplimiento de Documentación</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Requisitos legales y corporativos</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">% Documentos al día</div><div class="bx bx-pi">% Vehículos con documentación vencida</div><div class="bx bx-pi">% Licencias de conductor al día</div></td>
 </tr>
 
+<!-- 2. MANTENIMIENTO -->
 <tr class="area-sep">
-  <td class="c-area" rowspan="7"><div class="bx bx-area"><span class="ico">🔩</span>2. Gestión de Mantenimiento</div></td>
+  <td class="c-area" rowspan="7"><div class="bx-area"><i class="ti ti-tool" aria-hidden="true"></i>2. Gestión de Mantenimiento</div></td>
   <td class="sep" rowspan="7"></td>
-  <td class="c-kpi"><div class="bx bx-kpi">2.1 Disponibilidad de Flota (MTBF)</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-calendar-stats" aria-hidden="true"></i>2.1 Disponibilidad de Flota (MTBF)</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Confiabilidad operativa de la flota</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">% Disponibilidad de flota</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">2.2 Cumplimiento Plan Mant. Preventivo</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-clipboard-check" aria-hidden="true"></i>2.2 Cumplimiento Plan Mant. Preventivo</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Ejecución del plan preventivo</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">% Adherencia al plan de mant. preventivo</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">2.3 Efectividad Mant. Preventivo</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-shield-bolt" aria-hidden="true"></i>2.3 Efectividad Mant. Preventivo</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Calidad del mantenimiento preventivo</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">% Fallas repetitivas por vehículo</div><div class="bx bx-pi">% MTTR preventivo</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">2.4 Efectividad Mant. Correctivo</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-settings" aria-hidden="true"></i>2.4 Efectividad Mant. Correctivo</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Resolución efectiva de fallas</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">% MTTR correctivo</div><div class="bx bx-pi">% Reparaciones a la primera</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">2.5 Cumplimiento Check de Salida</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-car-crash" aria-hidden="true"></i>2.5 Cumplimiento Check de Salida</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Condiciones seguras para operar</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">% Adherencia al check de salida</div><div class="bx bx-pi">% Hallazgos críticos detectados</div><div class="bx bx-pi">% Vehículos con salida no autorizada</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">2.6 Gestión de Costos de Mantenimiento</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-coins" aria-hidden="true"></i>2.6 Gestión de Costos de Mantenimiento</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Control de costos de mantenimiento</div></td>
   <td class="sep"></td>
   <td class="c-pi"><div class="bx bx-pi">Costo de mant. por km recorrido</div><div class="bx bx-pi">Costo de mant. por vehículo</div><div class="bx bx-pi">% Variación vs presupuesto</div></td>
 </tr>
 <tr class="kpi-sep">
-  <td class="c-kpi"><div class="bx bx-kpi">2.7 Análisis Predictivo y Mejora Continua</div></td>
+  <td class="c-kpi"><div class="bx-kpi"><i class="ti ti-chart-dots" aria-hidden="true"></i>2.7 Análisis Predictivo y Mejora Continua</div></td>
   <td class="sep"></td>
   <td class="c-drv"><div class="bx bx-drv">Anticipar fallas y mejorar confiabilidad</div></td>
   <td class="sep"></td>
