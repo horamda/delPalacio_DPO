@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cascadeo del Sueño · Del Palacio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#1b2330; --paper:#eef1f5; --panel:#ffffff; --panel2:#f6f8fb;
+    --line:#d3dae4; --muted:#5b6675;
+    --gold:#d99400; --green:#1f9d55; --amber:#d98a00; --red:#d63b3b;
+    --green-bg:rgba(31,157,85,.13); --amber-bg:rgba(217,138,0,.15); --red-bg:rgba(214,59,59,.13); --gray-bg:rgba(120,130,145,.12);
+    --pilar-serv:#6a4bc0; --pilar-prod:#2563b8; --pilar-seg:#178a7a; --pilar-cli:#c07b1e;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ink:#e7ecf3; --paper:#0f141b; --panel:#161d27; --panel2:#1b2431;
+      --line:#2a3644; --muted:#93a0b2;
+      --gold:#eab308; --green:#43c17f; --amber:#e6a52e; --red:#ef6a6a;
+      --green-bg:rgba(67,193,127,.14); --amber-bg:rgba(230,165,46,.15); --red-bg:rgba(239,106,106,.15); --gray-bg:rgba(140,155,175,.14);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e7ecf3; --paper:#0f141b; --panel:#161d27; --panel2:#1b2431;
+    --line:#2a3644; --muted:#93a0b2;
+    --gold:#eab308; --green:#43c17f; --amber:#e6a52e; --red:#ef6a6a;
+    --green-bg:rgba(67,193,127,.14); --amber-bg:rgba(230,165,46,.15); --red-bg:rgba(239,106,106,.15); --gray-bg:rgba(140,155,175,.14);
+  }
+  *{box-sizing:inherit}
+  html,body{margin:0}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{background:var(--paper); color:var(--ink); font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums;}
+  .wrap{max-width:1160px; margin:0 auto; padding:20px clamp(14px,3vw,30px) 60px}
+
+  header.top{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:6px}
+  .brand{display:flex; align-items:baseline; gap:12px}
+  .brand .mark{font-weight:700; letter-spacing:.02em; font-size:14px; color:var(--paper); background:var(--ink); padding:3px 9px; border-radius:5px}
+  :root[data-theme="dark"] .brand .mark{background:var(--gold); color:#12161d}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand .mark{background:var(--gold); color:#12161d}}
+  h1{font-size:clamp(20px,3.4vw,27px); font-weight:600; margin:0; letter-spacing:-.01em}
+  .themebtn{border:1px solid var(--line); background:var(--panel); color:var(--muted); border-radius:20px; padding:5px 13px; font:inherit; font-size:13px; cursor:pointer}
+  .themebtn:hover{color:var(--ink)}
+
+  .dream{border-left:3px solid var(--gold); padding:2px 0 2px 16px; margin:14px 0 22px; color:var(--ink); max-width:70ch}
+  .dream b{font-weight:600}
+  .dream small{display:block; color:var(--muted); font-size:12.5px; margin-top:3px}
+
+  .summary{display:flex; gap:26px; flex-wrap:wrap; align-items:flex-end; margin:0 0 26px}
+  .stat{display:flex; align-items:baseline; gap:8px}
+  .stat .n{font-size:34px; font-weight:700; line-height:1}
+  .stat .l{font-size:13px; color:var(--muted); max-width:15ch}
+  .stat.red .n{color:var(--red)} .stat.amber .n{color:var(--amber)} .stat.green .n{color:var(--green)}
+
+  .colhead{display:grid; grid-template-columns:220px 200px 1fr; gap:26px; padding:0 4px 8px; position:sticky; left:0}
+  .colhead span{font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.03em}
+
+  .treewrap{overflow-x:auto; overflow-y:visible; padding:4px 4px 8px}
+  .tree{position:relative; display:flex; flex-direction:column; gap:40px; min-width:760px}
+  svg.links{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0}
+  svg.links path{fill:none; stroke:var(--line); stroke-width:1.8}
+  .band{display:grid; grid-template-columns:220px 1fr; column-gap:26px; align-items:center; position:relative; z-index:1}
+  .b-right{display:flex; flex-direction:column; gap:24px}
+  .gesgroup{display:grid; grid-template-columns:200px 1fr; column-gap:26px; align-items:center}
+  .g-ope{display:flex; flex-direction:column; gap:12px}
+
+  .node{background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:9px 11px; position:relative;
+    display:flex; flex-direction:column; gap:2px; transition:border-color .15s, box-shadow .15s}
+  .node .nm{font-weight:600; font-size:14px; display:flex; align-items:center; gap:7px}
+  .node .mt{font-size:12px; color:var(--muted)}
+  .node .dot{width:9px; height:9px; border-radius:50%; flex:none}
+  .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.gray{background:#8894a6}
+  .node.kpi{border-top-width:3px; padding:11px 13px}
+  .node.kpi .nm{font-size:15.5px}
+  .node.kpi .real{font-size:13px; color:var(--muted); margin-top:2px}
+  .node.kpi.serv{border-top-color:var(--pilar-serv)} .node.kpi.prod{border-top-color:var(--pilar-prod)}
+  .node.kpi.seg{border-top-color:var(--pilar-seg)} .node.kpi.cli{border-top-color:var(--pilar-cli)}
+  .node.oper{border-left:4px solid transparent; padding-left:10px}
+  .node.oper.green{border-left-color:var(--green)} .node.oper.amber{border-left-color:var(--amber)}
+  .node.oper.red{border-left-color:var(--red)} .node.oper.gray{border-left-color:#8894a6}
+  .node.foco{cursor:pointer}
+  .node.foco:hover{border-color:var(--ink); box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .node.foco .nm::after{content:"ver plan"; margin-left:auto; font-size:11px; font-weight:500; color:var(--gold); border:1px solid var(--gold); border-radius:10px; padding:1px 8px}
+  .tag{font-size:11px; font-weight:600; padding:1px 6px; border-radius:4px; background:var(--red-bg); color:var(--red)}
+
+  #tip{position:fixed; z-index:40; background:var(--ink); color:var(--paper); border-radius:7px; padding:8px 11px; font-size:12.5px;
+    pointer-events:none; opacity:0; transition:opacity .12s; max-width:240px; box-shadow:0 6px 20px rgba(0,0,0,.25)}
+  #tip .tn{font-weight:600; margin-bottom:2px} #tip .tr{color:#cfd6e0}
+  #tip b{color:var(--gold)}
+
+  /* panel */
+  #scrim{position:fixed; inset:0; background:rgba(10,14,20,.45); opacity:0; visibility:hidden; transition:opacity .2s; z-index:50}
+  #scrim.open{opacity:1; visibility:visible}
+  #panel{position:fixed; top:0; right:0; height:100%; width:min(440px,100%); background:var(--panel);
+    transform:translateX(100%); transition:transform .25s ease; z-index:51; display:flex; flex-direction:column;
+    box-shadow:-8px 0 30px rgba(0,0,0,.2); padding-top:env(safe-area-inset-top,0px)}
+  #panel.open{transform:none}
+  .phead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:20px 22px 14px; border-bottom:1px solid var(--line)}
+  .phead h2{margin:0; font-size:19px; font-weight:600}
+  .phead .st{font-size:13px; color:var(--muted); margin-top:3px}
+  .phead .st .bad{color:var(--red); font-weight:600}
+  .closeb{border:none; background:var(--panel2); color:var(--ink); width:32px; height:32px; border-radius:8px; font-size:18px; cursor:pointer; flex:none}
+  .pbody{padding:18px 22px 30px; overflow-y:auto}
+  .chartbox{background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:12px 12px 6px; margin-bottom:20px}
+  .chartbox .cap{font-size:12px; color:var(--muted); margin:0 0 4px}
+  .zones{display:flex; gap:14px; font-size:12px; color:var(--muted); margin:8px 2px 0; flex-wrap:wrap}
+  .zones span{display:flex; align-items:center; gap:5px}
+  .zones i{width:10px; height:10px; border-radius:3px; display:inline-block}
+  h3.rx{font-size:13px; font-weight:600; color:var(--muted); margin:0 0 10px; letter-spacing:.02em}
+  ol.rx{margin:0 0 20px; padding-left:0; list-style:none; counter-reset:s}
+  ol.rx li{counter-increment:s; position:relative; padding:9px 0 9px 34px; border-bottom:1px solid var(--line); font-size:14px}
+  ol.rx li:last-child{border-bottom:none}
+  ol.rx li::before{content:counter(s); position:absolute; left:0; top:8px; width:22px; height:22px; border-radius:6px;
+    background:var(--ink); color:var(--paper); font-size:12px; font-weight:600; display:grid; place-items:center}
+  .esc{background:var(--red-bg); border-radius:9px; padding:12px 14px; font-size:13.5px}
+  .esc b{color:var(--red)}
+  .note{color:var(--muted); font-size:12.5px; margin-top:30px; max-width:66ch}
+
+  @media (max-width:640px){
+    .colhead{display:none}
+    #panel{width:100%; height:88%; top:auto; bottom:0; border-radius:16px 16px 0 0; transform:translateY(100%)}
+    #panel.open{transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="mark">DPO · Del Palacio</span><h1>Cascadeo del Sueño</h1></div>
+    <button class="themebtn" id="theme" aria-label="Cambiar tema">Tema</button>
+  </header>
+
+  <p class="dream"><b>Ser la distribuidora elegida</b>, reconocida por la excelencia en el servicio, eficiencia operativa y compromiso con nuestra gente, nuestros clientes, la seguridad y el medio ambiente.
+    <small>Prototipo · datos de ejemplo. En producción, los valores entran desde ChessERP y Foxtrot.</small></p>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="colhead"><span>KPI del Sueño</span><span>Gestión</span><span>Operación · tocá los focos</span></div>
+  <div class="treewrap">
+    <div class="tree" id="tree">
+      <svg class="links" id="links"></svg>
+    </div>
+  </div>
+
+  <p class="note">Verde = dentro de meta · Amarillo = por debajo pero recuperable · Rojo = fuera de control · Gris = meta a definir. Los indicadores <b style="color:var(--red)">foco</b> abren su carta de control y plan de reacción.</p>
+</div>
+
+<div id="tip"></div>
+<div id="scrim"></div>
+<aside id="panel" aria-hidden="true">
+  <div class="phead"><div><h2 id="p-name"></h2><div class="st" id="p-st"></div></div><button class="closeb" id="p-close" aria-label="Cerrar">×</button></div>
+  <div class="pbody">
+    <div class="chartbox"><p class="cap">Carta de control · últimos 6 días</p><canvas id="p-chart" height="150"></canvas>
+      <div class="zones" id="p-zones"></div></div>
+    <h3 class="rx">Plan de reacción · en orden de causa más probable</h3>
+    <ol class="rx" id="p-plan"></ol>
+    <div class="esc" id="p-esc"></div>
+  </div>
+</aside>
+
+<script>
+const DATA = {
+  kpis:[
+    {id:"otif", cls:"serv", name:"OTIF (NDS)", meta:"~90%", real:"78% YTD", status:"amber", ges:[
+      {name:"In Full", mt:"% completo", status:"amber", ope:[
+        {name:"% Rechazos", mt:"≤ 2%", real:"1,35%", status:"green"},
+        {name:"Disponibilidad · DDI", mt:"≤ 630 ppm", real:"975", status:"red"},
+        {name:"Errores de picking", mt:"≤ 4", real:"3", status:"green"}]},
+      {name:"On Time", mt:"% a tiempo", status:"amber", ope:[
+        {name:"TML", mt:"≤ 30 min", real:"27,8", status:"green"},
+        {name:"Tiempo x PDV", mt:"por agrupación", real:"—", status:"gray"}]}]},
+    {id:"prod", cls:"prod", name:"Productividad total", meta:"benchmark", real:"a definir", status:"gray", ges:[
+      {name:"WNP", mt:"Almacén", status:"amber", ope:[
+        {name:"Prod. Picking", mt:"≥ 330 btos/h", real:"282", status:"red", foco:"picking"},
+        {name:"Clasif. vacíos", mt:"≥ 4,5 pallet/h", real:"5,45", status:"green"},
+        {name:"FNP / Prod. AE", mt:"≥ 44 HL/Hs", real:"67", status:"green"}]},
+      {name:"TLP", mt:"Distribución", status:"red", ope:[
+        {name:"TI", mt:"≤ 30 min", real:"38", status:"red", foco:"ti"},
+        {name:"Tiempo en ruta", mt:"por definir", real:"—", status:"gray"},
+        {name:"Paradas x ruta", mt:"por definir", real:"—", status:"gray"}]}]},
+    {id:"tri", cls:"seg", name:"0 TRI", meta:"0", real:"0 · 42 días sin acc.", status:"green", ges:[
+      {name:"FAI", mt:"seguridad", status:"amber", ope:[
+        {name:"Comport. inseguros", mt:"reducir", real:"20", status:"amber"}]},
+      {name:"SIF", mt:"precursor / pot.", status:"amber", ope:[
+        {name:"Cuasi-accidentes", mt:"0", real:"1", status:"amber"}]}]},
+    {id:"nps", cls:"cli", name:"NPS", meta:"≥ 70", real:"73", status:"green", ges:[
+      {name:"RMD", mt:"≥ 4,75", status:"red", ope:[
+        {name:"% Respuestas RMD", mt:"≥ 50%", real:"32%", status:"red", foco:"respuestas"},
+        {name:"RMD (score)", mt:"≥ 4,75", real:"4,96", status:"green"}]},
+      {name:"Reclamos", mt:"SLA ≤ 72h", status:"gray", ope:[
+        {name:"% resuelto ≤ 72h", mt:"por canal", real:"—", status:"gray"}]}]}
+  ]
+};
+
+const FOCOS = {
+  picking:{ title:"Prod. Picking", sub:"Tarea crítica · Almacén", state:"282 btos/h · meta ≥ 330", bad:true,
+    unit:"btos/h", days:["Lun","Mar","Mié","Jue","Vie","Sáb"], series:[282,285,278,290,288,295], meta:330, better:"high",
+    zones:[{from:0,to:300,color:"var(--red-bg)"},{from:300,to:330,color:"var(--amber-bg)"},{from:330,to:360,color:"var(--green-bg)"}],
+    ymin:260, ymax:360,
+    plan:["Reabastecimiento de canchas — ¿hay faltante de producto? Chequear el punto de reorden (mín-máx) y reponer antes de que se vacíe. Es la palanca principal.",
+      "Secuencia / recorrido — ¿el pickero camina de más? Reordenar el recorrido de canchas.",
+      "Asignación de zonas — ¿balanceado entre pickeros? Rebalancear las canchas lejanas o pesadas."],
+    esc:"Si sigue en rojo → OWD de la tarea de recolección + 5 porqués sobre la causa raíz." },
+  ti:{ title:"TI — Tiempo Interno", sub:"Liquidación + fichada · Distribución", state:"38 min · meta ≤ 30", bad:true,
+    unit:"min", days:["Lun","Mar","Mié","Jue","Vie","Sáb"], series:[38,42,35,33,38,36], meta:30, better:"low",
+    zones:[{from:0,to:30,color:"var(--green-bg)"},{from:30,to:35,color:"var(--amber-bg)"},{from:35,to:48,color:"var(--red-bg)"}],
+    ymin:20, ymax:48,
+    plan:["Liquidación — agilizar el cierre (efectivo, retornos, rendición); preparar la data por adelantado.",
+      "Secuencia de dársena en el retorno — ordenar quién descarga primero y evitar la cola del pelotón.",
+      "Recursos en el pico de retorno — cajero/administrativo y autoelevador disponibles a esa hora.",
+      "Volumen de retornos — muchas devoluciones alargan descarga y conteo (conecta con rechazos)."],
+    esc:"Si sigue en rojo → OWD de la tarea de retorno/liquidación + 5 porqués." },
+  respuestas:{ title:"% Respuestas RMD", sub:"Captura en la entrega · Cliente", state:"32% · meta ≥ 50%", bad:true,
+    unit:"%", days:["Lun","Mar","Mié","Jue","Vie","Sáb"], series:[32,33,31,35,34,32], meta:50, better:"high",
+    zones:[{from:0,to:40,color:"var(--red-bg)"},{from:40,to:50,color:"var(--amber-bg)"},{from:50,to:70,color:"var(--green-bg)"}],
+    ymin:25, ymax:70,
+    plan:["Cierre del chofer — pedir la calificación en el momento de dejar el pedido. Es la palanca más fuerte.",
+      "Timing del envío — que la encuesta salga apenas se confirma la entrega, no horas después.",
+      "Facilidad — menos pasos, QR en el remito. A más fricción, menos respuesta.",
+      "Seguimiento diario por chofer — cada uno ve su tasa; la acción de la semana va al de menor respuesta."],
+    esc:"Si sigue en rojo → OWD de cierre/utilización al chofer de menor tasa de respuesta." }
+};
+
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const el = (t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+
+// ---- render tree (bandas por KPI) ----
+const tree=document.getElementById("tree");
+const links=[];
+DATA.kpis.forEach(k=>{
+  const band=el("div","band");
+  const bl=el("div","b-kpi");
+  const kn=el("div","node kpi "+k.cls); kn.id="n-"+k.id;
+  kn.innerHTML=`<div class="nm">${k.name}<span class="dot ${k.status}" style="margin-left:auto"></span></div>
+    <div class="real">meta ${k.meta} · real ${k.real}</div>`;
+  attachTip(kn, k.name, `meta ${k.meta}`, `real ${k.real}`);
+  bl.appendChild(kn); band.appendChild(bl);
+  const right=el("div","b-right");
+  k.ges.forEach((g,gi)=>{
+    const gg=el("div","gesgroup");
+    const gid="n-"+k.id+"-g"+gi;
+    const gn=el("div","node ges"); gn.id=gid;
+    gn.innerHTML=`<div class="nm">${g.name}<span class="dot ${g.status}" style="margin-left:auto"></span></div><div class="mt">${g.mt}</div>`;
+    attachTip(gn, g.name, g.mt, "");
+    gg.appendChild(gn); links.push(["n-"+k.id, gid]);
+    const gope=el("div","g-ope");
+    g.ope.forEach((o,oi)=>{
+      const oid=gid+"-o"+oi;
+      const on=el("div","node oper "+o.status+(o.foco?" foco":"")); on.id=oid;
+      on.innerHTML=`<div class="nm">${o.name}</div><div class="mt">meta ${o.mt} · real <b>${o.real}</b></div>`;
+      if(o.foco){ on.addEventListener("click",()=>openPanel(o.foco)); }
+      attachTip(on, o.name, `meta ${o.mt}`, `real ${o.real}`);
+      gope.appendChild(on); links.push([gid, oid]);
+    });
+    gg.appendChild(gope);
+    right.appendChild(gg);
+  });
+  band.appendChild(right);
+  tree.appendChild(band);
+});
+
+// ---- summary ----
+let red=0,amber=0,foco=0;
+DATA.kpis.forEach(k=>k.ges.forEach(g=>g.ope.forEach(o=>{ if(o.status==="red")red++; if(o.status==="amber")amber++; if(o.foco)foco++; })));
+document.getElementById("summary").innerHTML=
+  `<div class="stat red"><span class="n">${foco}</span><span class="l">indicadores foco en rojo</span></div>
+   <div class="stat amber"><span class="n">${amber}</span><span class="l">en alerta</span></div>
+   <div class="stat green"><span class="n">1</span><span class="l">KPI de servicio a subir (OTIF)</span></div>`;
+
+// ---- connectors ----
+function drawLinks(){
+  const svg=document.getElementById("links"), tree=document.getElementById("tree");
+  const tb=tree.getBoundingClientRect();
+  svg.setAttribute("viewBox",`0 0 ${tree.offsetWidth} ${tree.offsetHeight}`);
+  svg.innerHTML="";
+  links.forEach(([a,b])=>{
+    const A=document.getElementById(a).getBoundingClientRect(), B=document.getElementById(b).getBoundingClientRect();
+    const x1=A.right-tb.left, y1=A.top-tb.top+A.height/2, x2=B.left-tb.left, y2=B.top-tb.top+B.height/2;
+    const mx=x1+(x2-x1)/2;
+    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+    svg.appendChild(p);
+  });
+}
+window.addEventListener("resize",()=>requestAnimationFrame(drawLinks));
+window.addEventListener("load",()=>requestAnimationFrame(drawLinks));
+document.fonts && document.fonts.ready.then(()=>requestAnimationFrame(drawLinks));
+setTimeout(drawLinks,120);
+
+// ---- tooltip ----
+const tip=document.getElementById("tip");
+function attachTip(node,n,m,r){
+  node.addEventListener("mouseenter",e=>{ tip.innerHTML=`<div class="tn">${n}</div><div class="tr">${m}${r?" · "+r:""}</div>`; tip.style.opacity="1"; move(e); });
+  node.addEventListener("mousemove",move);
+  node.addEventListener("mouseleave",()=>tip.style.opacity="0");
+  function move(e){ const x=Math.min(e.clientX+14,innerWidth-250); tip.style.left=x+"px"; tip.style.top=(e.clientY+16)+"px"; }
+}
+
+// ---- panel + chart ----
+let chart=null;
+const scrim=document.getElementById("scrim"), panel=document.getElementById("panel");
+function openPanel(key){
+  const f=FOCOS[key]; if(!f)return;
+  document.getElementById("p-name").textContent=f.title;
+  document.getElementById("p-st").innerHTML=`${f.sub} · <span class="bad">${f.state}</span>`;
+  const zl=document.getElementById("p-zones");
+  zl.innerHTML=`<span><i style="background:var(--green)"></i>en meta</span><span><i style="background:var(--amber)"></i>alerta</span><span><i style="background:var(--red)"></i>fuera de control</span><span style="margin-left:auto">línea = meta ${f.meta}${f.unit==='%'?'%':''}</span>`;
+  const ol=document.getElementById("p-plan"); ol.innerHTML=""; f.plan.forEach(t=>{const li=el("li"); li.textContent=t; ol.appendChild(li);});
+  document.getElementById("p-esc").innerHTML="<b>Escalación.</b> "+f.esc;
+  scrim.classList.add("open"); panel.classList.add("open"); panel.setAttribute("aria-hidden","false");
+  drawChart(f);
+}
+function closePanel(){ scrim.classList.remove("open"); panel.classList.remove("open"); panel.setAttribute("aria-hidden","true"); }
+scrim.addEventListener("click",closePanel);
+document.getElementById("p-close").addEventListener("click",closePanel);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape")closePanel(); });
+
+const zonePlugin={ id:"zones", beforeDatasetsDraw(c){
+  const b=c.$zones; if(!b)return; const {ctx,chartArea:{left,right},scales:{y}}=c;
+  b.forEach(z=>{ const yTop=y.getPixelForValue(Math.min(z.to,y.max)), yBot=y.getPixelForValue(Math.max(z.from,y.min));
+    ctx.save(); ctx.fillStyle=resolve(z.color); ctx.fillRect(left,Math.min(yTop,yBot),right-left,Math.abs(yBot-yTop)); ctx.restore(); });
+}};
+const metaLine={ id:"metaLine", afterDatasetsDraw(c){
+  const m=c.$meta; if(m==null)return; const {ctx,chartArea:{left,right},scales:{y}}=c; const py=y.getPixelForValue(m);
+  ctx.save(); ctx.strokeStyle=cssv("--gold"); ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(left,py); ctx.lineTo(right,py); ctx.stroke(); ctx.restore();
+}};
+function resolve(v){ if(v.startsWith("var(")){ return cssv(v.slice(4,-1)); } return v; }
+Chart.register(zonePlugin, metaLine);
+
+function drawChart(f){
+  const ctx=document.getElementById("p-chart").getContext("2d");
+  if(chart) chart.destroy();
+  const pts=f.series.map(v=>{ const ok=f.better==="high"? v>=f.meta : v<=f.meta; return ok?cssv("--green"):cssv("--red"); });
+  chart=new Chart(ctx,{ type:"line",
+    data:{ labels:f.days, datasets:[{ data:f.series, borderColor:cssv("--ink"), borderWidth:2, tension:.3,
+      pointBackgroundColor:pts, pointBorderColor:pts, pointRadius:5, pointHoverRadius:6 }]},
+    options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.parsed.y} ${f.unit}`}} },
+      scales:{ y:{min:f.ymin,max:f.ymax, grid:{color:cssv("--line")}, ticks:{color:cssv("--muted")}},
+        x:{grid:{display:false}, ticks:{color:cssv("--muted")}} } }
+  });
+  chart.$zones=f.zones; chart.$meta=f.meta; chart.update();
+}
+
+// ---- theme toggle ----
+const root=document.documentElement;
+try{ const t=localStorage.getItem("dp-theme"); if(t) root.setAttribute("data-theme",t); }catch(e){}
+document.getElementById("theme").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme");
+  const isDark = cur ? cur==="dark" : matchMedia("(prefers-color-scheme:dark)").matches;
+  const next=isDark?"light":"dark"; root.setAttribute("data-theme",next);
+  try{ localStorage.setItem("dp-theme",next); }catch(e){}
+  requestAnimationFrame(drawLinks); if(chart && panel.classList.contains("open")) drawChart(FOCOS[Object.keys(FOCOS).find(k=>FOCOS[k].title===document.getElementById("p-name").textContent)]);
+});
+</script>
+</body>
+</html>
