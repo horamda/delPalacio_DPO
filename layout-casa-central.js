@@ -44,7 +44,7 @@ window.CASA_CENTRAL_WALKWAYS = [
   [914,358,20,264], // Lateral este de canchas 1 y 5.
   [798,603,116,19], // Borde sur de cancha 5.
   [568,449,18,173], // Lateral oeste de cancha 3, junto a dock 2.
-  [548,603,250,19] // Corrección en captura del usuario: frente a almacenamiento,
+  [568,603,230,19] // Corrección en captura del usuario: frente a almacenamiento,
                     // conecta cancha 5 con canchas 2–4 y control de rechazados.
 ];
 
