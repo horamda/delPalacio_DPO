@@ -1,43 +1,64 @@
-# delPalacio_SA
-Politicas, links, varios
+﻿# delPalacio_DPO
 
-## Recorrido interior 3D (MVP)
+Políticas, links y herramientas de del Palacio S.A.
 
-Página estática: `visita_deposito.html`, enlazada desde `ubicacion.html`.
-Usa geometría 3D proyectada en Canvas 2D, sin dependencias externas, backend,
+## Recorrido 3D de Casa Central
+
+Página estática `visita_deposito.html`, enlazada desde `ubicacion.html`.
+Canvas 2D con proyección de geometría 3D; sin bibliotecas externas, backend,
 compilación, claves ni permisos de geolocalización. Compatible con GitHub Pages
-en el subdirectorio del repositorio: todos sus recursos usan rutas relativas.
+con rutas relativas al subdirectorio del repositorio.
 
-### Sectores y QR
+### Fuente y límites
 
-Ejemplo de destino para un QR:
-`https://horamda.github.io/delPalacio_DPO/visita_deposito.html?sector=picking`
+El usuario identificó `Layout general DPO 2026 (1).png` como el plano de Casa
+Central. Se conserva sin modificaciones en `img/layout-casa-central-2026.png`
+y se puede consultar desde el recorrido. Indica Calle Chascomús 386, Partido
+de la Costa, superficie total aproximada 15.000 m², Sacconi al oeste y Julio
+Campos al sur. No se deducen dimensiones individuales a partir de esa área.
 
-Identificadores disponibles: `ingreso`, `picking`, `terminados`, `reempaque`,
-`bloqueados`, `activos`, `oficinas`. Seleccionar un sector actualiza la URL y
-permite copiarla para un generador de QR. No se generan imágenes QR en esta versión.
-Un enlace sin sector o con un identificador inválido no presupone una ubicación.
-Los botones del listado sirven como alternativa al QR y a la interacción con el
-modelo; los controles de vista también funcionan con teclado y en pantallas táctiles.
+`layout-casa-central.js` contiene sectores y rectángulos trazados visualmente
+sobre la fuente, en píxeles, no en metros. La distribución es aproximada y las
+alturas son extrusiones ilustrativas. El trazado simplifica recintos; no reproduce
+todos los detalles, sendas ni equipos de emergencia. No es una ruta autorizada
+ni un plano de evacuación. El original mantiene su señalización y leyenda.
+Validar medidas, alturas, sectores y circulación con el responsable de la sede
+antes de usarlo como guía operativa.
 
-El sector indicado por el enlace representa el cartel escaneado, no una posición
-medida ni seguimiento en tiempo real. No se utiliza GPS interior.
+### Sectores y enlaces QR
 
-### Sustituir la demostración
+Ejemplos:
 
-La distribución, nombres y volúmenes son ejemplos; no constituyen un plano del
-depósito, una ruta peatonal autorizada ni un plano de evacuación. No se identificó
-un modelo 3D o plano interior verificable durante la revisión del repositorio.
-Las coordenadas de `sectors` en `visita-deposito.js` son unidades abstractas,
-no metros. Para reemplazarlas: validar sectores y circulación con el responsable
-del depósito, obtener un relevamiento, actualizar esa configuración (o sustituir
-el renderizador por el modelo validado) y conservar los IDs para no romper los QR.
-Validar la correspondencia entre cada cartel y su sector antes del uso operativo.
+- `https://horamda.github.io/delPalacio_DPO/visita_deposito.html?sector=cancha-1`
+- `https://horamda.github.io/delPalacio_DPO/visita_deposito.html?sector=dock-2`
+- `https://horamda.github.io/delPalacio_DPO/visita_deposito.html?sector=picking`
+
+IDs disponibles: `cancha-1` a `cancha-6`, `terminados`, `reempaque`, `bloqueados`,
+`pop-pesado`, `oficinas`, `dock-1` a `dock-3`, `control-consolidados`,
+`control-rechazados`, `clasificacion-vacios`, `vacios-para-clasificar`,
+`paletas-clasificadas`, `estiba-vacios`, `taller`, `estacionamiento-camiones`,
+`estacionamiento`. Dos grupos adicionales: `picking` y `activos`.
+
+Compatibilidad con el MVP inicial:
+
+- `picking` resalta las seis canchas; es una agrupación de la app.
+- `terminados` resalta los bloques rotulados Almacenamiento. El plano no indica
+  su contenido; la interfaz conserva el nombre del plano.
+- `activos` agrupa las áreas de vacíos, sin inventar un recinto único.
+- `ingreso` no selecciona ubicación: el ingreso genérico anterior no está
+  identificado como tal en el plano. Se explica y se pide selección manual.
+
+La selección manual actualiza la URL, que puede copiarse para generar un QR.
+No se generan imágenes QR. Un enlace sin sector o inválido no presupone ubicación.
+El QR identifica el cartel escaneado; no mide posición ni sigue movimientos.
+No se utiliza GPS interior. El listado y los controles admiten teclado y móvil.
+La vista superior conserva la orientación del plano; restablecer vuelve a 3D.
 
 ### Desarrollo y despliegue
 
 Servir la raíz con `python -m http.server 8000` y abrir
-`http://localhost:8000/visita_deposito.html?sector=picking`.
-En GitHub Pages, publicar la raíz de `main` del repositorio `horamda/delPalacio_DPO`.
-No se requiere un proceso de build. Verificar enlace sin parámetro, sector válido,
-sector inválido, selección manual, historial, copia de enlace y vista móvil.
+`http://localhost:8000/visita_deposito.html?sector=cancha-1`.
+GitHub Pages publica la raíz de `main` en `horamda/delPalacio_DPO`; no requiere build.
+Mantener los IDs publicados al corregir el trazado para conservar los QR.
+Verificar sectores, grupos, enlaces inválidos, selección manual, historial,
+portapapeles, vista superior, acceso al original y pantallas móviles.

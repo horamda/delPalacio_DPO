@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Recorrido interior 3D de demostración para visitantes de del Palacio S.A.">
-  <title>Recorrido interior 3D | del Palacio S.A.</title>
+  <meta name="description" content="Sectores de Casa Central de del Palacio S.A., basados en el Layout general 2026, con selección por QR.">
+  <title>Casa Central · Recorrido 3D | del Palacio S.A.</title>
   <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="visita-deposito.css">
 </head>
@@ -16,35 +16,45 @@
   </nav>
   <main class="page">
     <section class="intro" aria-labelledby="pageTitle">
-      <div><p class="eyebrow">Orientación para visitantes</p><h1 id="pageTitle">Recorrido interior 3D</h1><p>Explorá los sectores del depósito desde el listado o tocando el modelo. Los sectores y su distribución son ejemplos pendientes de validación.</p></div>
-      <span class="demo-badge">Modelo demostrativo · no a escala</span>
+      <div><p class="eyebrow">Casa Central · Layout 2026</p><h1 id="pageTitle">Recorrido interior 3D</h1><p>Calle Chascomús 386 · Partido de la Costa. Sectores ubicados según el plano aportado de Casa Central: canchas, docks, almacenamiento, oficinas y vacíos.</p></div>
+      <span class="demo-badge">Basado en plano · alturas ilustrativas</span>
     </section>
     <div class="workspace">
       <section class="viewer" aria-label="Modelo 3D interactivo del depósito">
         <canvas id="warehouseCanvas" role="img" aria-label="Representación tridimensional demostrativa de los sectores del depósito"></canvas>
         <div class="viewer-tools"><span>Arrastrá para girar · rueda para acercar</span><button class="reset-view" id="resetView" type="button">Restablecer vista</button></div>
+        <p id="viewSelection" class="view-selection" aria-live="polite">Seleccioná un sector</p>
         <div class="view-controls" aria-label="Controles del modelo">
           <button id="rotateLeft" type="button" aria-label="Girar a la izquierda">↶</button>
           <button id="rotateRight" type="button" aria-label="Girar a la derecha">↷</button>
           <button id="zoomOut" type="button" aria-label="Alejar">−</button>
           <button id="zoomIn" type="button" aria-label="Acercar">+</button>
+          <button id="topView" type="button">Vista superior</button>
         </div>
-        <p class="model-caption">Geometría de demostración · sin medidas reales</p>
+        <p class="model-caption">Distribución aproximada del plano · sin escala métrica</p>
       </section>
       <aside class="panel" aria-labelledby="sectorHeading">
         <h2 id="sectorHeading">¿En qué sector estás?</h2>
         <p class="panel-copy">Si llegaste desde un QR, el sector se marca automáticamente. También podés elegirlo manualmente.</p>
-        <div class="sector-list" id="sectorList"></div>
         <div class="current-card" aria-live="polite"><small id="selectionSource">Sin sector indicado</small><h3 id="currentTitle">Elegí un sector</h3><p id="currentNote"></p><div class="share-row"><button id="copySectorLink" type="button" disabled>Copiar enlace para QR</button><a href="ubicacion.html">Ver sedes</a></div></div>
+        <p class="panel-copy sector-help">Elegí un sector. Las siglas del listado aparecen en el modelo.</p>
+        <div class="sector-list" id="sectorList" role="region" aria-label="Sectores de Casa Central" tabindex="0"></div>
         <label class="link-label" for="sectorLink">Enlace para generar el QR del sector</label>
         <input id="sectorLink" type="url" readonly placeholder="Seleccioná un sector" aria-describedby="linkHelp">
         <p id="linkHelp" class="panel-copy">El QR conserva el sector del cartel escaneado. No sigue tu movimiento al cambiar de sector.</p>
         <p id="copyStatus" role="status"></p>
       </aside>
     </div>
-    <p class="notice"><strong>Importante:</strong> esta versión no usa GPS para determinar sectores interiores. La selección proviene del QR escaneado o de la elección manual. La geometría es demostrativa y deberá reemplazarse por un plano o modelo con medidas verificadas.</p>
+    <p class="notice"><strong>Alcance del modelo:</strong> distribución trazada a partir del Layout general 2026 de Casa Central. El plano declara una superficie total aproximada de 15.000 m², pero no aporta cotas por sector ni alturas: los volúmenes 3D son ilustrativos. Esta vista no define rutas de circulación ni de evacuación. No usa GPS interior: el sector se indica mediante QR o selección manual.</p>
+    <details class="source-plan">
+      <summary>Consultar plano original · Casa Central 2026</summary>
+      <p>Referencia aportada para esta sede. Conserva las sendas, señales y leyenda del documento original; el modelo 3D simplifica su distribución.</p>
+      <a href="img/layout-casa-central-2026.png" target="_blank" rel="noopener">Abrir plano en tamaño completo ↗</a>
+      <img src="img/layout-casa-central-2026.png" alt="Layout general 2026 de Casa Central: Chascomús al norte, Sacconi al oeste y Julio Campos al sur; canchas y depósito al este, docks y vacíos al oeste." loading="lazy" width="1055" height="1491">
+    </details>
   </main>
   <noscript><p class="noscript">Activá JavaScript para visualizar y seleccionar los sectores.</p></noscript>
+  <script src="layout-casa-central.js"></script>
   <script src="visita-deposito.js"></script>
 </body>
 </html>

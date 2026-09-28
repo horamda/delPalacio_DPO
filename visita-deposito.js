@@ -1,15 +1,10 @@
 (() => {
-  // Coordenadas abstractas de demostración, NO metros ni posiciones verificadas.
-  // Reemplazar esta configuración al disponer de un relevamiento aprobado.
-  const sectors = [
-    { id:'ingreso', name:'Ingreso y recepción', color:'#2f80ed', x:-5.3, z:3.2, w:3.0, d:2.4, h:1.0, note:'Punto inicial sugerido para visitantes.' },
-    { id:'picking', name:'Picking', color:'#f2994a', x:-1.6, z:1.9, w:4.2, d:3.5, h:1.8, note:'Zona de preparación de pedidos.' },
-    { id:'terminados', name:'Producto terminado', color:'#27ae60', x:3.0, z:1.9, w:4.2, d:3.5, h:2.15, note:'Almacenamiento de producto terminado.' },
-    { id:'reempaque', name:'Reempaque', color:'#9b51e0', x:-3.8, z:-2.2, w:2.8, d:2.2, h:1.25, note:'Área destinada al proceso de reempaque.' },
-    { id:'bloqueados', name:'Bloqueados', color:'#eb5757', x:-.4, z:-2.2, w:2.8, d:2.2, h:1.35, note:'Sector de mercadería bloqueada o no conforme.' },
-    { id:'activos', name:'Activos retornables', color:'#00a6a6', x:3.3, z:-2.2, w:3.8, d:2.2, h:1.45, note:'Zona demostrativa para activos retornables.' },
-    { id:'oficinas', name:'Oficinas', color:'#65758b', x:-5.2, z:-.1, w:2.0, d:1.7, h:1.7, note:'Área administrativa y de recepción interna.' }
-  ];
+  const sectors = window.CASA_CENTRAL_LAYOUT;
+  // Transformación de píxeles del plano a unidades abstractas, sin escala métrica.
+  const point = (px, py) => ({x:(px-529)/80, y:0, z:(py-611)/80});
+  const shapes = sectors.flatMap(s => (s.rects || []).map(([left,top,w,d],i) => ({
+    ...s, ...point(left+w/2,top+d/2), w:w/80, d:d/80, label:i===0
+  })));
   const byId = Object.fromEntries(sectors.map(s => [s.id,s]));
   const canvas = document.querySelector('#warehouseCanvas');
   const ctx = canvas.getContext('2d');
@@ -20,14 +15,14 @@
   const source = document.querySelector('#selectionSource');
   const link = document.querySelector('#sectorLink');
   const status = document.querySelector('#copyStatus');
-  let selected = null, yaw = -.72, pitch = .68, zoomFactor = 1, dragging = false, moved = false, lastX = 0, hitAreas = [];
-  function scale(){ return Math.min(canvas.clientWidth / 20, canvas.clientHeight / 16) * zoomFactor; }
+  let selected = null, yaw = -.3, pitch = .95, zoomFactor = 1, dragging = false, moved = false, lastX = 0, hitAreas = [], labelAreas = [];
+  function scale(){ return Math.min(canvas.clientWidth / 20, canvas.clientHeight / 22) * zoomFactor; }
 
   sectors.forEach(s => {
     const b = document.createElement('button');
     b.className = 'sector-button'; b.type = 'button'; b.dataset.sector = s.id;
     b.style.setProperty('--sector-color',s.color);
-    b.innerHTML = `<span class="dot" aria-hidden="true"></span><strong>${s.name}</strong><small>Ver</small>`;
+    b.innerHTML = `<span class="dot" aria-hidden="true"></span><strong>${s.name}</strong><small>${s.tag}</small>`;
     b.addEventListener('click',() => select(s.id,true)); list.appendChild(b);
   });
 
@@ -35,14 +30,15 @@
   function select(id,updateUrl=false){
     selected = safeSector(id); const s = byId[selected];
     title.textContent = s ? s.name : 'Elegí un sector';
-    note.textContent = s ? s.note : id ? 'El enlace no identifica un sector válido. Seleccioná uno del listado.' : 'Escaneá el QR de un sector o elegí uno del listado.';
+    note.textContent = s ? (s.note || 'Sector identificado en el Layout general 2026 de Casa Central. Volumen ilustrativo; sin medidas ni altura verificadas.') : id === 'ingreso' ? 'El ingreso genérico del MVP no está identificado en este plano. Elegí un sector rotulado.' : id ? 'El enlace no identifica un sector válido. Seleccioná uno del listado.' : 'Escaneá el QR de un sector o elegí uno del listado.';
     source.textContent = s ? updateUrl ? 'Selección manual' : 'Sector indicado por el enlace / QR' : 'Sin sector indicado';
+    document.querySelector('#viewSelection').textContent = s ? 'Resaltado: ' + s.name : 'Seleccioná un sector · las siglas corresponden al listado';
     copy.disabled = !s;
     status.textContent = '';
     const u = new URL(location.href);
     if(s) u.searchParams.set('sector',selected);
     link.value = s ? u.href : '';
-    canvas.setAttribute('aria-label', `Modelo 3D demostrativo, no a escala.${s ? ' Sector resaltado: ' + s.name : ' Sin sector seleccionado.'}`);
+    canvas.setAttribute('aria-label', `Casa Central: esquema 3D basado en el layout 2026; alturas ilustrativas.${s ? ' Sector resaltado: ' + s.name : ' Sin sector seleccionado.'}`);
     document.querySelectorAll('.sector-button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sector === selected)));
     if(updateUrl && s) history.pushState({},'',u);
     draw();
@@ -52,7 +48,7 @@
   function project(p){
     const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
     const x=p.x*cy-p.z*sy, z=p.x*sy+p.z*cy;
-    return { x:canvas.clientWidth/2+x*scale(), y:canvas.clientHeight*.56-(p.y*cp-z*sp)*scale() };
+    return { x:canvas.clientWidth/2+x*scale(), y:canvas.clientHeight*.5-(p.y*cp-z*sp)*scale() };
   }
   function shade(hex,amt){ const n=parseInt(hex.slice(1),16),r=Math.max(0,Math.min(255,(n>>16)+amt)),g=Math.max(0,Math.min(255,((n>>8)&255)+amt)),b=Math.max(0,Math.min(255,(n&255)+amt)); return `rgb(${r},${g},${b})`; }
   function poly(points,fill,stroke='rgba(17,31,48,.22)',width=1){ ctx.beginPath(); points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)); ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); ctx.strokeStyle=stroke; ctx.lineWidth=width; ctx.stroke(); }
@@ -60,7 +56,7 @@
     const x0=s.x-s.w/2,x1=s.x+s.w/2,z0=s.z-s.d/2,z1=s.z+s.d/2,y=s.h;
     const a=project({x:x0,y:0,z:z0}),b=project({x:x1,y:0,z:z0}),c=project({x:x1,y:0,z:z1}),d=project({x:x0,y:0,z:z1});
     const A=project({x:x0,y,z:z0}),B=project({x:x1,y,z:z0}),C=project({x:x1,y,z:z1}),D=project({x:x0,y,z:z1});
-    const active=s.id===selected, edge=active?'#ffd43b':'rgba(17,31,48,.25)', lw=active?4:1;
+    const active=s.id===selected || s.parent===selected, edge=active?'#ffd43b':'rgba(17,31,48,.25)', lw=active?4:1;
     const faces=[];
     if(Math.cos(yaw)<0) faces.push([[a,b,B,A],-24]);
     if(Math.sin(yaw)>0) faces.push([[b,c,C,B],-38]);
@@ -71,18 +67,31 @@
   }
   function label(s){
     const center=project({x:s.x,y:s.h+.18,z:s.z});
-    ctx.font=`700 ${canvas.clientWidth<500?10:s.id===selected?15:13}px system-ui`; ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.fillStyle='#142033'; ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=4;
-    ctx.strokeText(s.name,center.x,center.y); ctx.fillText(s.name,center.x,center.y);
+    const size=canvas.clientWidth<500?11:13;
+    ctx.font=`700 ${size}px system-ui`;
+    const width=ctx.measureText(s.tag).width+6;
+    let y=center.y;
+    const overlaps=()=>labelAreas.some(r=>center.x+width/2>r.left && center.x-width/2<r.right && y>r.top && y-size-5<r.bottom);
+    for(let tries=0;tries<15 && overlaps();tries++) y-=size+7;
+    labelAreas.push({left:center.x-width/2,right:center.x+width/2,top:y-size-5,bottom:y});
+    if(y!==center.y){ctx.beginPath();ctx.moveTo(center.x,center.y);ctx.lineTo(center.x,y);ctx.strokeStyle='#52667d';ctx.lineWidth=1;ctx.stroke();}
+    ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(center.x-width/2,y-size-3,width,size+4);
+    ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillStyle='#142033';ctx.fillText(s.tag,center.x,y);
   }
   function draw(){
-    if(!ctx || !canvas.clientWidth)return; ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight); hitAreas=[];
-    const ground=[project({x:-7,y:0,z:-4.5}),project({x:6,y:0,z:-4.5}),project({x:6,y:0,z:4.8}),project({x:-7,y:0,z:4.8})]; poly(ground,'rgba(255,255,255,.73)','rgba(72,95,120,.28)',2);
-    ctx.strokeStyle='rgba(91,117,143,.12)'; ctx.lineWidth=1;
-    for(let x=-7;x<=6;x++){ const a=project({x,y:.01,z:-4.5}),b=project({x,y:.01,z:4.8}); ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke(); }
-    for(let z=-4;z<=4;z++){ const a=project({x:-7,y:.01,z}),b=project({x:6,y:.01,z}); ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke(); }
-    [...sectors].sort((m,n)=>((m.x*Math.sin(yaw)+m.z*Math.cos(yaw))-(n.x*Math.sin(yaw)+n.z*Math.cos(yaw)))).forEach(box);
-    sectors.filter(s=>s.id!==selected).forEach(label);
-    if(selected) label(byId[selected]);
+    if(!ctx || !canvas.clientWidth)return; ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight); hitAreas=[];labelAreas=[];
+    const perimeter=[[98,50],[1003,50],[1003,1173],[94,1173],[56,1136],[56,89]];
+    poly(perimeter.map(([x,z])=>project(point(x,z))), '#f9fafb', '#8190a1', 2);
+    // Contorno aproximado del edificio principal; patios y circulaci?n quedan libres.
+    poly([[567,206],[937,206],[937,1171],[567,1171]].map(([x,z])=>project(point(x,z))), '#e3edf3', '#a5b6c4');
+    ctx.save();
+    ctx.font='700 11px system-ui'; ctx.textAlign='center'; ctx.fillStyle='#49576a';
+    const streets=[['CHASCOMÚS · NORTE',529,24],['JULIO CAMPOS',529,1215],['SACCONI',12,650]];
+    streets.forEach(([name,x,z])=>{const p=project(point(x,z)); ctx.fillText(name,p.x,p.y);});
+    ctx.restore();
+    [...shapes].sort((m,n)=>((m.x*Math.sin(yaw)+m.z*Math.cos(yaw))-(n.x*Math.sin(yaw)+n.z*Math.cos(yaw)))).forEach(box);
+    shapes.filter(s=>s.label && (s.id===selected || s.parent===selected)).forEach(label);
+    shapes.filter(s=>s.label && s.id!==selected && s.parent!==selected).forEach(label);
   }
   function inside(p,poly){ let c=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ if(((poly[i].y>p.y)!==(poly[j].y>p.y))&&(p.x<(poly[j].x-poly[i].x)*(p.y-poly[i].y)/(poly[j].y-poly[i].y)+poly[i].x))c=!c; } return c; }
   canvas.addEventListener('pointerdown',e=>{ dragging=true;moved=false;lastX=e.clientX;canvas.setPointerCapture(e.pointerId); });
@@ -96,7 +105,8 @@
   document.querySelector('#zoomOut').addEventListener('click',()=>zoomBy(-.15));
   document.querySelector('#rotateLeft').addEventListener('click',()=>{yaw-=.25;draw();});
   document.querySelector('#rotateRight').addEventListener('click',()=>{yaw+=.25;draw();});
-  document.querySelector('#resetView').addEventListener('click',()=>{yaw=-.72;pitch=.68;zoomFactor=1;draw();});
+  document.querySelector('#resetView').addEventListener('click',()=>{yaw=-.3;pitch=.95;zoomFactor=1;draw();});
+  document.querySelector('#topView').addEventListener('click',()=>{yaw=0;pitch=Math.PI/2;zoomFactor=1;draw();});
   copy.addEventListener('click',async()=>{ if(!selected)return; try{await navigator.clipboard.writeText(link.value);status.textContent='Enlace copiado. Podés usarlo para generar el QR.';}catch{link.focus();link.select();status.textContent='Copiá el enlace seleccionado con el menú de tu dispositivo.';} });
   addEventListener('popstate',()=>select(new URLSearchParams(location.search).get('sector')));
   addEventListener('resize',resize); select(new URLSearchParams(location.search).get('sector')); resize();
