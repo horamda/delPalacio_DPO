@@ -3,6 +3,7 @@
 // No son metros. h es una extrusión ilustrativa en unidades de dibujo.
 // Los grupos Picking y Vacíos agrupan áreas; no agregan recintos al plano.
 window.CASA_CENTRAL_LAYOUT = [
+  {id:'punto-encuentro', name:'Punto de encuentro · Sacconi y Chascomús', tag:'PE', color:'#087d36', group:true, note:'Esquina de Sacconi y Chascomús, indicada por el usuario como punto de encuentro. Marcador aproximado de la esquina; no se deduce un itinerario hasta ella.'},
   {id:'picking', name:'Canchas 1 a 6 · Picking', tag:'Picking', color:'#de913a', group:true, note:'Agrupación de las seis canchas del plano. Para identificar una cancha concreta, usá su propio enlace QR.'},
   {id:'cancha-1', name:'Cancha 1', tag:'C1', parent:'picking', color:'#de913a', rects:[[778,357,92,107],[891,357,23,107]], h:.5},
   {id:'cancha-2', name:'Cancha 2', tag:'C2', parent:'picking', color:'#de913a', rects:[[645,461,21,137]], h:.5},
@@ -44,3 +45,22 @@ window.CASA_CENTRAL_WALKWAYS = [
   [798,603,116,19], // Borde sur de cancha 5.
   [568,449,18,173] // Lateral oeste de cancha 3, junto a dock 2.
 ];
+
+// Bandas rojas rotuladas «Senda de seguridad» en la fuente (píxeles).
+window.CASA_CENTRAL_SAFETY_PATHS = [
+  [407,320,20,797],
+  [427,320,139,20], [548,340,18,55], [427,395,139,19],
+  [427,438,139,20], [548,458,18,55], [427,513,139,19],
+  [194,560,213,20],
+  [427,901,137,20], [479,921,20,196]
+];
+// Centro de cada flecha y vector de dirección según el PNG (arriba = norte).
+window.CASA_CENTRAL_EVACUATION = [
+  {x:540,z:111,dx:0,dz:-1}, {x:663,z:145,dx:0,dz:-1},
+  {x:767,z:149,dx:0,dz:-1}, {x:767,z:366,dx:0,dz:-1},
+  {x:690,z:441,dx:-1,dz:0}, {x:767,z:510,dx:0,dz:-1},
+  {x:767,z:703,dx:0,dz:-1}, {x:768,z:928,dx:0,dz:-1},
+  {x:768,z:1039,dx:0,dz:-1}
+];
+// Ubicación proporcionada por el usuario, no presente como símbolo en el PNG.
+window.CASA_CENTRAL_MEETING_POINT = {x:65,z:60};

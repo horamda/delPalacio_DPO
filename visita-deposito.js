@@ -16,6 +16,8 @@
   const link = document.querySelector('#sectorLink');
   const status = document.querySelector('#copyStatus');
   const walkwaysToggle = document.querySelector('#showWalkways');
+  const safetyToggle = document.querySelector('#showSafetyPaths');
+  const evacuationToggle = document.querySelector('#showEvacuation');
   let selected = null, yaw = -.3, pitch = .95, zoomFactor = 1, dragging = false, moved = false, lastX = 0, hitAreas = [], labelAreas = [];
   function scale(){ return Math.min(canvas.clientWidth / 20, canvas.clientHeight / 22) * zoomFactor; }
 
@@ -79,17 +81,34 @@
     ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(center.x-width/2,y-size-3,width,size+4);
     ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillStyle='#142033';ctx.fillText(s.tag,center.x,y);
   }
-  function drawWalkways(){
-    if(!walkwaysToggle.checked)return;
+  function drawStripedPaths(paths,color){
     function rect(x,z,w,d,fill){
       poly([[x,z],[x+w,z],[x+w,z+d],[x,z+d]].map(([px,py])=>project(point(px,py))),fill,fill,.4);
     }
-    window.CASA_CENTRAL_WALKWAYS.forEach(([x,z,w,d])=>{
-      rect(x,z,w,d,'#079c37');
-      // Rayado transversal blanco, dejando bordes verdes como en la fuente.
+    paths.forEach(([x,z,w,d])=>{
+      rect(x,z,w,d,color);
+      // Rayado transversal blanco, conservando el color de cada tipo de senda.
       if(w>d){ for(let offset=4;offset<w-3;offset+=10) rect(x+offset,z+3,Math.min(4,w-offset-3),d-6,'#ffffff'); }
       else { for(let offset=4;offset<d-3;offset+=10) rect(x+3,z+offset,w-6,Math.min(4,d-offset-3),'#ffffff'); }
     });
+  }
+  function drawEvacuation(){
+    if(!evacuationToggle.checked)return;
+    window.CASA_CENTRAL_EVACUATION.forEach(({x,z,dx,dz})=>{
+      // Flecha orientada en el plano del suelo; gira con la cámara.
+      const outline=[[-6,-16],[6,-16],[6,5],[12,5],[0,20],[-12,5],[-6,5]];
+      const vertices=outline.map(([side,forward])=>project(point(x-dz*side+dx*forward,z+dx*side+dz*forward)));
+      poly(vertices,'#00c52c','#087d36',.6);
+      labelAreas.push({left:Math.min(...vertices.map(p=>p.x))-3,right:Math.max(...vertices.map(p=>p.x))+3,top:Math.min(...vertices.map(p=>p.y))-3,bottom:Math.max(...vertices.map(p=>p.y))+3});
+    });
+  }
+  function drawMeetingPoint(){
+    const {x,z}=window.CASA_CENTRAL_MEETING_POINT;
+    const p=project(point(x,z)), half=16;
+    const corners=[{x:p.x-half,y:p.y-half},{x:p.x+half,y:p.y-half},{x:p.x+half,y:p.y+half},{x:p.x-half,y:p.y+half}];
+    poly(corners,'#087d36',selected==='punto-encuentro'?'#ffd43b':'#ffffff',selected==='punto-encuentro'?4:2);
+    ctx.fillStyle='#ffffff';ctx.font='800 13px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('PE',p.x,p.y);
+    hitAreas.push({id:'punto-encuentro',poly:corners});
   }
   function draw(){
     if(!ctx || !canvas.clientWidth)return; ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight); hitAreas=[];labelAreas=[];
@@ -97,15 +116,19 @@
     poly(perimeter.map(([x,z])=>project(point(x,z))), '#f9fafb', '#8190a1', 2);
     // Contorno aproximado del edificio principal; patios y circulación quedan libres.
     poly([[567,206],[937,206],[937,1171],[567,1171]].map(([x,z])=>project(point(x,z))), '#e3edf3', '#a5b6c4');
-    drawWalkways();
+    if(walkwaysToggle.checked) drawStripedPaths(window.CASA_CENTRAL_WALKWAYS,'#079c37');
+    if(safetyToggle.checked) drawStripedPaths(window.CASA_CENTRAL_SAFETY_PATHS,'#e3242b');
     ctx.save();
     ctx.font='700 11px system-ui'; ctx.textAlign='center'; ctx.fillStyle='#49576a';
     const streets=[['CHASCOMÚS · NORTE',529,24],['JULIO CAMPOS',529,1215],['SACCONI',12,650]];
     streets.forEach(([name,x,z])=>{const p=project(point(x,z)); ctx.fillText(name,p.x,p.y);});
     ctx.restore();
     [...shapes].sort((m,n)=>((m.x*Math.sin(yaw)+m.z*Math.cos(yaw))-(n.x*Math.sin(yaw)+n.z*Math.cos(yaw)))).forEach(box);
+    // Señalización superpuesta para que la geometría simplificada no oculte flechas.
+    drawEvacuation();
     shapes.filter(s=>s.label && (s.id===selected || s.parent===selected)).forEach(label);
     shapes.filter(s=>s.label && s.id!==selected && s.parent!==selected).forEach(label);
+    drawMeetingPoint();
   }
   function inside(p,poly){ let c=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ if(((poly[i].y>p.y)!==(poly[j].y>p.y))&&(p.x<(poly[j].x-poly[i].x)*(p.y-poly[i].y)/(poly[j].y-poly[i].y)+poly[i].x))c=!c; } return c; }
   canvas.addEventListener('pointerdown',e=>{ dragging=true;moved=false;lastX=e.clientX;canvas.setPointerCapture(e.pointerId); });
@@ -122,6 +145,8 @@
   document.querySelector('#resetView').addEventListener('click',()=>{yaw=-.3;pitch=.95;zoomFactor=1;draw();});
   document.querySelector('#topView').addEventListener('click',()=>{yaw=0;pitch=Math.PI/2;zoomFactor=1;draw();});
   walkwaysToggle.addEventListener('change',draw);
+  safetyToggle.addEventListener('change',draw);
+  evacuationToggle.addEventListener('change',draw);
   copy.addEventListener('click',async()=>{ if(!selected)return; try{await navigator.clipboard.writeText(link.value);status.textContent='Enlace copiado. Podés usarlo para generar el QR.';}catch{link.focus();link.select();status.textContent='Copiá el enlace seleccionado con el menú de tu dispositivo.';} });
   addEventListener('popstate',()=>select(new URLSearchParams(location.search).get('sector')));
   addEventListener('resize',resize); select(new URLSearchParams(location.search).get('sector')); resize();

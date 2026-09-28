@@ -21,7 +21,10 @@
     </section>
     <div class="layer-controls">
       <label for="showWalkways"><input id="showWalkways" type="checkbox" checked aria-describedby="walkwaysHelp"><span class="walkway-swatch" aria-hidden="true"></span>Mostrar sendas peatonales</label>
-      <p id="walkwaysHelp">Bandas verdes rayadas del plano. Usá la vista superior para ver todos los tramos. Se conservan las interrupciones del original; no son una ruta calculada.</p>
+      <label for="showSafetyPaths"><input id="showSafetyPaths" type="checkbox" checked><span class="walkway-swatch safety-swatch" aria-hidden="true"></span>Mostrar senda de seguridad</label>
+      <label for="showEvacuation"><input id="showEvacuation" type="checkbox" checked><span class="evacuation-swatch" aria-hidden="true">↑</span>Mostrar sentido de evacuación</label>
+      <p id="walkwaysHelp">Bandas y flechas trazadas del plano. Usá la vista superior para ver todos los tramos. Se conservan las interrupciones; no se calcula una ruta hasta el punto de encuentro.</p>
+      <p class="meeting-reference"><strong>PE · Punto de encuentro:</strong> esquina de Sacconi y Chascomús, indicada por el usuario. <a href="?sector=punto-encuentro">Resaltar punto de encuentro</a></p>
     </div>
     <div class="workspace">
       <section class="viewer" aria-label="Modelo 3D interactivo del depósito">

@@ -16,6 +16,9 @@ h1 { margin:0; font-size:clamp(1.75rem,4vw,3.1rem); line-height:1.04; letter-spa
 .layer-controls label { display:flex; align-items:center; gap:10px; min-height:32px; font-weight:750; cursor:pointer; }
 .layer-controls input { width:20px; height:20px; flex-shrink:0; accent-color:#079c37; }
 .walkway-swatch { width:28px; height:18px; flex-shrink:0; border:3px solid #079c37; background:repeating-linear-gradient(90deg,#fff 0 3px,#079c37 3px 6px); }
+.safety-swatch { border-color:#e3242b; background:repeating-linear-gradient(90deg,#fff 0 3px,#e3242b 3px 6px); }
+.evacuation-swatch { width:28px; flex-shrink:0; color:#008b27; text-align:center; font-size:1.6rem; font-weight:900; }
+.meeting-reference a { color:var(--brand-dark); }
 .layer-controls p { margin:6px 0 0; color:var(--muted); font-size:.85rem; line-height:1.5; }
 .viewer { position:sticky; top:16px; align-self:start; min-height:590px; overflow:hidden; border:1px solid var(--line); border-radius:22px; background:linear-gradient(160deg,#f9fcff,#dfeaf5); box-shadow:0 14px 35px rgba(20,32,51,.09); }
 #warehouseCanvas { display:block; width:100%; height:590px; cursor:grab; touch-action:none; }

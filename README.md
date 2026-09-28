@@ -28,10 +28,20 @@ antes de usarlo como guía operativa.
 La capa «Mostrar sendas peatonales» traza únicamente las bandas verdes rayadas
 de la fuente. Sus nueve tramos se configuran en `CASA_CENTRAL_WALKWAYS` dentro de
 `layout-casa-central.js`, conservando interrupciones, sin prolongar conexiones.
-No incluye las sendas rojas de seguridad, las barreras amarillas ni las flechas
-verdes de evacuación. Está activada al abrir la página y puede ocultarse.
+La capa roja «Mostrar senda de seguridad» usa `CASA_CENTRAL_SAFETY_PATHS`.
+«Mostrar sentido de evacuación» usa los nueve vectores de flechas de la fuente
+en `CASA_CENTRAL_EVACUATION`: ocho hacia el norte y uno hacia el oeste.
+Las tres capas están activadas al abrir y pueden ocultarse independientemente.
+No se representan las barreras amarillas.
 Se dibuja sobre el suelo: los volúmenes pueden taparla en 3D; la vista superior
 permite revisar todos los tramos. No calcula rutas ni verifica transitabilidad.
+
+El punto de encuentro PE se sitúa aproximadamente en la esquina de Sacconi y
+Chascomús (noroeste), según indicación explícita del usuario. Este marcador no
+figura en el PNG original y su origen se aclara en la interfaz. Se configura en
+`CASA_CENTRAL_MEETING_POINT`, se selecciona tocándolo o desde el listado y admite
+el enlace `visita_deposito.html?sector=punto-encuentro`. No se inventa un recorrido
+que conecte las flechas originales con esta esquina.
 
 ### Sectores y enlaces QR
 
