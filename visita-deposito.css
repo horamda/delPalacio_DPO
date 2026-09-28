@@ -12,6 +12,11 @@ h1 { margin:0; font-size:clamp(1.75rem,4vw,3.1rem); line-height:1.04; letter-spa
 .intro p:last-child { max-width:640px; margin:10px 0 0; color:var(--muted); line-height:1.55; }
 .demo-badge { flex:0 0 auto; padding:9px 13px; border:1px solid #f0c75e; border-radius:999px; background:#fff8da; color:#705300; font-size:.82rem; font-weight:800; }
 .workspace { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; }
+.layer-controls { margin-bottom:18px; padding:14px 16px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+.layer-controls label { display:flex; align-items:center; gap:10px; min-height:32px; font-weight:750; cursor:pointer; }
+.layer-controls input { width:20px; height:20px; flex-shrink:0; accent-color:#079c37; }
+.walkway-swatch { width:28px; height:18px; flex-shrink:0; border:3px solid #079c37; background:repeating-linear-gradient(90deg,#fff 0 3px,#079c37 3px 6px); }
+.layer-controls p { margin:6px 0 0; color:var(--muted); font-size:.85rem; line-height:1.5; }
 .viewer { position:sticky; top:16px; align-self:start; min-height:590px; overflow:hidden; border:1px solid var(--line); border-radius:22px; background:linear-gradient(160deg,#f9fcff,#dfeaf5); box-shadow:0 14px 35px rgba(20,32,51,.09); }
 #warehouseCanvas { display:block; width:100%; height:590px; cursor:grab; touch-action:none; }
 #warehouseCanvas:active { cursor:grabbing; }

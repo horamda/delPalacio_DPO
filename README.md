@@ -20,10 +20,18 @@ Campos al sur. No se deducen dimensiones individuales a partir de esa área.
 `layout-casa-central.js` contiene sectores y rectángulos trazados visualmente
 sobre la fuente, en píxeles, no en metros. La distribución es aproximada y las
 alturas son extrusiones ilustrativas. El trazado simplifica recintos; no reproduce
-todos los detalles, sendas ni equipos de emergencia. No es una ruta autorizada
+todos los detalles ni equipos de emergencia. No es una ruta autorizada
 ni un plano de evacuación. El original mantiene su señalización y leyenda.
 Validar medidas, alturas, sectores y circulación con el responsable de la sede
 antes de usarlo como guía operativa.
+
+La capa «Mostrar sendas peatonales» traza únicamente las bandas verdes rayadas
+de la fuente. Sus nueve tramos se configuran en `CASA_CENTRAL_WALKWAYS` dentro de
+`layout-casa-central.js`, conservando interrupciones, sin prolongar conexiones.
+No incluye las sendas rojas de seguridad, las barreras amarillas ni las flechas
+verdes de evacuación. Está activada al abrir la página y puede ocultarse.
+Se dibuja sobre el suelo: los volúmenes pueden taparla en 3D; la vista superior
+permite revisar todos los tramos. No calcula rutas ni verifica transitabilidad.
 
 ### Sectores y enlaces QR
 

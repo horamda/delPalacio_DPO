@@ -29,3 +29,18 @@ window.CASA_CENTRAL_LAYOUT = [
   {id:'estacionamiento-camiones', name:'Estacionamiento de camiones', tag:'EC', color:'#8796a5', rects:[[71,180,111,332]], h:.06},
   {id:'estacionamiento', name:'Estacionamiento', tag:'E', color:'#8796a5', rects:[[785,51,214,151]], h:.06}
 ];
+
+// Sólo bandas verdes rayadas de la leyenda «Senda peatonal».
+// Rectángulos en píxeles de la misma fuente. Conservar las interrupciones:
+// no unir por inferencia ni confundir flechas de evacuación con sendas.
+window.CASA_CENTRAL_WALKWAYS = [
+  [650,210,193,20], // Norte de cancha 6, hasta el borde este.
+  [650,230,20,187], // Lateral de cancha 6.
+  [568,399,82,19], // Frente a oficinas, junto a dock 1.
+  [824,230,20,42], // Tramo norte del lateral de reempaque.
+  [824,310,20,28], // Tramo al sur del símbolo de lavaojos.
+  [824,338,110,20], // Frente a reempaque.
+  [914,358,20,264], // Lateral este de canchas 1 y 5.
+  [798,603,116,19], // Borde sur de cancha 5.
+  [568,449,18,173] // Lateral oeste de cancha 3, junto a dock 2.
+];

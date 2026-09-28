@@ -19,9 +19,13 @@
       <div><p class="eyebrow">Casa Central · Layout 2026</p><h1 id="pageTitle">Recorrido interior 3D</h1><p>Calle Chascomús 386 · Partido de la Costa. Sectores ubicados según el plano aportado de Casa Central: canchas, docks, almacenamiento, oficinas y vacíos.</p></div>
       <span class="demo-badge">Basado en plano · alturas ilustrativas</span>
     </section>
+    <div class="layer-controls">
+      <label for="showWalkways"><input id="showWalkways" type="checkbox" checked aria-describedby="walkwaysHelp"><span class="walkway-swatch" aria-hidden="true"></span>Mostrar sendas peatonales</label>
+      <p id="walkwaysHelp">Bandas verdes rayadas del plano. Usá la vista superior para ver todos los tramos. Se conservan las interrupciones del original; no son una ruta calculada.</p>
+    </div>
     <div class="workspace">
       <section class="viewer" aria-label="Modelo 3D interactivo del depósito">
-        <canvas id="warehouseCanvas" role="img" aria-label="Representación tridimensional demostrativa de los sectores del depósito"></canvas>
+        <canvas id="warehouseCanvas" role="img" aria-describedby="walkwaysHelp" aria-label="Representación tridimensional demostrativa de los sectores del depósito"></canvas>
         <div class="viewer-tools"><span>Arrastrá para girar · rueda para acercar</span><button class="reset-view" id="resetView" type="button">Restablecer vista</button></div>
         <p id="viewSelection" class="view-selection" aria-live="polite">Seleccioná un sector</p>
         <div class="view-controls" aria-label="Controles del modelo">
