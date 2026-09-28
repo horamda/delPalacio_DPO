@@ -73,13 +73,16 @@
     const size=canvas.clientWidth<500?11:13;
     ctx.font=`700 ${size}px system-ui`;
     const width=ctx.measureText(s.tag).width+6;
-    let y=center.y;
-    const overlaps=()=>labelAreas.some(r=>center.x+width/2>r.left && center.x-width/2<r.right && y>r.top && y-size-5<r.bottom);
-    for(let tries=0;tries<15 && overlaps();tries++) y-=size+7;
-    labelAreas.push({left:center.x-width/2,right:center.x+width/2,top:y-size-5,bottom:y});
-    if(y!==center.y){ctx.beginPath();ctx.moveTo(center.x,center.y);ctx.lineTo(center.x,y);ctx.strokeStyle='#52667d';ctx.lineWidth=1;ctx.stroke();}
-    ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(center.x-width/2,y-size-3,width,size+4);
-    ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillStyle='#142033';ctx.fillText(s.tag,center.x,y);
+    let x=center.x,y=center.y;
+    const overlaps=()=>labelAreas.some(r=>x+width/2>r.left && x-width/2<r.right && y>r.top && y-size-5<r.bottom);
+    for(let tries=0;tries<20 && overlaps();tries++) {
+      y-=size+7;
+      if(y-size<110){x+=width+8;y=center.y;}
+    }
+    labelAreas.push({left:x-width/2,right:x+width/2,top:y-size-5,bottom:y});
+    if(y!==center.y || x!==center.x){ctx.beginPath();ctx.moveTo(center.x,center.y);ctx.lineTo(x,y);ctx.strokeStyle='#52667d';ctx.lineWidth=1;ctx.stroke();}
+    ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(x-width/2,y-size-3,width,size+4);
+    ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillStyle='#142033';ctx.fillText(s.tag,x,y);
   }
   function drawStripedPaths(paths,color){
     function rect(x,z,w,d,fill){
