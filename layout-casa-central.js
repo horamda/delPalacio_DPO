@@ -31,7 +31,7 @@ window.CASA_CENTRAL_LAYOUT = [
   {id:'estacionamiento', name:'Estacionamiento', tag:'E', color:'#8796a5', rects:[[785,51,214,151]], h:.06}
 ];
 
-// Sólo bandas verdes rayadas de la leyenda «Senda peatonal».
+// Bandas verdes del plano y correcciones indicadas explícitamente por el usuario.
 // Rectángulos en píxeles de la misma fuente. Conservar las interrupciones:
 // no unir por inferencia ni confundir flechas de evacuación con sendas.
 window.CASA_CENTRAL_WALKWAYS = [
@@ -43,7 +43,9 @@ window.CASA_CENTRAL_WALKWAYS = [
   [824,338,110,20], // Frente a reempaque.
   [914,358,20,264], // Lateral este de canchas 1 y 5.
   [798,603,116,19], // Borde sur de cancha 5.
-  [568,449,18,173] // Lateral oeste de cancha 3, junto a dock 2.
+  [568,449,18,173], // Lateral oeste de cancha 3, junto a dock 2.
+  [548,603,250,19] // Corrección en captura del usuario: frente a almacenamiento,
+                    // conecta cancha 5 con canchas 2–4 y control de rechazados.
 ];
 
 // Bandas rojas rotuladas «Senda de seguridad» en la fuente (píxeles).

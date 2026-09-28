@@ -25,9 +25,11 @@ ni un plano de evacuación. El original mantiene su señalización y leyenda.
 Validar medidas, alturas, sectores y circulación con el responsable de la sede
 antes de usarlo como guía operativa.
 
-La capa «Mostrar sendas peatonales» traza únicamente las bandas verdes rayadas
-de la fuente. Sus nueve tramos se configuran en `CASA_CENTRAL_WALKWAYS` dentro de
-`layout-casa-central.js`, conservando interrupciones, sin prolongar conexiones.
+La capa «Mostrar sendas peatonales» incluye las bandas verdes rayadas de la
+fuente y un tramo adicional señalado en verde por el usuario en una captura:
+el frente del almacenamiento, conectando cancha 5 con canchas 2–4 y control
+de rechazados. Los diez tramos se configuran en `CASA_CENTRAL_WALKWAYS` dentro
+de `layout-casa-central.js`; el comentario del tramo identifica esa corrección.
 La capa roja «Mostrar senda de seguridad» usa `CASA_CENTRAL_SAFETY_PATHS`.
 «Mostrar sentido de evacuación» usa los nueve vectores de flechas de la fuente
 en `CASA_CENTRAL_EVACUATION`: ocho hacia el norte y uno hacia el oeste.
