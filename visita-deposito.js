@@ -48,6 +48,7 @@
     document.querySelectorAll('.sector-button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sector === selected)));
     if(updateUrl && s) history.pushState({},'',u);
     draw();
+    dispatchEvent(new CustomEvent('sectorselected',{detail:{id:selected,manual:updateUrl}}));
   }
 
   function resize(){ if(!ctx)return; const dpr=Math.min(devicePixelRatio||1,2); const r=canvas.getBoundingClientRect(); canvas.width=r.width*dpr; canvas.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
@@ -133,6 +134,8 @@
   }
   function draw(){
     if(!ctx || !canvas.clientWidth)return; ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight); hitAreas=[];labelAreas=[];
+    document.querySelector('#zoomLevel').textContent=Math.round(zoomFactor*100)+'%';
+    document.querySelector('#topView').setAttribute('aria-pressed',String(Math.abs(pitch-Math.PI/2)<.001));
     drawStreets();
     const perimeter=[[98,50],[1003,50],[1003,1173],[94,1173],[56,1136],[56,89]];
     poly(perimeter.map(([x,z])=>project(point(x,z))), '#bfc0b5', '#7d8785', 3);
@@ -162,7 +165,14 @@
   canvas.addEventListener('pointercancel',()=>{dragging=false;moved=false;});
   canvas.addEventListener('lostpointercapture',()=>{dragging=false;});
   function zoomBy(delta){ zoomFactor=Math.max(.6,Math.min(1.8,zoomFactor+delta));draw(); }
-  canvas.addEventListener('wheel',e=>{ e.preventDefault();zoomBy(-e.deltaY*.001); },{passive:false});
+  canvas.addEventListener('wheel',e=>{if(!e.ctrlKey&&!e.metaKey)return; e.preventDefault();zoomBy(-e.deltaY*.001); },{passive:false});
+  canvas.addEventListener('keydown',e=>{
+    if(editor?.placing)return;
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();yaw+=e.key==='ArrowLeft'?-.25:.25;draw();}
+    if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(.15);}
+    if(e.key==='-'){e.preventDefault();zoomBy(-.15);}
+    if(e.key==='Home'){e.preventDefault();document.querySelector('#resetView').click();}
+  });
   document.querySelector('#zoomIn').addEventListener('click',()=>zoomBy(.15));
   document.querySelector('#zoomOut').addEventListener('click',()=>zoomBy(-.15));
   document.querySelector('#rotateLeft').addEventListener('click',()=>{editor?.cancel();yaw-=.25;draw();});
@@ -173,8 +183,9 @@
   safetyToggle.addEventListener('change',draw);
   evacuationToggle.addEventListener('change',draw);
   labelsToggle.addEventListener('change',draw);
-  copy.addEventListener('click',async()=>{ if(!selected)return; try{await navigator.clipboard.writeText(link.value);status.textContent='Enlace copiado. Podés usarlo para generar el QR.';}catch{link.focus();link.select();status.textContent='Copiá el enlace seleccionado con el menú de tu dispositivo.';} });
+  copy.addEventListener('click',async()=>{ if(!selected)return; try{await navigator.clipboard.writeText(link.value);status.textContent='Enlace copiado. Podés usarlo para generar el QR.';}catch{document.querySelector('.share-details').open=true;link.focus();link.select();status.textContent='Copiá el enlace seleccionado con el menú de tu dispositivo.';} });
   addEventListener('popstate',()=>select(new URLSearchParams(location.search).get('sector')));
   editor=window.createLayoutEditor({canvas,ctx,redraw:draw,project:(x,z)=>project(point(x,z)),paths:drawStripedPaths,arrow:drawArrow,topView(){yaw=0;pitch=Math.PI/2;zoomFactor=1;draw();}});
   addEventListener('resize',resize); select(new URLSearchParams(location.search).get('sector')); resize();
+  new ResizeObserver(resize).observe(canvas);
 })();

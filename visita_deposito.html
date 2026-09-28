@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="visita-deposito.css">
 </head>
 <body>
+  <a class="skip-link" href="#mapSection">Ir al mapa</a>
   <nav class="visitor-nav" aria-label="Navegación principal">
     <img src="img/logodp.png" alt="Logo de del Palacio S.A.">
     <a href="index.html">del Palacio S.A. <span class="brand-long">· Visitas</span></a>
@@ -19,26 +20,42 @@
       <div><p class="eyebrow">Casa Central · Layout 2026</p><h1 id="pageTitle">Mapa para visitantes</h1><p>Explorá los sectores, consultá la señalización y ubicá el punto de encuentro.</p></div>
       <span class="demo-badge">Vista ilustrativa basada en plano</span>
     </section>
+    <div class="mobile-actions" aria-label="Herramientas del mapa">
+      <button id="openSectors" type="button">⌕ Buscar sector</button><button id="openLayers" type="button">☷ Capas</button><button id="openEditor" type="button">＋ Etiquetas</button>
+    </div>
     <div class="workspace">
-      <section class="viewer" aria-label="Modelo 3D interactivo del depósito">
+      <section class="viewer" id="mapSection" tabindex="-1" aria-label="Modelo 3D interactivo del depósito">
         <canvas id="warehouseCanvas" role="img" tabindex="0" aria-describedby="walkwaysHelp annotationStatus" aria-label="Representación tridimensional demostrativa de los sectores del depósito"></canvas>
-        <div class="viewer-tools"><span>Arrastrá para girar · rueda para acercar</span><button class="reset-view" id="resetView" type="button">Restablecer vista</button></div>
+        <div class="viewer-tools"><span>Arrastrá de lado para girar</span><div class="viewer-actions"><button class="reset-view" id="resetView" type="button" title="Restablecer giro y zoom">Restablecer</button><button id="expandMap" type="button" aria-label="Ampliar mapa" aria-haspopup="dialog">⛶ Ampliar</button></div></div>
         <p id="viewSelection" class="view-selection" aria-live="polite">Seleccioná un sector</p>
+        <div id="placementNotice" class="placement-notice" hidden><p id="placementText" role="status"></p><button id="cancelPlacement" type="button">Cancelar</button></div>
         <div class="view-controls" aria-label="Controles del modelo">
           <button id="rotateLeft" type="button" aria-label="Girar a la izquierda">↶</button>
           <button id="rotateRight" type="button" aria-label="Girar a la derecha">↷</button>
           <button id="zoomOut" type="button" aria-label="Alejar">−</button>
           <button id="zoomIn" type="button" aria-label="Acercar">+</button>
-          <button id="topView" type="button">Vista superior</button>
+          <button id="topView" type="button" aria-pressed="false">Vista superior</button><span id="zoomLevel" class="zoom-level" aria-live="off">100%</span>
         </div>
         <p class="model-caption">Casa Central · distribución aproximada · ambientación ilustrativa</p>
       </section>
       <aside class="panel" aria-labelledby="sectorHeading">
-        <p class="eyebrow">Del Palacio S.A.</p><h2 id="sectorHeading">Bienvenido</h2>
-        <p class="panel-copy">Seleccioná un sector o escaneá su QR para resaltarlo en el mapa.</p>
-        <div class="current-card" aria-live="polite"><small id="selectionSource">Sin sector indicado</small><h3 id="currentTitle">Elegí un sector</h3><p id="currentNote"></p><div class="share-row"><button id="copySectorLink" type="button" disabled>Copiar enlace para QR</button><a href="ubicacion.html">Ver sedes</a></div></div>
-        <p class="panel-copy sector-help">Elegí un sector. Las siglas del listado aparecen en el modelo.</p>
+        <p class="eyebrow">Casa Central</p><h2 id="sectorHeading">Explorá el depósito</h2>
+        <div class="panel-tabs" role="tablist" aria-label="Herramientas">
+          <button id="sectorsTab" type="button" role="tab" aria-selected="true" aria-controls="sectorsPane">Sectores</button><button id="layersTab" type="button" role="tab" aria-selected="false" aria-controls="layersPane" tabindex="-1">Capas y señales</button>
+        </div>
+        <section id="sectorsPane" role="tabpanel" aria-labelledby="sectorsTab">
+        <div class="current-card" aria-live="polite"><small id="selectionSource">Sin sector indicado</small><h3 id="currentTitle">Elegí un sector</h3><details class="sector-description"><summary>Sobre este sector</summary><p id="currentNote"></p></details><div class="share-row"><button id="copySectorLink" type="button" disabled>Copiar enlace para QR</button><a href="ubicacion.html">Ver sedes</a></div></div>
+        <div class="sector-search"><label for="sectorSearch">Buscar sector</label><input id="sectorSearch" type="search" placeholder="Ej.: Dock 2, oficinas…" autocomplete="off" aria-controls="sectorList"><p id="searchCount" role="status"></p></div>
         <div class="sector-list" id="sectorList" role="region" aria-label="Sectores de Casa Central" tabindex="0"></div>
+        <p id="emptySearch" class="empty-search" hidden>No encontramos ese sector. Probá con «cancha», «dock» u «oficinas».</p>
+        <details class="share-details"><summary>Enlace QR del sector</summary>
+          <label class="link-label" for="sectorLink">Copiá este enlace para generar el QR</label>
+          <input id="sectorLink" type="url" readonly placeholder="Seleccioná un sector" aria-describedby="linkHelp">
+          <p id="linkHelp" class="panel-copy">El QR identifica el cartel escaneado. No sigue tu movimiento.</p>
+        </details>
+        <p id="copyStatus" role="status"></p>
+        </section>
+        <section id="layersPane" role="tabpanel" aria-labelledby="layersTab" hidden>
     <div class="layer-controls">
       <label for="showWalkways"><input id="showWalkways" type="checkbox" checked aria-describedby="walkwaysHelp"><span class="walkway-swatch" aria-hidden="true"></span>Mostrar sendas peatonales</label>
       <label for="showSafetyPaths"><input id="showSafetyPaths" type="checkbox" checked><span class="walkway-swatch safety-swatch" aria-hidden="true"></span>Mostrar senda de seguridad</label>
@@ -48,10 +65,7 @@
       <p class="meeting-reference"><strong>PE · Punto de encuentro:</strong> esquina de Sacconi y Chascomús, indicada por el usuario. <a href="?sector=punto-encuentro">Resaltar punto de encuentro</a></p>
       <p>Flechas exteriores: Chascomús hacia Sacconi y Sacconi hacia Chascomús, según el recorrido indicado.</p>
     </div>
-        <label class="link-label" for="sectorLink">Enlace para generar el QR del sector</label>
-        <input id="sectorLink" type="url" readonly placeholder="Seleccioná un sector" aria-describedby="linkHelp">
-        <p id="linkHelp" class="panel-copy">El QR conserva el sector del cartel escaneado. No sigue tu movimiento al cambiar de sector.</p>
-        <p id="copyStatus" role="status"></p>
+        </section>
       </aside>
     </div>
     <details class="annotation-editor" id="annotationEditor">
@@ -76,10 +90,13 @@
       <img src="img/layout-casa-central-2026.png" alt="Layout general 2026 de Casa Central: Chascomús al norte, Sacconi al oeste y Julio Campos al sur; canchas y depósito al este, docks y vacíos al oeste." loading="lazy" width="1055" height="1491">
     </details>
   </main>
+  <dialog id="panelDialog" class="panel-dialog" aria-label="Sectores y capas del mapa"><div class="dialog-toolbar"><strong>Herramientas del mapa</strong><button id="closePanel" type="button" aria-label="Cerrar herramientas">✕ Cerrar</button></div></dialog>
+  <dialog id="mapDialog" class="map-dialog" aria-label="Mapa ampliado"></dialog>
   <noscript><p class="noscript">Activá JavaScript para visualizar y seleccionar los sectores.</p></noscript>
   <script src="layout-casa-central.js"></script>
   <script src="visita-escena.js"></script>
   <script src="visita-etiquetas.js"></script>
   <script src="visita-deposito.js"></script>
+  <script src="visita-ux.js"></script>
 </body>
 </html>

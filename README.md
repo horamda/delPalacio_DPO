@@ -104,6 +104,21 @@ El QR identifica el cartel escaneado; no mide posición ni sigue movimientos.
 No se utiliza GPS interior. El listado y los controles admiten teclado y móvil.
 La vista superior conserva la orientación del plano; restablecer vuelve a 3D.
 
+### Uso en móvil y accesibilidad
+
+`visita-ux.js` organiza la interfaz: pestañas Sectores / Capas, búsqueda sin
+distinción de tildes o mayúsculas, aviso de resultados vacíos y panel modal en
+móvil. Al elegir un sector, el panel móvil se cierra y el mapa queda visible.
+El mapa se puede ampliar en un diálogo con cierre por botón o Escape; al cambiar
+de tamaño se recalcula el canvas. La altura del panel considera el teclado móvil.
+Las capas, selección, zoom y agregados se conservan al ampliar o cerrar.
+
+Controles: arrastre horizontal para girar; botones +/− o Ctrl/Command + rueda
+para zoom. La rueda normal desplaza la página y el gesto vertical permite
+desplazarse en móvil. Con el canvas enfocado: izquierda/derecha giran, +/− hacen
+zoom y Home restablece. Las pestañas admiten izquierda/derecha y Home/End.
+Durante una colocación, instrucciones y botón Cancelar se muestran sobre el mapa.
+
 ### Desarrollo y despliegue
 
 Servir la raíz con `python -m http.server 8000` y abrir
