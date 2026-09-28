@@ -5,6 +5,8 @@
   const shapes = sectors.flatMap(s => (s.rects || []).map(([left,top,w,d],i) => ({
     ...s, ...point(left+w/2,top+d/2), w:w/80, d:d/80, label:i===0
   })));
+  const scene=window.buildVisitorScene(shapes);
+  let editor;
   const byId = Object.fromEntries(sectors.map(s => [s.id,s]));
   const canvas = document.querySelector('#warehouseCanvas');
   const ctx = canvas.getContext('2d');
@@ -18,8 +20,9 @@
   const walkwaysToggle = document.querySelector('#showWalkways');
   const safetyToggle = document.querySelector('#showSafetyPaths');
   const evacuationToggle = document.querySelector('#showEvacuation');
-  let selected = null, yaw = -.3, pitch = .95, zoomFactor = 1, dragging = false, moved = false, lastX = 0, hitAreas = [], labelAreas = [];
-  function scale(){ return Math.min(canvas.clientWidth / 20, canvas.clientHeight / 22) * zoomFactor; }
+  const labelsToggle = document.querySelector('#showSectorLabels');
+  let selected = null, yaw = -.13, pitch = .95, zoomFactor = 1, dragging = false, moved = false, lastX = 0, lastY=0, hitAreas = [], labelAreas = [];
+  function scale(){ return Math.min(canvas.clientWidth / 17.5, (canvas.clientHeight-130) / 16) * zoomFactor; }
 
   sectors.forEach(s => {
     const b = document.createElement('button');
@@ -56,54 +59,69 @@
   function shade(hex,amt){ const n=parseInt(hex.slice(1),16),r=Math.max(0,Math.min(255,(n>>16)+amt)),g=Math.max(0,Math.min(255,((n>>8)&255)+amt)),b=Math.max(0,Math.min(255,(n&255)+amt)); return `rgb(${r},${g},${b})`; }
   function poly(points,fill,stroke='rgba(17,31,48,.22)',width=1){ ctx.beginPath(); points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)); ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); ctx.strokeStyle=stroke; ctx.lineWidth=width; ctx.stroke(); }
   function box(s){
-    const x0=s.x-s.w/2,x1=s.x+s.w/2,z0=s.z-s.d/2,z1=s.z+s.d/2,y=s.h;
-    const a=project({x:x0,y:0,z:z0}),b=project({x:x1,y:0,z:z0}),c=project({x:x1,y:0,z:z1}),d=project({x:x0,y:0,z:z1});
+    const x0=s.x-s.w/2,x1=s.x+s.w/2,z0=s.z-s.d/2,z1=s.z+s.d/2,y0=s.y0||0,y=y0+s.h;
+    const a=project({x:x0,y:y0,z:z0}),b=project({x:x1,y:y0,z:z0}),c=project({x:x1,y:y0,z:z1}),d=project({x:x0,y:y0,z:z1});
     const A=project({x:x0,y,z:z0}),B=project({x:x1,y,z:z0}),C=project({x:x1,y,z:z1}),D=project({x:x0,y,z:z1});
-    const active=s.id===selected || s.parent===selected, edge=active?'#ffd43b':'rgba(17,31,48,.25)', lw=active?4:1;
+    const active=s.id===selected || s.parent===selected, edge=active?'#ffd43b':'rgba(17,31,48,.22)', lw=active?1.5:.5;
     const faces=[];
     if(Math.cos(yaw)<0) faces.push([[a,b,B,A],-24]);
     if(Math.sin(yaw)>0) faces.push([[b,c,C,B],-38]);
     if(Math.cos(yaw)>=0) faces.push([[c,d,D,C],-12]);
     if(Math.sin(yaw)<=0) faces.push([[d,a,A,D],-30]);
     faces.push([[A,B,C,D],18]);
-    faces.forEach(([points,tint])=>{ poly(points,active ? shade('#ffd43b',tint) : shade(s.color,tint),edge,lw); hitAreas.push({id:s.id,poly:points}); });
+    faces.forEach(([points,tint])=>{ poly(points,active ? shade('#ffd43b',tint) : shade(s.color,tint),edge,lw); if(byId[s.id])hitAreas.push({id:s.id,poly:points}); });
   }
   function label(s){
-    const center=project({x:s.x,y:s.h+.18,z:s.z});
-    const size=canvas.clientWidth<500?11:13;
+    const center=project({x:s.x,y:1.05,z:s.z});
+    const size=canvas.clientWidth<600?10:11;
+    const name=canvas.clientWidth<650?s.tag:s.name.replace(' · Picking','');
     ctx.font=`700 ${size}px system-ui`;
-    const width=ctx.measureText(s.tag).width+6;
+    const width=ctx.measureText(name).width+12;
     let x=center.x,y=center.y;
-    const overlaps=()=>labelAreas.some(r=>x+width/2>r.left && x-width/2<r.right && y>r.top && y-size-5<r.bottom);
-    for(let tries=0;tries<20 && overlaps();tries++) {
-      y-=size+7;
-      if(y-size<110){x+=width+8;y=center.y;}
-    }
+    const candidates=[];
+    for(let row=-4;row<=4;row++)for(const col of [0,-1,1])candidates.push({x:center.x+col*(width*.6+12),y:center.y+row*(size+12)});
+    candidates.sort((a,b)=>Math.hypot(a.x-center.x,a.y-center.y)-Math.hypot(b.x-center.x,b.y-center.y));
+    const free=candidates.find(p=>p.x-width/2>4&&p.x+width/2<canvas.clientWidth-4&&p.y-size>95&&p.y<canvas.clientHeight-85&&!labelAreas.some(r=>p.x+width/2>r.left&&p.x-width/2<r.right&&p.y>r.top&&p.y-size-8<r.bottom));
+    if(free){x=free.x;y=free.y;}
     labelAreas.push({left:x-width/2,right:x+width/2,top:y-size-5,bottom:y});
     if(y!==center.y || x!==center.x){ctx.beginPath();ctx.moveTo(center.x,center.y);ctx.lineTo(x,y);ctx.strokeStyle='#52667d';ctx.lineWidth=1;ctx.stroke();}
-    ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(x-width/2,y-size-3,width,size+4);
-    ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillStyle='#142033';ctx.fillText(s.tag,x,y);
+    x=Math.max(width/2+5,Math.min(canvas.clientWidth-width/2-5,x));
+    ctx.fillStyle='#062d48';ctx.fillRect(x-width/2,y-size-5,width,size+8);
+    ctx.strokeStyle='#f2f5f0';ctx.lineWidth=1;ctx.strokeRect(x-width/2,y-size-5,width,size+8);
+    ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillStyle='#fff';ctx.fillText(name,x,y);
   }
-  function drawStripedPaths(paths,color){
+  function drawStripedPaths(paths,color,striped=true){
     function rect(x,z,w,d,fill){
       poly([[x,z],[x+w,z],[x+w,z+d],[x,z+d]].map(([px,py])=>project(point(px,py))),fill,fill,.4);
     }
     paths.forEach(([x,z,w,d])=>{
       rect(x,z,w,d,color);
+      if(!striped)return;
       // Rayado transversal blanco, conservando el color de cada tipo de senda.
       if(w>d){ for(let offset=4;offset<w-3;offset+=10) rect(x+offset,z+3,Math.min(4,w-offset-3),d-6,'#ffffff'); }
       else { for(let offset=4;offset<d-3;offset+=10) rect(x+3,z+offset,w-6,Math.min(4,d-offset-3),'#ffffff'); }
     });
   }
-  function drawEvacuation(){
-    if(!evacuationToggle.checked)return;
-    window.CASA_CENTRAL_EVACUATION.forEach(({x,z,dx,dz})=>{
+  function drawArrow({x,z,dx,dz}){
       // Flecha orientada en el plano del suelo; gira con la cámara.
       const outline=[[-6,-16],[6,-16],[6,5],[12,5],[0,20],[-12,5],[-6,5]];
       const vertices=outline.map(([side,forward])=>project(point(x-dz*side+dx*forward,z+dx*side+dz*forward)));
       poly(vertices,'#00c52c','#087d36',.6);
       labelAreas.push({left:Math.min(...vertices.map(p=>p.x))-3,right:Math.max(...vertices.map(p=>p.x))+3,top:Math.min(...vertices.map(p=>p.y))-3,bottom:Math.max(...vertices.map(p=>p.y))+3});
-    });
+  }
+  function drawEvacuation(){
+    if(!evacuationToggle.checked)return;
+    [...window.CASA_CENTRAL_EVACUATION,...window.CASA_CENTRAL_EXTERIOR_EVACUATION].forEach(drawArrow);
+  }
+  function drawStreets(){
+    const rect=(x,z,w,d,color)=>poly([[x,z],[x+w,z],[x+w,z+d],[x,z+d]].map(([a,b])=>project(point(a,b))),color,color,.5);
+    rect(-75,-80,1080,128,'#555e63');rect(-75,48,131,1126,'#555e63');rect(-75,1174,1080,106,'#555e63');
+    rect(45,95,10,1040,'#cdd0c9');rect(98,38,905,10,'#cdd0c9');rect(94,1173,909,10,'#cdd0c9');
+    ctx.save();ctx.fillStyle='#fff';ctx.font='700 12px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    [['CALLE CHASCOMÚS',529,-48,1,0],['CALLE JULIO CAMPOS',529,1250,1,0],['CALLE SACCONI',-48,650,0,1]].forEach(([name,x,z,dx,dz])=>{
+      const p=project(point(x,z)),q=project(point(x+dx*50,z+dz*50));
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.atan2(q.y-p.y,q.x-p.x));ctx.fillText(name,0,0);ctx.restore();
+    });ctx.restore();
   }
   function drawMeetingPoint(){
     const {x,z}=window.CASA_CENTRAL_MEETING_POINT;
@@ -115,42 +133,48 @@
   }
   function draw(){
     if(!ctx || !canvas.clientWidth)return; ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight); hitAreas=[];labelAreas=[];
+    drawStreets();
     const perimeter=[[98,50],[1003,50],[1003,1173],[94,1173],[56,1136],[56,89]];
-    poly(perimeter.map(([x,z])=>project(point(x,z))), '#f9fafb', '#8190a1', 2);
+    poly(perimeter.map(([x,z])=>project(point(x,z))), '#bfc0b5', '#7d8785', 3);
     // Contorno aproximado del edificio principal; patios y circulación quedan libres.
-    poly([[567,206],[937,206],[937,1171],[567,1171]].map(([x,z])=>project(point(x,z))), '#e3edf3', '#a5b6c4');
+    poly([[567,206],[937,206],[937,1171],[567,1171]].map(([x,z])=>project(point(x,z))), '#d8d0b9', '#a5a694');
+    // Juntas de piso ilustrativas, sin escala métrica.
+    for(let z=100;z<1170;z+=65){const a=project(point(60,z)),b=project(point(1000,z));ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle='rgba(61,73,69,.1)';ctx.lineWidth=.6;ctx.stroke();}
+    shapes.forEach(s=>{const dx=.13,dz=.16;poly([{x:s.x-s.w/2+dx,y:0,z:s.z-s.d/2+dz},{x:s.x+s.w/2+dx,y:0,z:s.z-s.d/2+dz},{x:s.x+s.w/2+dx,y:0,z:s.z+s.d/2+dz},{x:s.x-s.w/2+dx,y:0,z:s.z+s.d/2+dz}].map(project),'rgba(33,42,38,.13)','transparent',0);});
+    [...scene].sort((m,n)=>((m.x*Math.sin(yaw)+m.z*Math.cos(yaw)+(m.y0||0)*.001)-(n.x*Math.sin(yaw)+n.z*Math.cos(yaw)+(n.y0||0)*.001))).forEach(box);
+    // Capas visibles sobre la geometría: no perder tramos detrás de bloques.
     if(walkwaysToggle.checked) drawStripedPaths(window.CASA_CENTRAL_WALKWAYS,'#079c37');
     if(safetyToggle.checked) drawStripedPaths(window.CASA_CENTRAL_SAFETY_PATHS,'#e3242b');
-    ctx.save();
-    ctx.font='700 11px system-ui'; ctx.textAlign='center'; ctx.fillStyle='#49576a';
-    const streets=[['CHASCOMÚS · NORTE',529,24],['JULIO CAMPOS',529,1215],['SACCONI',12,650]];
-    streets.forEach(([name,x,z])=>{const p=project(point(x,z)); ctx.fillText(name,p.x,p.y);});
-    ctx.restore();
-    [...shapes].sort((m,n)=>((m.x*Math.sin(yaw)+m.z*Math.cos(yaw))-(n.x*Math.sin(yaw)+n.z*Math.cos(yaw)))).forEach(box);
     // Señalización superpuesta para que la geometría simplificada no oculte flechas.
     drawEvacuation();
-    shapes.filter(s=>s.label && (s.id===selected || s.parent===selected)).forEach(label);
-    shapes.filter(s=>s.label && s.id!==selected && s.parent!==selected).forEach(label);
+    if(labelsToggle.checked){
+      shapes.filter(s=>s.label && (s.id===selected || s.parent===selected)).forEach(label);
+      shapes.filter(s=>s.label && s.id!==selected && s.parent!==selected).forEach(label);
+    }
     drawMeetingPoint();
+    editor?.draw();
   }
   function inside(p,poly){ let c=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ if(((poly[i].y>p.y)!==(poly[j].y>p.y))&&(p.x<(poly[j].x-poly[i].x)*(p.y-poly[i].y)/(poly[j].y-poly[i].y)+poly[i].x))c=!c; } return c; }
-  canvas.addEventListener('pointerdown',e=>{ dragging=true;moved=false;lastX=e.clientX;canvas.setPointerCapture(e.pointerId); });
-  canvas.addEventListener('pointermove',e=>{ if(!dragging)return; const dx=e.clientX-lastX; if(Math.abs(dx)>1){moved=true;yaw+=dx*.009;lastX=e.clientX;draw();} });
-  canvas.addEventListener('pointerup',e=>{ dragging=false; if(!moved){ const r=canvas.getBoundingClientRect(),p={x:e.clientX-r.left,y:e.clientY-r.top}; const hit=[...hitAreas].reverse().find(h=>inside(p,h.poly)); if(hit)select(hit.id,true); } });
+  function unproject(p){const rx=(p.x-canvas.clientWidth/2)/scale(),rz=(p.y-canvas.clientHeight*.5)/(scale()*Math.sin(pitch));return {x:(rx*Math.cos(yaw)+rz*Math.sin(yaw))*80+529,z:(-rx*Math.sin(yaw)+rz*Math.cos(yaw))*80+611};}
+  canvas.addEventListener('pointerdown',e=>{ dragging=true;moved=false;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener('pointermove',e=>{if(editor?.placing){const r=canvas.getBoundingClientRect();editor.hover(unproject({x:e.clientX-r.left,y:e.clientY-r.top}));if(dragging&&Math.hypot(e.clientX-lastX,e.clientY-lastY)>6)moved=true;return;} if(!dragging)return; const dx=e.clientX-lastX; if(Math.abs(dx)>1){moved=true;yaw+=dx*.009;lastX=e.clientX;draw();} });
+  canvas.addEventListener('pointerup',e=>{ dragging=false; if(!moved){ const r=canvas.getBoundingClientRect(),p={x:e.clientX-r.left,y:e.clientY-r.top};if(editor?.placing){editor.place(unproject(p));return;} const hit=[...hitAreas].reverse().find(h=>inside(p,h.poly)); if(hit)select(hit.id,true); } });
   canvas.addEventListener('pointercancel',()=>{dragging=false;moved=false;});
   canvas.addEventListener('lostpointercapture',()=>{dragging=false;});
   function zoomBy(delta){ zoomFactor=Math.max(.6,Math.min(1.8,zoomFactor+delta));draw(); }
   canvas.addEventListener('wheel',e=>{ e.preventDefault();zoomBy(-e.deltaY*.001); },{passive:false});
   document.querySelector('#zoomIn').addEventListener('click',()=>zoomBy(.15));
   document.querySelector('#zoomOut').addEventListener('click',()=>zoomBy(-.15));
-  document.querySelector('#rotateLeft').addEventListener('click',()=>{yaw-=.25;draw();});
-  document.querySelector('#rotateRight').addEventListener('click',()=>{yaw+=.25;draw();});
-  document.querySelector('#resetView').addEventListener('click',()=>{yaw=-.3;pitch=.95;zoomFactor=1;draw();});
+  document.querySelector('#rotateLeft').addEventListener('click',()=>{editor?.cancel();yaw-=.25;draw();});
+  document.querySelector('#rotateRight').addEventListener('click',()=>{editor?.cancel();yaw+=.25;draw();});
+  document.querySelector('#resetView').addEventListener('click',()=>{editor?.cancel();yaw=-.13;pitch=.95;zoomFactor=1;draw();});
   document.querySelector('#topView').addEventListener('click',()=>{yaw=0;pitch=Math.PI/2;zoomFactor=1;draw();});
   walkwaysToggle.addEventListener('change',draw);
   safetyToggle.addEventListener('change',draw);
   evacuationToggle.addEventListener('change',draw);
+  labelsToggle.addEventListener('change',draw);
   copy.addEventListener('click',async()=>{ if(!selected)return; try{await navigator.clipboard.writeText(link.value);status.textContent='Enlace copiado. Podés usarlo para generar el QR.';}catch{link.focus();link.select();status.textContent='Copiá el enlace seleccionado con el menú de tu dispositivo.';} });
   addEventListener('popstate',()=>select(new URLSearchParams(location.search).get('sector')));
+  editor=window.createLayoutEditor({canvas,ctx,redraw:draw,project:(x,z)=>project(point(x,z)),paths:drawStripedPaths,arrow:drawArrow,topView(){yaw=0;pitch=Math.PI/2;zoomFactor=1;draw();}});
   addEventListener('resize',resize); select(new URLSearchParams(location.search).get('sector')); resize();
 })();

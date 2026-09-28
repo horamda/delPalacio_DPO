@@ -64,3 +64,10 @@ window.CASA_CENTRAL_EVACUATION = [
 ];
 // Ubicación proporcionada por el usuario, no presente como símbolo en el PNG.
 window.CASA_CENTRAL_MEETING_POINT = {x:65,z:60};
+
+// Sentidos exteriores confirmados por el usuario: ambas calles hacia PE.
+// Coordenadas esquemáticas fuera del perímetro, no procedentes del PNG.
+window.CASA_CENTRAL_EXTERIOR_EVACUATION = [
+  ...[870,700,530,360,190].map(x=>({x,z:0,dx:-1,dz:0})),
+  ...[1030,840,650,460,270,130].map(z=>({x:15,z,dx:0,dz:-1}))
+];

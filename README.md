@@ -33,15 +33,43 @@ La capa roja «Mostrar senda de seguridad» usa `CASA_CENTRAL_SAFETY_PATHS`.
 en `CASA_CENTRAL_EVACUATION`: ocho hacia el norte y uno hacia el oeste.
 Las tres capas están activadas al abrir y pueden ocultarse independientemente.
 No se representan las barreras amarillas.
-Se dibuja sobre el suelo: los volúmenes pueden taparla en 3D; la vista superior
-permite revisar todos los tramos. No calcula rutas ni verifica transitabilidad.
+Las sendas se superponen al modelo para que no desaparezcan detrás de los
+volúmenes ilustrativos. La vista superior permite revisar su trazado.
+No calcula rutas ni verifica transitabilidad.
 
 El punto de encuentro PE se sitúa aproximadamente en la esquina de Sacconi y
 Chascomús (noroeste), según indicación explícita del usuario. Este marcador no
 figura en el PNG original y su origen se aclara en la interfaz. Se configura en
 `CASA_CENTRAL_MEETING_POINT`, se selecciona tocándolo o desde el listado y admite
 el enlace `visita_deposito.html?sector=punto-encuentro`. No se inventa un recorrido
-que conecte las flechas originales con esta esquina.
+que conecte las flechas originales con esta esquina. Posteriormente el usuario
+confirmó las direcciones exteriores: por Chascomús hacia Sacconi y por Sacconi
+hacia Chascomús, ambas hacia PE. Esas flechas se almacenan por separado en
+`CASA_CENTRAL_EXTERIOR_EVACUATION` y se distinguen de las extraídas del PNG.
+
+### Presentación y edición local
+
+El estilo visual toma como referencia `best.png` aportado por el usuario. El mapa
+sigue siendo geometría interactiva, no una imagen plana. `visita-escena.js` agrega
+racks, cajas, vehículos, edificios y cerco ilustrativos: no son un relevamiento
+de cantidades, alturas o equipamiento real. Las calles son franjas esquemáticas.
+La ubicación de sectores conserva el plano original, aunque la referencia estética
+muestre otra distribución. Los carteles de sectores pueden ocultarse.
+
+«Agregar etiquetas y trazados al gráfico» abre el editor de `visita-etiquetas.js`.
+Admite texto, extintor, botiquín, alarma, lavaojos, baños, encuentro, flecha de
+evacuación, senda peatonal, senda de seguridad y barrera amarilla. Se elige el
+tipo, texto opcional y dirección (para flechas), y luego se coloca en vista superior.
+Las sendas y barreras requieren dos puntos; se ajustan al eje horizontal o vertical.
+También funciona con flechas del teclado, Enter y Escape. Permite reubicar,
+eliminar y filtrar los agregados por tipo.
+
+Los agregados se guardan sólo en `localStorage` de ese navegador bajo
+`dpo-casa-central-annotations-v1`; no alteran la versión pública ni el plano base.
+Exportar e importar JSON permite compartirlos. La importación valida versión,
+tipos, coordenadas y límite de 100 elementos; agrega IDs nuevos sin reemplazar
+los existentes. No se ejecuta HTML de las etiquetas. Si el almacenamiento está
+bloqueado, se informa y se permite exportar los cambios de la sesión.
 
 ### Sectores y enlaces QR
 

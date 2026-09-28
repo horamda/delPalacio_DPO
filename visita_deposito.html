@@ -16,19 +16,12 @@
   </nav>
   <main class="page">
     <section class="intro" aria-labelledby="pageTitle">
-      <div><p class="eyebrow">Casa Central · Layout 2026</p><h1 id="pageTitle">Recorrido interior 3D</h1><p>Calle Chascomús 386 · Partido de la Costa. Sectores ubicados según el plano aportado de Casa Central: canchas, docks, almacenamiento, oficinas y vacíos.</p></div>
-      <span class="demo-badge">Basado en plano · alturas ilustrativas</span>
+      <div><p class="eyebrow">Casa Central · Layout 2026</p><h1 id="pageTitle">Mapa para visitantes</h1><p>Explorá los sectores, consultá la señalización y ubicá el punto de encuentro.</p></div>
+      <span class="demo-badge">Vista ilustrativa basada en plano</span>
     </section>
-    <div class="layer-controls">
-      <label for="showWalkways"><input id="showWalkways" type="checkbox" checked aria-describedby="walkwaysHelp"><span class="walkway-swatch" aria-hidden="true"></span>Mostrar sendas peatonales</label>
-      <label for="showSafetyPaths"><input id="showSafetyPaths" type="checkbox" checked><span class="walkway-swatch safety-swatch" aria-hidden="true"></span>Mostrar senda de seguridad</label>
-      <label for="showEvacuation"><input id="showEvacuation" type="checkbox" checked><span class="evacuation-swatch" aria-hidden="true">↑</span>Mostrar sentido de evacuación</label>
-      <p id="walkwaysHelp">Bandas y flechas trazadas del plano. Usá la vista superior para ver todos los tramos. Se conservan las interrupciones; no se calcula una ruta hasta el punto de encuentro.</p>
-      <p class="meeting-reference"><strong>PE · Punto de encuentro:</strong> esquina de Sacconi y Chascomús, indicada por el usuario. <a href="?sector=punto-encuentro">Resaltar punto de encuentro</a></p>
-    </div>
     <div class="workspace">
       <section class="viewer" aria-label="Modelo 3D interactivo del depósito">
-        <canvas id="warehouseCanvas" role="img" aria-describedby="walkwaysHelp" aria-label="Representación tridimensional demostrativa de los sectores del depósito"></canvas>
+        <canvas id="warehouseCanvas" role="img" tabindex="0" aria-describedby="walkwaysHelp annotationStatus" aria-label="Representación tridimensional demostrativa de los sectores del depósito"></canvas>
         <div class="viewer-tools"><span>Arrastrá para girar · rueda para acercar</span><button class="reset-view" id="resetView" type="button">Restablecer vista</button></div>
         <p id="viewSelection" class="view-selection" aria-live="polite">Seleccioná un sector</p>
         <div class="view-controls" aria-label="Controles del modelo">
@@ -38,20 +31,43 @@
           <button id="zoomIn" type="button" aria-label="Acercar">+</button>
           <button id="topView" type="button">Vista superior</button>
         </div>
-        <p class="model-caption">Distribución aproximada del plano · sin escala métrica</p>
+        <p class="model-caption">Casa Central · distribución aproximada · ambientación ilustrativa</p>
       </section>
       <aside class="panel" aria-labelledby="sectorHeading">
-        <h2 id="sectorHeading">¿En qué sector estás?</h2>
-        <p class="panel-copy">Si llegaste desde un QR, el sector se marca automáticamente. También podés elegirlo manualmente.</p>
+        <p class="eyebrow">Del Palacio S.A.</p><h2 id="sectorHeading">Bienvenido</h2>
+        <p class="panel-copy">Seleccioná un sector o escaneá su QR para resaltarlo en el mapa.</p>
         <div class="current-card" aria-live="polite"><small id="selectionSource">Sin sector indicado</small><h3 id="currentTitle">Elegí un sector</h3><p id="currentNote"></p><div class="share-row"><button id="copySectorLink" type="button" disabled>Copiar enlace para QR</button><a href="ubicacion.html">Ver sedes</a></div></div>
         <p class="panel-copy sector-help">Elegí un sector. Las siglas del listado aparecen en el modelo.</p>
         <div class="sector-list" id="sectorList" role="region" aria-label="Sectores de Casa Central" tabindex="0"></div>
+    <div class="layer-controls">
+      <label for="showWalkways"><input id="showWalkways" type="checkbox" checked aria-describedby="walkwaysHelp"><span class="walkway-swatch" aria-hidden="true"></span>Mostrar sendas peatonales</label>
+      <label for="showSafetyPaths"><input id="showSafetyPaths" type="checkbox" checked><span class="walkway-swatch safety-swatch" aria-hidden="true"></span>Mostrar senda de seguridad</label>
+      <label for="showEvacuation"><input id="showEvacuation" type="checkbox" checked><span class="evacuation-swatch" aria-hidden="true">↑</span>Mostrar sentido de evacuación</label>
+      <label for="showSectorLabels"><input id="showSectorLabels" type="checkbox" checked>Mostrar etiquetas de sectores</label>
+      <p id="walkwaysHelp">Bandas y flechas trazadas del plano. Usá la vista superior para ver todos los tramos. Se conservan las interrupciones; no se calcula una ruta hasta el punto de encuentro.</p>
+      <p class="meeting-reference"><strong>PE · Punto de encuentro:</strong> esquina de Sacconi y Chascomús, indicada por el usuario. <a href="?sector=punto-encuentro">Resaltar punto de encuentro</a></p>
+      <p>Flechas exteriores: Chascomús hacia Sacconi y Sacconi hacia Chascomús, según el recorrido indicado.</p>
+    </div>
         <label class="link-label" for="sectorLink">Enlace para generar el QR del sector</label>
         <input id="sectorLink" type="url" readonly placeholder="Seleccioná un sector" aria-describedby="linkHelp">
         <p id="linkHelp" class="panel-copy">El QR conserva el sector del cartel escaneado. No sigue tu movimiento al cambiar de sector.</p>
         <p id="copyStatus" role="status"></p>
       </aside>
     </div>
+    <details class="annotation-editor" id="annotationEditor">
+      <summary>Agregar etiquetas y trazados al gráfico</summary>
+      <p>Elegí un tipo y pulsá «Colocar en el gráfico». Para una senda, marcá inicio y fin; los tramos se ajustan horizontal o verticalmente.</p>
+      <p><strong>Guardado en este navegador.</strong> Exportá tus agregados para compartirlos o llevarlos a otro dispositivo. No se publican automáticamente para los demás visitantes.</p>
+      <div class="editor-fields">
+        <label>Tipo<select id="annotationType"></select></label>
+        <label>Texto opcional<input id="annotationText" maxlength="60" placeholder="Ej.: Extintor junto a Dock 2"></label>
+        <label>Dirección de la flecha<select id="annotationDirection"><option value="north">Norte ↑</option><option value="south">Sur ↓</option><option value="west">Oeste ←</option><option value="east">Este →</option></select></label>
+      </div>
+      <div class="editor-actions"><button id="startAnnotation" type="button">Colocar en el gráfico</button><button id="cancelAnnotation" type="button" disabled>Cancelar colocación</button><button id="exportAnnotations" type="button">Exportar agregados</button><label class="import-label">Importar agregados<input id="importAnnotations" type="file" accept=".json,application/json"></label></div>
+      <p id="annotationStatus" role="status">Sin colocación en curso.</p>
+      <label class="annotation-filter">Mostrar agregados de tipo<select id="annotationFilter"><option value="all">Todos los tipos</option></select></label>
+      <ul id="annotationList" aria-label="Etiquetas y trazados agregados"></ul>
+    </details>
     <p class="notice"><strong>Alcance del modelo:</strong> distribución trazada a partir del Layout general 2026 de Casa Central. El plano declara una superficie total aproximada de 15.000 m², pero no aporta cotas por sector ni alturas: los volúmenes 3D son ilustrativos. Esta vista no define rutas de circulación ni de evacuación. No usa GPS interior: el sector se indica mediante QR o selección manual.</p>
     <details class="source-plan">
       <summary>Consultar plano original · Casa Central 2026</summary>
@@ -62,6 +78,8 @@
   </main>
   <noscript><p class="noscript">Activá JavaScript para visualizar y seleccionar los sectores.</p></noscript>
   <script src="layout-casa-central.js"></script>
+  <script src="visita-escena.js"></script>
+  <script src="visita-etiquetas.js"></script>
   <script src="visita-deposito.js"></script>
 </body>
 </html>
