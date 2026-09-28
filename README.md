@@ -48,6 +48,8 @@ que conecte las flechas originales con esta esquina. Posteriormente el usuario
 confirmó las direcciones exteriores: por Chascomús hacia Sacconi y por Sacconi
 hacia Chascomús, ambas hacia PE. Esas flechas se almacenan por separado en
 `CASA_CENTRAL_EXTERIOR_EVACUATION` y se distinguen de las extraídas del PNG.
+El usuario también confirmó flechas junto a los docks 1, 2 y 3 hacia Chascomús;
+se configuran en `CASA_CENTRAL_DOCK_EVACUATION` y usan la misma capa de evacuación.
 
 ### Presentación y edición local
 

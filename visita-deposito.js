@@ -111,7 +111,7 @@
   }
   function drawEvacuation(){
     if(!evacuationToggle.checked)return;
-    [...window.CASA_CENTRAL_EVACUATION,...window.CASA_CENTRAL_EXTERIOR_EVACUATION].forEach(drawArrow);
+    [...window.CASA_CENTRAL_EVACUATION,...window.CASA_CENTRAL_EXTERIOR_EVACUATION,...window.CASA_CENTRAL_DOCK_EVACUATION].forEach(drawArrow);
   }
   function drawStreets(){
     const rect=(x,z,w,d,color)=>poly([[x,z],[x+w,z],[x+w,z+d],[x,z+d]].map(([a,b])=>project(point(a,b))),color,color,.5);

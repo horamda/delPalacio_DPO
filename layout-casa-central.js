@@ -73,3 +73,11 @@ window.CASA_CENTRAL_EXTERIOR_EVACUATION = [
   ...[870,700,530,360,190].map(x=>({x,z:0,dx:-1,dz:0})),
   ...[1030,840,650,460,270,130].map(z=>({x:15,z,dx:0,dz:-1}))
 ];
+
+// Confirmación del usuario: junto a los tres docks, hacia Chascomús (norte).
+// Marcadores junto al corredor rojo, sin modificar el trazado de la senda.
+window.CASA_CENTRAL_DOCK_EVACUATION = [
+  {x:385,z:368,dx:0,dz:-1}, // Dock 1.
+  {x:385,z:486,dx:0,dz:-1}, // Dock 2.
+  {x:385,z:1015,dx:0,dz:-1} // Dock 3.
+];
