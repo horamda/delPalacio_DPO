@@ -119,6 +119,15 @@ desplazarse en móvil. Con el canvas enfocado: izquierda/derecha giran, +/− ha
 zoom y Home restablece. Las pestañas admiten izquierda/derecha y Home/End.
 Durante una colocación, instrucciones y botón Cancelar se muestran sobre el mapa.
 
+La pantalla ofrece «Vista 3D» y «Plano 2D»; el segundo representa las áreas
+sin racks ni vehículos ilustrativos para facilitar la lectura de sendas.
+«Centrar» encuadra el sector seleccionado, incluidos grupos y punto de encuentro.
+«Mover» cambia el arrastre de giro a desplazamiento; con ese modo activo las
+flechas del teclado desplazan el mapa. Restablecer conserva la vista 2D/3D elegida.
+La brújula sigue la orientación del norte. Las etiquetas son seleccionables y
+su densidad puede ser automática, todas o sólo el sector seleccionado.
+Los accesos Todos / Canchas / Docks aplican búsquedas rápidas al listado.
+
 ### Desarrollo y despliegue
 
 Servir la raíz con `python -m http.server 8000` y abrir

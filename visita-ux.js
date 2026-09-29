@@ -48,6 +48,8 @@
     $('searchCount').textContent=count+' de '+buttons.length+' sectores';$('emptySearch').hidden=count!==0;
   }
   $('sectorSearch').addEventListener('input',search);search();
+  document.querySelectorAll('[data-query]').forEach(button=>button.addEventListener('click',()=>{$('sectorSearch').value=button.dataset.query;search();}));
+  $('fitMap').onclick=()=>$('resetView').click();
   addEventListener('sectorselected',e=>{
     if(e.detail.manual&&panelDialog.open){panelDialog.close();viewer.focus({preventScroll:true});}
   });
