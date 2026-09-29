@@ -23,7 +23,8 @@
   const labelsToggle = document.querySelector('#showSectorLabels');
   const tooltip=document.querySelector('#mapTooltip'),density=document.querySelector('#labelDensity');
   let selected = null, yaw = -.13, pitch = .95, zoomFactor = 1, panX=0,panY=0,panMode=false,dragging = false, moved = false, lastX = 0, lastY=0, hitAreas = [], labelAreas = [];
-  function fittedYaw(flat){return canvas.clientWidth>canvas.clientHeight*1.15 ? (flat?-Math.PI/2:-1.35) : (flat?0:-.13);}
+  // Chascom?s remains at the top in both default views, on every screen size.
+  function fittedYaw(){return 0;}
   function scale(){
     // Fit the complete site and surrounding streets, reserving only the toolbars.
     const width=15.1*Math.abs(Math.cos(yaw))+17.3*Math.abs(Math.sin(yaw));
@@ -60,10 +61,7 @@
     dispatchEvent(new CustomEvent('sectorselected',{detail:{id:selected,manual:updateUrl}}));
   }
 
-  let wideFrame;
-  function resize(){ if(!ctx)return; const wide=canvas.clientWidth>canvas.clientHeight*1.15;
-    if(wide!==wideFrame && zoomFactor===1 && panX===0 && panY===0)yaw=fittedYaw(Math.abs(pitch-Math.PI/2)<.001);
-    wideFrame=wide; const dpr=Math.min(devicePixelRatio||1,2); const r=canvas.getBoundingClientRect(); canvas.width=r.width*dpr; canvas.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
+  function resize(){ if(!ctx)return; const dpr=Math.min(devicePixelRatio||1,2); const r=canvas.getBoundingClientRect(); canvas.width=r.width*dpr; canvas.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
   function project(p){
     const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
     const x=p.x*cy-p.z*sy, z=p.x*sy+p.z*cy;
