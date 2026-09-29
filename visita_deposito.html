@@ -21,13 +21,14 @@
       <span class="demo-badge">Vista ilustrativa basada en plano</span>
     </section>
     <div class="mobile-actions" aria-label="Herramientas del mapa">
-      <button id="openSectors" type="button">⌕ Buscar sector</button><button id="openLayers" type="button">☷ Capas</button><button id="openEditor" type="button">＋ Etiquetas</button>
+      <button id="openSectors" type="button">⌕ Buscar sector</button><button id="openLayers" type="button">☷ Capas</button><a class="qr-tools" href="qr_deposito.html">QR</a><button id="openEditor" type="button">＋ Etiquetas</button>
     </div>
     <div class="workspace">
       <section class="viewer" id="mapSection" tabindex="-1" aria-label="Modelo 3D interactivo del depósito">
         <canvas id="warehouseCanvas" role="img" tabindex="0" aria-describedby="walkwaysHelp annotationStatus" aria-label="Representación tridimensional demostrativa de los sectores del depósito"></canvas>
         <div class="viewer-tools"><div class="view-modes" aria-label="Presentación del mapa"><button id="perspectiveView" type="button" aria-pressed="true">Vista 3D</button><button id="topView" type="button" aria-pressed="false">Plano 2D</button></div><div class="viewer-actions"><button class="reset-view" id="resetView" type="button" title="Restablecer giro y zoom">Restablecer</button><button id="expandMap" type="button" aria-label="Ampliar mapa" aria-haspopup="dialog">⛶ Ampliar</button></div></div>
         <div class="selection-strip"><p id="viewSelection" class="view-selection" aria-live="polite">Seleccioná un sector</p><button id="focusSector" type="button" disabled>⌖ Centrar</button></div>
+        <div id="qrLocation" class="qr-location" hidden><span id="qrLocationText"></span><button id="returnQR" type="button">Ver ubicación</button></div>
         <div class="compass" aria-label="Orientación del norte"><span>N</span><b id="compassArrow" aria-hidden="true">↑</b></div>
         <div id="mapTooltip" class="map-tooltip" role="tooltip" hidden></div>
         <div id="placementNotice" class="placement-notice" hidden><p id="placementText" role="status"></p><button id="cancelPlacement" type="button">Cancelar</button></div>

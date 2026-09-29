@@ -99,7 +99,6 @@ Compatibilidad con el MVP inicial:
   identificado como tal en el plano. Se explica y se pide selección manual.
 
 La selección manual actualiza la URL, que puede copiarse para generar un QR.
-No se generan imágenes QR. Un enlace sin sector o inválido no presupone ubicación.
 El QR identifica el cartel escaneado; no mide posición ni sigue movimientos.
 No se utiliza GPS interior. El listado y los controles admiten teclado y móvil.
 La vista superior conserva la orientación del plano; restablecer vuelve a 3D.
@@ -136,3 +135,16 @@ GitHub Pages publica la raíz de `main` en `horamda/delPalacio_DPO`; no requiere
 Mantener los IDs publicados al corregir el trazado para conservar los QR.
 Verificar sectores, grupos, enlaces inválidos, selección manual, historial,
 portapapeles, vista superior, acceso al original y pantallas móviles.
+
+### Carteles imprimibles
+
+`qr_deposito.html` genera 24 QR SVG y carteles A4 seleccionables (imprimir / guardar PDF).
+Los enlaces apuntan al sitio publicado, incluso al generar desde localhost.
+Oficinas y Almacenamiento abarcan varios bloques y quedan desmarcados por defecto.
+Los grupos Picking y Vacios no generan carteles para evitar ubicaciones ambiguas.
+Los carteles usan `?sector=ID&origen=qr`: abren 2D centrado en el sector, conservan
+la referencia del cartel al explorar y permiten volver a ella. No siguen movimientos.
+Probar cada cartel con un celular y colocarlo en el sector que indica.
+Un enlace sin sector valido no presupone ubicacion. Necesita Internet para abrir el mapa.
+Biblioteca local: Project Nayuki, licencia MIT incluida en `vendor/qrcodegen.js`.
+Fuente: https://www.nayuki.io/page/qr-code-generator-library

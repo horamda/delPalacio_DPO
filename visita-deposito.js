@@ -6,6 +6,8 @@
     ...s, ...point(left+w/2,top+d/2), w:w/80, d:d/80, label:i===0
   })));
   const scene=window.buildVisitorScene(shapes);
+  const initialParams=new URLSearchParams(location.search);
+  const qrSector=initialParams.get('origen')==='qr'&&sectors.some(s=>s.id===initialParams.get('sector'))?initialParams.get('sector'):null;
   let editor;
   const byId = Object.fromEntries(sectors.map(s => [s.id,s]));
   const canvas = document.querySelector('#warehouseCanvas');
@@ -23,7 +25,7 @@
   const labelsToggle = document.querySelector('#showSectorLabels');
   const tooltip=document.querySelector('#mapTooltip'),density=document.querySelector('#labelDensity');
   let selected = null, yaw = -.13, pitch = .95, zoomFactor = 1, panX=0,panY=0,panMode=false,dragging = false, moved = false, lastX = 0, lastY=0, hitAreas = [], labelAreas = [];
-  // Chascom?s remains at the top in both default views, on every screen size.
+  // Chascomús remains at the top in both default views, on every screen size.
   function fittedYaw(){return 0;}
   function scale(){
     // Fit the complete site and surrounding streets, reserving only the toolbars.
@@ -53,6 +55,7 @@
     status.textContent = '';
     const u = new URL(location.href);
     if(s) u.searchParams.set('sector',selected);
+    if(updateUrl)u.searchParams.delete('origen');
     link.value = s ? u.href : '';
     canvas.setAttribute('aria-label', `Casa Central: esquema 3D basado en el layout 2026; alturas ilustrativas.${s ? ' Sector resaltado: ' + s.name : ' Sin sector seleccionado.'}`);
     document.querySelectorAll('.sector-button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sector === selected)));
@@ -233,4 +236,11 @@
   yaw=fittedYaw(false);
   addEventListener('resize',resize); select(new URLSearchParams(location.search).get('sector')); resize();
   new ResizeObserver(resize).observe(canvas);
+  if(qrSector){
+    document.querySelector('#qrLocation').hidden=false;
+    document.querySelector('#qrLocationText').textContent='Ubicación del QR: '+byId[qrSector].name;
+    const locate=()=>{select(qrSector);view(true);focusSector();};
+    document.querySelector('#returnQR').addEventListener('click',locate);
+    locate();
+  }
 })();
