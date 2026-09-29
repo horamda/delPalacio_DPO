@@ -23,8 +23,14 @@
   const labelsToggle = document.querySelector('#showSectorLabels');
   const tooltip=document.querySelector('#mapTooltip'),density=document.querySelector('#labelDensity');
   let selected = null, yaw = -.13, pitch = .95, zoomFactor = 1, panX=0,panY=0,panMode=false,dragging = false, moved = false, lastX = 0, lastY=0, hitAreas = [], labelAreas = [];
-  function scale(){const flat=Math.abs(pitch-Math.PI/2)<.001;return Math.min(canvas.clientWidth/17.5,(canvas.clientHeight-(flat?240:200))/(flat?17.5:16))*zoomFactor;}
-  function originY(){return canvas.clientHeight*.5+24;}
+  function fittedYaw(flat){return canvas.clientWidth>canvas.clientHeight*1.15 ? (flat?-Math.PI/2:-1.35) : (flat?0:-.13);}
+  function scale(){
+    // Fit the complete site and surrounding streets, reserving only the toolbars.
+    const width=15.1*Math.abs(Math.cos(yaw))+17.3*Math.abs(Math.sin(yaw));
+    const depth=(15.1*Math.abs(Math.sin(yaw))+17.3*Math.abs(Math.cos(yaw)))*Math.sin(pitch)+.9*Math.cos(pitch);
+    return Math.max(1,Math.min((canvas.clientWidth-30)/width,(canvas.clientHeight-(canvas.clientWidth>900?100:180))/depth))*zoomFactor;
+  }
+  function originY(){return canvas.clientHeight*.5+(canvas.clientWidth>900?20:-10);}
 
   sectors.forEach(s => {
     const b = document.createElement('button');
@@ -54,7 +60,10 @@
     dispatchEvent(new CustomEvent('sectorselected',{detail:{id:selected,manual:updateUrl}}));
   }
 
-  function resize(){ if(!ctx)return; const dpr=Math.min(devicePixelRatio||1,2); const r=canvas.getBoundingClientRect(); canvas.width=r.width*dpr; canvas.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
+  let wideFrame;
+  function resize(){ if(!ctx)return; const wide=canvas.clientWidth>canvas.clientHeight*1.15;
+    if(wide!==wideFrame && zoomFactor===1 && panX===0 && panY===0)yaw=fittedYaw(Math.abs(pitch-Math.PI/2)<.001);
+    wideFrame=wide; const dpr=Math.min(devicePixelRatio||1,2); const r=canvas.getBoundingClientRect(); canvas.width=r.width*dpr; canvas.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
   function project(p){
     const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
     const x=p.x*cy-p.z*sy, z=p.x*sy+p.z*cy;
@@ -87,7 +96,7 @@
     const candidates=[];
     for(let row=-4;row<=4;row++)for(const col of [0,-1,1])candidates.push({x:center.x+col*(width*.6+12),y:center.y+row*(size+12)});
     candidates.sort((a,b)=>Math.hypot(a.x-center.x,a.y-center.y)-Math.hypot(b.x-center.x,b.y-center.y));
-    const free=candidates.find(p=>p.x-width/2>4&&p.x+width/2<canvas.clientWidth-4&&p.y-size>132&&p.y<canvas.clientHeight-85&&!labelAreas.some(r=>p.x+width/2>r.left&&p.x-width/2<r.right&&p.y>r.top&&p.y-size-8<r.bottom));
+    const free=candidates.find(p=>p.x-width/2>4&&p.x+width/2<canvas.clientWidth-4&&p.y-size>66&&p.y<canvas.clientHeight-114&&!labelAreas.some(r=>p.x+width/2>r.left&&p.x-width/2<r.right&&p.y>r.top&&p.y-size-8<r.bottom));
     if(!free&&density.value==='auto'&&!active)return;
     if(free){x=free.x;y=free.y;}
     labelAreas.push({left:x-width/2,right:x+width/2,top:y-size-5,bottom:y});
@@ -189,7 +198,7 @@
   canvas.addEventListener('pointercancel',()=>{dragging=false;moved=false;});
   canvas.addEventListener('lostpointercapture',()=>{dragging=false;});
   function zoomBy(delta){const before=zoomFactor;zoomFactor=Math.max(.6,Math.min(2.4,zoomFactor+delta));panX*=zoomFactor/before;panY*=zoomFactor/before;draw();}
-  function view(flat){editor?.cancel();yaw=flat?0:-.13;pitch=flat?Math.PI/2:.95;zoomFactor=1;panX=panY=0;panMode=flat;tooltip.hidden=true;draw();}
+  function view(flat){editor?.cancel();yaw=fittedYaw(flat);pitch=flat?Math.PI/2:.95;zoomFactor=1;panX=panY=0;panMode=flat;tooltip.hidden=true;draw();}
   function focusSector(){
     if(!selected)return;editor?.cancel();zoomFactor=1;panX=panY=0;
     const bounds=shapes.filter(s=>s.id===selected||s.parent===selected).flatMap(s=>[-1,1].flatMap(a=>[-1,1].map(b=>project({x:s.x+a*s.w/2,y:0,z:s.z+b*s.d/2}))));
@@ -223,6 +232,7 @@
   copy.addEventListener('click',async()=>{ if(!selected)return; try{await navigator.clipboard.writeText(link.value);status.textContent='Enlace copiado. Podés usarlo para generar el QR.';}catch{document.querySelector('.share-details').open=true;link.focus();link.select();status.textContent='Copiá el enlace seleccionado con el menú de tu dispositivo.';} });
   addEventListener('popstate',()=>select(new URLSearchParams(location.search).get('sector')));
   editor=window.createLayoutEditor({canvas,ctx,redraw:draw,project:(x,z)=>project(point(x,z)),paths:drawStripedPaths,arrow:drawArrow,topView(){yaw=0;pitch=Math.PI/2;zoomFactor=1;panX=panY=0;panMode=false;draw();}});
+  yaw=fittedYaw(false);
   addEventListener('resize',resize); select(new URLSearchParams(location.search).get('sector')); resize();
   new ResizeObserver(resize).observe(canvas);
 })();

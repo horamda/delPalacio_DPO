@@ -57,3 +57,46 @@ dialog{color:var(--ink)}dialog::backdrop{background:#05203380;backdrop-filter:bl
 .quick-search{display:flex;gap:6px;margin:6px 0 12px}.quick-search button{min-height:36px;border:1px solid #c5d7e4;border-radius:18px;background:#f2f7fb;color:#2c526c;padding:6px 12px;font-size:.75rem;font-weight:650}
 .layer-controls .label-density{display:grid;gap:8px;padding:12px 0;font-size:.8rem}.label-density select{width:100%;min-width:0;border:1px solid #bccfdc;border-radius:8px;background:#fff;padding:8px;color:var(--ink);font-size:.82rem}
 @media(max-width:620px){.viewer-actions{width:auto}.viewer-tools{flex-wrap:nowrap;gap:6px}.viewer-tools #resetView{display:none}.view-modes button,#topView{min-height:40px;padding:6px 10px;font-size:.75rem}.selection-strip{top:64px;left:10px;right:10px;gap:6px;padding:7px 8px}.selection-strip .view-selection{font-size:.73rem}#focusSector{min-height:40px;font-size:.72rem;padding:6px 8px}.view-controls #rotateLeft,.view-controls #rotateRight{display:none}#fitMap{display:block}.view-controls{gap:8px}.compass{right:11px;top:128px;width:28px}.compass b{font-size:1.2rem}.map-tooltip{display:none}.label-density select{font-size:16px}}
+
+/* The map is the primary workspace; auxiliary content stays below the fold. */
+:root{--map-height:max(420px,calc(100svh - 124px))}
+.page{width:100%;padding:10px 14px 24px}
+.visitor-nav{min-height:48px;padding-top:6px;padding-bottom:6px}
+.visitor-nav img{width:30px;height:30px}
+.intro{margin-bottom:10px;gap:12px}
+.intro h1{font-size:1.2rem;letter-spacing:-.02em}
+.intro .eyebrow,.intro p:last-child{display:none}
+.demo-badge{font-size:.65rem;padding:5px 8px}
+.workspace{grid-template-columns:270px minmax(0,1fr);gap:12px}
+.panel{padding:14px}
+.viewer{border-radius:12px}
+.selection-strip{top:auto;bottom:88px;left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);padding:4px 8px;box-shadow:0 2px 8px #15304710}
+.selection-strip .view-selection{font-size:.75rem}
+.compass{top:68px;right:12px}
+.view-controls{bottom:32px}
+.model-caption{bottom:9px}
+@media(max-width:900px){
+ :root{--map-height:max(440px,calc(100svh - 160px))}
+ .workspace{display:block}
+ .mobile-actions{margin-bottom:8px;gap:6px}
+ .mobile-actions button{min-height:40px;padding:6px}
+ .page{padding:8px 8px 20px}
+ .intro{margin-bottom:8px}
+ .intro h1{font-size:1rem}
+ .viewer{height:max(440px,calc(100svh - 160px))}
+ .selection-strip{bottom:86px;top:auto;left:50%;right:auto;max-width:calc(100% - 16px);gap:6px}
+ .selection-strip .view-selection{font-size:.7rem}
+ #focusSector{min-height:36px}
+ .compass{top:66px}
+}
+@media(max-height:500px) and (max-width:900px){
+ .viewer{height:max(340px,calc(100svh - 100px))}
+ .intro{display:none}
+}
+
+@media(min-width:1200px){
+ .viewer .selection-strip{top:70px;bottom:auto;left:12px;transform:none;max-width:230px}
+ .viewer .view-controls{left:auto;right:12px;bottom:32px;width:98px;flex-wrap:wrap}
+ .viewer .model-caption{text-align:right}
+}
+@media(max-width:360px){.intro .demo-badge{max-width:110px;font-size:.57rem}.intro h1{font-size:.9rem}.visitor-nav .back{max-width:100px}.visitor-nav{min-height:48px}}
