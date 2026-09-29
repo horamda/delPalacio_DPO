@@ -100,3 +100,38 @@ dialog{color:var(--ink)}dialog::backdrop{background:#05203380;backdrop-filter:bl
  .viewer .model-caption{text-align:right}
 }
 @media(max-width:360px){.intro .demo-badge{max-width:110px;font-size:.57rem}.intro h1{font-size:.9rem}.visitor-nav .back{max-width:100px}.visitor-nav{min-height:48px}}
+
+/* Compact tools, full-width map on every device. */
+.page{padding:0 6px 18px}
+.visitor-nav{height:42px;min-height:42px;padding:4px 12px;gap:8px}
+.visitor-nav img{width:26px;height:26px}
+.visitor-nav a{font-size:.8rem}
+.visitor-nav .back{font-size:.7rem;max-width:none}
+.intro{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.mobile-actions{display:flex;gap:6px;margin:4px 0;justify-content:flex-start}
+.mobile-actions button,.mobile-actions button:first-child{flex:0 1 auto;min-height:40px;padding:5px 12px;font-size:.75rem;border:1px solid #c2d1da;border-radius:7px;background:#fff;color:var(--navy)}
+.workspace{display:block;margin-bottom:8px}
+.workspace>.panel{display:none}
+.workspace>.viewer{height:calc(100svh - 96px);min-height:280px;border-radius:8px}
+.viewer-tools{top:6px;left:6px;right:6px}
+.view-modes{padding:2px;gap:0;border-radius:8px}
+.view-modes button,#topView{min-height:36px;padding:5px 9px;font-size:.72rem}
+.viewer-actions button{min-height:36px;padding:5px 9px;font-size:.7rem}
+.viewer .selection-strip{top:auto;bottom:64px;left:8px;right:auto;transform:none;max-width:calc(100% - 16px);padding:3px 6px;border-radius:8px;background:#ffffffe8}
+.viewer .selection-strip:has(#focusSector:disabled){display:none}
+.viewer .view-controls{left:8px;right:auto;bottom:8px;width:auto;gap:5px;flex-wrap:nowrap}
+.viewer .view-controls button{width:40px;height:40px;min-height:40px;border-radius:8px;font-size:1.15rem}
+.viewer #panMode{width:auto;padding:0 9px;font-size:.72rem}
+.viewer .model-caption{display:none}
+.compass{top:54px;right:8px;width:26px;padding:3px 0}
+.compass b{font-size:1.1rem}
+.panel-dialog{inset:0 auto 0 0;margin:0;width:min(360px,100%);height:100dvh;max-height:100dvh;border-radius:0 14px 14px 0}
+.panel-dialog .panel{height:calc(100dvh - 69px);max-height:none}
+@media(max-width:620px){
+ .visitor-nav .brand-long{display:none}
+ .viewer .view-controls{left:50%;transform:translateX(-50%)}
+ .viewer .selection-strip{bottom:56px;left:50%;transform:translateX(-50%)}
+ .view-modes button,#topView,.viewer-actions button{min-height:40px}
+ .panel-dialog{inset:auto 0 0;width:100%;height:auto;max-height:var(--sheet-height);border-radius:16px 16px 0 0}
+ .panel-dialog .panel{height:calc(var(--sheet-height) - 69px)}
+}

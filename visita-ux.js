@@ -1,6 +1,5 @@
 (() => {
   const $=id=>document.getElementById(id);
-  const mobile=matchMedia('(max-width: 900px)');
   const workspace=document.querySelector('.workspace'),panel=document.querySelector('.panel'),viewer=$('mapSection');
   const panelDialog=$('panelDialog'),mapDialog=$('mapDialog');
   const tabs=[$('sectorsTab'),$('layersTab')];
@@ -22,14 +21,13 @@
   });
   function openPanel(index){
     setTab(index);
-    if(mobile.matches){panelDialog.append(panel);panelDialog.showModal();lockScroll();}
+    panelDialog.append(panel);panelDialog.showModal();lockScroll();
     if(index===0)$('sectorSearch').focus();else tabs[1].focus();
   }
   $('openSectors').onclick=()=>openPanel(0);
   $('openLayers').onclick=()=>openPanel(1);
   $('closePanel').onclick=()=>panelDialog.close();
   panelDialog.addEventListener('close',()=>{workspace.append(panel);lockScroll();});
-  mobile.addEventListener('change',()=>{if(!mobile.matches&&panelDialog.open)panelDialog.close();});
   $('openEditor').onclick=()=>{const editor=$('annotationEditor');editor.open=true;editor.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});$('annotationType').focus({preventScroll:true});};
   $('expandMap').onclick=()=>{
     if(mapDialog.open){mapDialog.close();return;}

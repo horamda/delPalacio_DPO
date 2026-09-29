@@ -27,11 +27,11 @@
   function fittedYaw(){return 0;}
   function scale(){
     // Fit the complete site and surrounding streets, reserving only the toolbars.
-    const width=15.1*Math.abs(Math.cos(yaw))+17.3*Math.abs(Math.sin(yaw));
-    const depth=(15.1*Math.abs(Math.sin(yaw))+17.3*Math.abs(Math.cos(yaw)))*Math.sin(pitch)+.9*Math.cos(pitch);
-    return Math.max(1,Math.min((canvas.clientWidth-30)/width,(canvas.clientHeight-(canvas.clientWidth>900?100:180))/depth))*zoomFactor;
+    const width=13.5*Math.abs(Math.cos(yaw))+17*Math.abs(Math.sin(yaw));
+    const depth=(13.5*Math.abs(Math.sin(yaw))+17*Math.abs(Math.cos(yaw)))*Math.sin(pitch)+.9*Math.cos(pitch);
+    return Math.max(1,Math.min((canvas.clientWidth-30)/width,(canvas.clientHeight-112)/depth))*zoomFactor;
   }
-  function originY(){return canvas.clientHeight*.5+(canvas.clientWidth>900?20:-10);}
+  function originY(){return canvas.clientHeight*.5-10;}
 
   sectors.forEach(s => {
     const b = document.createElement('button');
@@ -64,7 +64,7 @@
   function resize(){ if(!ctx)return; const dpr=Math.min(devicePixelRatio||1,2); const r=canvas.getBoundingClientRect(); canvas.width=r.width*dpr; canvas.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
   function project(p){
     const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
-    const x=p.x*cy-p.z*sy, z=p.x*sy+p.z*cy;
+    const x=(p.x+.8)*cy-(p.z+.1375)*sy, z=(p.x+.8)*sy+(p.z+.1375)*cy;
     return { x:canvas.clientWidth/2+panX+x*scale(), y:originY()+panY-(p.y*cp-z*sp)*scale() };
   }
   function shade(hex,amt){ const n=parseInt(hex.slice(1),16),r=Math.max(0,Math.min(255,(n>>16)+amt)),g=Math.max(0,Math.min(255,((n>>8)&255)+amt)),b=Math.max(0,Math.min(255,(n&255)+amt)); return `rgb(${r},${g},${b})`; }
@@ -94,7 +94,7 @@
     const candidates=[];
     for(let row=-4;row<=4;row++)for(const col of [0,-1,1])candidates.push({x:center.x+col*(width*.6+12),y:center.y+row*(size+12)});
     candidates.sort((a,b)=>Math.hypot(a.x-center.x,a.y-center.y)-Math.hypot(b.x-center.x,b.y-center.y));
-    const free=candidates.find(p=>p.x-width/2>4&&p.x+width/2<canvas.clientWidth-4&&p.y-size>66&&p.y<canvas.clientHeight-114&&!labelAreas.some(r=>p.x+width/2>r.left&&p.x-width/2<r.right&&p.y>r.top&&p.y-size-8<r.bottom));
+    const free=candidates.find(p=>p.x-width/2>4&&p.x+width/2<canvas.clientWidth-4&&p.y-size>66&&p.y<canvas.clientHeight-90&&!labelAreas.some(r=>p.x+width/2>r.left&&p.x-width/2<r.right&&p.y>r.top&&p.y-size-8<r.bottom));
     if(!free&&density.value==='auto'&&!active)return;
     if(free){x=free.x;y=free.y;}
     labelAreas.push({left:x-width/2,right:x+width/2,top:y-size-5,bottom:y});
@@ -181,7 +181,7 @@
     editor?.draw();
   }
   function inside(p,poly){ let c=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ if(((poly[i].y>p.y)!==(poly[j].y>p.y))&&(p.x<(poly[j].x-poly[i].x)*(p.y-poly[i].y)/(poly[j].y-poly[i].y)+poly[i].x))c=!c; } return c; }
-  function unproject(p){const rx=(p.x-canvas.clientWidth/2-panX)/scale(),rz=(p.y-originY()-panY)/(scale()*Math.sin(pitch));return {x:(rx*Math.cos(yaw)+rz*Math.sin(yaw))*80+529,z:(-rx*Math.sin(yaw)+rz*Math.cos(yaw))*80+611};}
+  function unproject(p){const rx=(p.x-canvas.clientWidth/2-panX)/scale(),rz=(p.y-originY()-panY)/(scale()*Math.sin(pitch));return {x:(rx*Math.cos(yaw)+rz*Math.sin(yaw)-.8)*80+529,z:(-rx*Math.sin(yaw)+rz*Math.cos(yaw)-.1375)*80+611};}
   function hover(e){
     if(e.pointerType==='touch')return;
     const r=canvas.getBoundingClientRect(),p={x:e.clientX-r.left,y:e.clientY-r.top};
